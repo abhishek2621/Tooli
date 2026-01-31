@@ -1,26 +1,158 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: 0.75rem;
+  --radius-md: calc(0.75rem - 2px);
+  --radius-sm: calc(0.75rem - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  --background: 0 0% 100%;
+  --foreground: 215 25% 27%;
+  /* Slate 800 */
+
+  --card: 0 0% 100%;
+  --card-foreground: 215 25% 27%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 25% 27%;
+
+  /* Indigo 600 - Trustworthy Blue */
+  --primary: 226 70% 55.5%;
+  --primary-foreground: 210 40% 98%;
+
+  /* Slate 100 */
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  /* Slate 100 */
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  /* Slate 500 */
+
+  /* Slate 100 */
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  /* Slate 200 */
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+
+  /* Indigo 600 (ring matches primary) */
+  --ring: 226 70% 55.5%;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  /* Deep, calming Slate 950 base instead of pure black */
+  --background: 222.2 47.4% 11.2%;
+  --foreground: 210 40% 98%;
+
+  /* Slightly lighter Slate 900 for cards to create subtle depth */
+  --card: 217.2 32.6% 17.5%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222.2 47.4% 11.2%;
+  --popover-foreground: 210 40% 98%;
+
+  /* Softened Blue/Indigo for reduced eye strain in dark mode */
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+
+  /* Darker muted tones */
+  --secondary: 217.2 32.6% 20.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 70%;
+
+  --accent: 217.2 32.6% 20.5%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  /* Subtle borders */
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
+@layer utilities {
+  .container {
+    @apply mx-auto px-4 md:px-8;
+  }
+  
+  .glass-panel {
+    @apply bg-background/60 backdrop-blur-xl border border-border/50 shadow-xl;
+  }
+  
+  .glass-card {
+    @apply bg-card/50 backdrop-blur-sm border border-border/50 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/20;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 }

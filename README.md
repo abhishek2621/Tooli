@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tooli
 
-## Getting Started
+<div align="center">
+  <img src="public/screenshot.png" alt="Tooli - Free Online Tools" width="800" />
+  <p align="center">
+    <strong>A privacy-focused, ad-free collection of essential online tools.</strong>
+  </p>
+</div>
 
-First, run the development server:
+## 🚀 Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Tooli is a modern, responsive web application offering a suite of free utilities for finance, document management, image processing, and more. Built with Next.js 14, Tailwind CSS, and Framer Motion, it focuses on providing a premium user experience without the clutter of typical tool sites.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Key Features
+*   **Privacy First**: All file processing (PDF compression, Image conversion) happens **100% Client-Side**. Files never leave your browser.
+*   **Ad-Free**: Clean, distraction-free interface.
+*   **PWA Ready**: Installable as a native-like app on mobile and desktop.
+*   **Dark/Light Mode**: Beautifully designed themes (Default: Light).
+*   **Responsive**: Optimized for all devices from mobile to 4K monitors.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+*   **Components**: [shadcn/ui](https://ui.shadcn.com/) (Radix Primitives)
+*   **Animations**: [Framer Motion](https://www.framer.com/motion/)
+*   **Icons**: [Lucide React](https://lucide.dev/)
+*   **PDF Processing**: `pdf-lib` & `pdfjs-dist`
+*   **Image Processing**: `browser-image-compression`
 
-## Learn More
+## 📦 Included Tools
 
-To learn more about Next.js, take a look at the following resources:
+| Category | Tools |
+|----------|-------|
+| **Image** | Image Compressor, Image to PDF, Image Converter (WebP/PNG/JPG) |
+| **Document** | PDF Compressor, PDF Merger, Text to PDF, Word Counter |
+| **Finance** | GST Calculator, EMI Calculator, SIP Calculator, Currency Converter |
+| **Utility** | Password Generator, QR Code Generator, Unit Converter, Age Calculator |
+| **Education** | GPA Calculator |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Getting Started
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Prerequisites
+*   Node.js 18+ 
+*   npm or pnpm
 
-## Deploy on Vercel
+### Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/tooli.git
+    cd tooli
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Run the development server**
+    ```bash
+    npm run dev
+    ```
+
+4.  Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🌐 Deployment
+
+This project is optimized for deployment on [Vercel](https://vercel.com).
+
+1.  Push your code to a Git repository (GitHub/GitLab).
+2.  Import the project into Vercel.
+3.  Vercel will detect Next.js and configure the build settings automatically.
+4.  **Deploy!**
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
