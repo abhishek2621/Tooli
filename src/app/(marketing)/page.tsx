@@ -8,15 +8,25 @@ import { ToolExplorer } from "@/components/home/tool-explorer";
 import { BackgroundBlobs } from "@/components/shared/background-blobs";
 
 export const metadata: Metadata = {
-    title: "Tooli - Free Online Tools for Everyone",
-    description: "Access a suite of free online tools including GST Calculator, PDF Converter, Image Compressor, and more. No ads, no sign-up needed.",
-    keywords: ["online tools", "free calculators", "pdf converter", "image compressor", "gst calculator", "productivity suite", "tooli"],
+    title: "Free Online Tools – Image, PDF, Finance & Utility Tools | Tooli",
+    description: "Use Tooli’s free online tools for images, PDFs, finance calculators, and utilities. Fast, secure, no sign-up, no tracking. Works directly in your browser.",
+    keywords: [
+        "free online tools",
+        "all-in-one online tools",
+        "online utility tools",
+        "browser based tools",
+        "no sign up online tools",
+        "instant online tools",
+        "image compressor online",
+        "pdf tools online",
+        "finance calculators india"
+    ],
     openGraph: {
         type: "website",
         locale: "en_US",
         url: siteConfig.url,
-        title: "Tooli - Free Online Tools",
-        description: "Your go-to privacy-focused utility belt for the web.",
+        title: "Free Online Tools – Image, PDF, Finance & Utility Tools | Tooli",
+        description: "Use Tooli’s free online tools for images, PDFs, finance calculators, and utilities. Fast, secure, no sign-up, no tracking. Works directly in your browser.",
         siteName: siteConfig.name,
     },
 };
@@ -32,12 +42,14 @@ export default function Home() {
                         Phase-1 MVP is now live.
                     </div>
                     <h1 className="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
-                        Essential tools for <br className="hidden sm:inline" />
-                        <span className="text-primary bg-clip-text">everyday tasks</span>.
+                        Free Online Tools to <br className="hidden sm:inline" />
+                        <span className="text-primary bg-clip-text">Convert, Compress & Calculate Instantly</span>
                     </h1>
-                    <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-                        A privacy-focused collection of calculators, converters, and generators.
-                        No ads, no tracking, just utility.
+                    <h2 className="text-xl md:text-2xl text-muted-foreground font-medium">
+                        Image, PDF, Finance & Utility Tools — No Login, No Tracking
+                    </h2>
+                    <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-lg sm:leading-8">
+                        Tooli is an all-in-one platform offering free online image tools, PDF tools, finance calculators, utility tools, and productivity tools designed for fast, private, and secure use directly in your browser.
                     </p>
                 </div>
             </section>

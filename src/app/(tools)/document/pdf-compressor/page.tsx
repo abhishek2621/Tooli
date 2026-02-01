@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import { PdfCompressorWrapper } from "@/components/tools/document/pdf-compressor-wrapper";
 
 export const metadata: Metadata = {
-    title: 'Free PDF Compressor | Reduce PDF File Size',
-    description: 'Compress PDF files online for free. Optimize documents for faster sharing while maintaining quality.',
+    title: 'PDF Compressor Online – Reduce File Size Without Quality Loss',
+    description: 'Reduce PDF file size without losing quality. Compress PDF files online for free. Secure, privacy-first.',
     keywords: [
-        'pdf compressor', 'compress pdf', 'reduce pdf size', 'optimize pdf',
-        'free pdf tool', 'online pdf compressor'
+        'pdf compressor online', 'reduce pdf size for email', 'compress pdf without watermark',
+        'shrink pdf file size', 'no sign up pdf compressor'
     ]
 }
 
@@ -14,9 +14,9 @@ export default function PdfCompressorPage() {
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
             <div className="flex flex-col gap-2 mb-8 text-center items-center">
-                <h1 className="text-3xl font-bold tracking-tight">Compress PDF</h1>
+                <h1 className="text-3xl font-bold tracking-tight">PDF Compressor Online – Reduce File Size Without Quality Loss</h1>
                 <p className="text-lg text-muted-foreground">
-                    Reduce file size while optimizing for quality.
+                    Reduce file size while optimizing for quality. No signup, no watermark.
                 </p>
             </div>
 

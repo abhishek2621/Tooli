@@ -2,14 +2,14 @@ import type { Metadata } from 'next'
 import { TextToPdfConverter } from "@/components/tools/document/text-to-pdf-converter";
 
 export const metadata: Metadata = {
-    title: 'Free Text to PDF Converter | Convert TXT to PDF Online',
-    description: 'Convert plain text files (.txt) or specific text content to high-quality PDF documents quickly. Free, secure, and purely client-side conversion.',
+    title: 'Text to PDF Converter – Convert Text Files Online',
+    description: 'Convert plain text files (.txt) or specific text content to high-quality PDF documents quickly. Free, secure. Works in browser.',
     keywords: [
-        'text to pdf', 'txt to pdf', 'convert text to pdf', 'text to pdf converter',
-        'online pdf converter', 'create pdf from text', 'free pdf tools'
+        'text to pdf online', 'convert text to pdf free', 'txt to pdf converter',
+        'plain text to pdf', 'online pdf converter'
     ],
     openGraph: {
-        title: 'Text to PDF Converter | Tooli',
+        title: 'Text to PDF Converter – Convert Text Files Online',
         description: 'Convert plain text to PDF documents directly in your browser.',
         type: 'website',
     }
@@ -19,9 +19,9 @@ export default function TextToPdfPage() {
     return (
         <div className="space-y-6 max-w-7xl mx-auto">
             <div className="flex flex-col gap-2 mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Text to PDF Converter</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Text to PDF Converter – Convert Text Files Online</h1>
                 <p className="text-lg text-muted-foreground">
-                    Convert text files or typed content into PDF format instantly.
+                    Convert text files or typed content into PDF format instantly. No signup, privacy-first.
                 </p>
             </div>
 

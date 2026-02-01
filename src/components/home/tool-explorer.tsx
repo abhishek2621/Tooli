@@ -141,19 +141,28 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                             animate="show"
                             className="space-y-12"
                         >
-                            {(Object.keys(initialTools) as ToolCategory[]).map((category) => (
-                                <motion.div key={category} variants={itemVars} className="space-y-6">
-                                    <div className="flex items-center gap-2">
-                                        <h2 className="text-2xl font-bold capitalize tracking-tight text-foreground/80">{category}</h2>
-                                        <div className="h-px flex-1 bg-border/60"></div>
-                                    </div>
-                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                        {initialTools[category].map((tool) => (
-                                            <ToolCard key={tool.slug} tool={tool} /> // Categories themselves fade in, cards inside could animate too but letting the block animate is cleaner for large lists
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            ))}
+                            {(Object.keys(initialTools) as ToolCategory[]).map((category) => {
+                                const categoryHeadings: Record<ToolCategory, string> = {
+                                    image: "Free Image Tools Online",
+                                    document: "Online PDF & Document Tools",
+                                    finance: "Finance & Calculator Tools Online",
+                                    utility: "Everyday Utility Tools",
+                                    education: "Study & Education Tools Online"
+                                };
+                                return (
+                                    <motion.div key={category} variants={itemVars} className="space-y-6">
+                                        <div className="flex items-center gap-2">
+                                            <h2 className="text-2xl font-bold capitalize tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
+                                            <div className="h-px flex-1 bg-border/60"></div>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                            {initialTools[category].map((tool) => (
+                                                <ToolCard key={tool.slug} tool={tool} />
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -167,22 +176,31 @@ function ToolCard({ tool, variants }: { tool: Tool, variants?: any }) {
     const IconComponent = iconMap[tool.icon] || ArrowRight;
 
     return (
-        <motion.div variants={variants} whileHover={{ y: -5, transition: { duration: 0.2 } }} className="h-full">
+        <motion.div
+            variants={variants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="h-full"
+        >
             <Link
                 href={tool.path}
-                className="group relative flex flex-col h-full overflow-hidden rounded-xl border bg-card/60 hover:bg-card/90 p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/20"
+                className="group relative flex flex-col h-full overflow-hidden rounded-xl border bg-card/40 hover:bg-card/80 p-6 transition-colors duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 backdrop-blur-sm"
             >
-                <div className="flex items-start gap-4 flex-1">
-                    <div className="shrink-0 rounded-lg p-3 bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                {/* Subtle gradient blob on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                <div className="flex items-start gap-4 flex-1 relative z-10">
+                    <div className="shrink-0 rounded-lg p-3 bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 shadow-sm">
                         <IconComponent className="h-6 w-6" aria-hidden="true" />
                     </div>
                     <div className="flex flex-col gap-2 pt-0.5">
-                        <h3 className="font-semibold text-lg transition-colors group-hover:text-primary">{tool.name}</h3>
+                        <h3 className="font-semibold text-lg transition-colors group-hover:text-primary tracking-tight">{tool.name}</h3>
                         <p className="text-sm text-muted-foreground line-clamp-2">{tool.description}</p>
                     </div>
                 </div>
 
-                <div className="absolute right-4 bottom-4 opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                <div className="absolute right-4 bottom-4 opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 z-10">
                     <ArrowRight className="h-5 w-5 text-primary" />
                 </div>
             </Link>

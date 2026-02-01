@@ -2,15 +2,14 @@ import type { Metadata } from 'next'
 import { GSTCalculatorForm } from '@/components/tools/finance/gst-form'
 
 export const metadata: Metadata = {
-    title: 'Free GST Calculator India (2025) | Calculate GST & Tax',
-    description: 'Use our Free GST Calculator to find inclusive and exclusive tax amounts instantly. supports 5%, 12%, 18%, and 28% tax slabs. Best for business and students.',
+    title: 'GST Calculator Online (India) – Inclusive & Exclusive',
+    description: 'Calculate GST inclusive and exclusive amounts easily. Supports 5%, 12%, 18%, and 28% tax slabs. Free GST tax calculator for India.',
     keywords: [
-        'gst calculator', 'gst calculator india', 'calculate gst', 'gst inclusive calculator',
-        'gst exclusive calculator', 'tax calculator', 'gst tax', 'india tax calculator',
-        'goods and services tax'
+        'gst calculator online india', 'gst inclusive exclusive calculator', 'calculate gst amount',
+        'gst tax calculator india', 'gst calculation tool'
     ],
     openGraph: {
-        title: 'GST Calculator | Free Online Finance Tools',
+        title: 'GST Calculator Online (India) – Inclusive & Exclusive',
         description: 'Calculate GST inclusive and exclusive amounts online instantly.',
         type: 'website',
     }
@@ -20,9 +19,9 @@ export default function GSTCalculatorPage() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">GST Calculator</h1>
+                <h1 className="text-3xl font-bold tracking-tight">GST Calculator Online (India) – Inclusive & Exclusive</h1>
                 <p className="text-lg text-muted-foreground">
-                    Calculate Goods and Services Tax (GST) effortlessly.
+                    Calculate Goods and Services Tax (GST) effortlessly. No signup.
                 </p>
             </div>
 

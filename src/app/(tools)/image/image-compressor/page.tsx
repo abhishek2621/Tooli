@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import { ImageCompressor } from "@/components/tools/image/image-compressor";
 
 export const metadata: Metadata = {
-    title: 'Free Image Compressor | Compress JPG, PNG, WEBP Online',
-    description: 'Compress images online without losing quality. Reduce image file size by up to 90% for faster website loading. Free and secure.',
+    title: 'Free Image Compressor Online (No Quality Loss)',
+    description: 'Compress images online without losing quality. Reduce image size by up to 90% for faster website loading. Free, secure, no tracking. Works in browser.',
     keywords: [
-        'image compressor', 'compress jpg', 'compress png', 'online image optimizer',
-        'reduce image size', 'photo compression', 'free image tool'
+        'image compressor online', 'compress image online free', 'reduce image size without quality loss',
+        'jpg png image compressor', 'image compressor no watermark', 'photo optimizer'
     ]
 }
 
@@ -14,9 +14,9 @@ export default function ImageCompressorPage() {
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
             <div className="flex flex-col gap-2 text-center items-center">
-                <h1 className="text-3xl font-bold tracking-tight">Image Compressor</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Free Image Compressor Online (No Quality Loss)</h1>
                 <p className="text-lg text-muted-foreground">
-                    Reduce file size up to 90% while maintaining quality.
+                    Reduce file size up to 90% while maintaining quality. No signup, no watermark.
                 </p>
             </div>
 
