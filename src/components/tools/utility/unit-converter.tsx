@@ -91,9 +91,10 @@ export function UnitConverter() {
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
                     {/* From Section */}
                     <div className="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-transparent focus-within:border-primary/20 transition-colors">
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold ml-1">From</Label>
+                        <Label htmlFor="from-amount" className="text-xs text-muted-foreground uppercase tracking-wider font-semibold ml-1">From</Label>
                         <div className="flex gap-2">
                             <Input
+                                id="from-amount"
                                 type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
@@ -102,7 +103,7 @@ export function UnitConverter() {
                             />
                         </div>
                         <Select value={fromUnit} onValueChange={setFromUnit}>
-                            <SelectTrigger className="w-full border-0 bg-background shadow-sm h-10">
+                            <SelectTrigger className="w-full border-0 bg-background shadow-sm h-10" aria-label="From Unit">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -120,6 +121,7 @@ export function UnitConverter() {
                             size="icon"
                             className="rounded-full h-10 w-10 bg-background shadow-sm hover:border-primary/50 hover:text-primary transition-colors"
                             onClick={handleSwap}
+                            aria-label="Swap units"
                         >
                             <ArrowRightLeft className="h-4 w-4" />
                         </Button>
@@ -127,7 +129,7 @@ export function UnitConverter() {
 
                     {/* To Section */}
                     <div className="space-y-3 bg-primary/5 p-5 rounded-2xl border border-primary/10">
-                        <Label className="text-xs text-primary/70 uppercase tracking-wider font-semibold ml-1">To</Label>
+                        <Label htmlFor="to-unit-select" className="text-xs text-primary/70 uppercase tracking-wider font-semibold ml-1">To</Label>
                         <div className="flex gap-2 items-center justify-between h-12">
                             <span className="text-2xl font-bold text-primary truncate">
                                 {formatResult(result)}
@@ -138,12 +140,13 @@ export function UnitConverter() {
                                 className="h-8 w-8 text-primary/60 hover:text-primary hover:bg-primary/10"
                                 onClick={copyResult}
                                 title="Copy result"
+                                aria-label="Copy result"
                             >
                                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                             </Button>
                         </div>
                         <Select value={toUnit} onValueChange={setToUnit}>
-                            <SelectTrigger className="w-full border-0 bg-background shadow-sm h-10 ring-offset-primary/5 focus:ring-primary/20">
+                            <SelectTrigger id="to-unit-select" className="w-full border-0 bg-background shadow-sm h-10 ring-offset-primary/5 focus:ring-primary/20" aria-label="To Unit">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

@@ -148,6 +148,7 @@ export function TimezoneConverter() {
                             value={`${new Date(baseTime).getHours().toString().padStart(2, '0')}:${new Date(baseTime).getMinutes().toString().padStart(2, '0')}`}
                             onChange={handleTimeInputChange}
                             className="w-auto cursor-pointer"
+                            aria-label="Time Scrubber Input"
                         />
                         <Button
                             variant="outline"
@@ -167,6 +168,7 @@ export function TimezoneConverter() {
                         step={15}
                         onValueChange={handleSliderChange}
                         className="py-4"
+                        aria-label="Time Scrubber Slider"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground px-1">
                         <span>12 AM</span>
@@ -210,6 +212,7 @@ export function TimezoneConverter() {
                                     size="icon"
                                     className="text-muted-foreground hover:text-destructive"
                                     onClick={() => removeZone(zone)}
+                                    aria-label={`Remove ${zone}`}
                                 >
                                     <X className="h-4 w-4" />
                                 </Button>

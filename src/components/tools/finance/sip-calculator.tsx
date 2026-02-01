@@ -73,10 +73,11 @@ export function SIPCalculator() {
                     {/* Monthly Investment */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                            <Label>Monthly Investment</Label>
+                            <Label htmlFor="monthly-investment">Monthly Investment</Label>
                             <div className="relative w-32">
                                 <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
+                                    id="monthly-investment"
                                     type="number"
                                     value={monthlyInvestment}
                                     onChange={(e) => setMonthlyInvestment(Number(e.target.value))}
@@ -90,15 +91,17 @@ export function SIPCalculator() {
                             max={100000}
                             step={500}
                             onValueChange={(val) => setMonthlyInvestment(val[0])}
+                            aria-label="Monthly Investment Slider"
                         />
                     </div>
 
                     {/* Expected Return */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                            <Label>Expected Return Rate (p.a)</Label>
+                            <Label htmlFor="expected-return">Expected Return Rate (p.a)</Label>
                             <div className="relative w-32">
                                 <Input
+                                    id="expected-return"
                                     type="number"
                                     value={expectedReturn}
                                     onChange={(e) => setExpectedReturn(Number(e.target.value))}
@@ -113,15 +116,17 @@ export function SIPCalculator() {
                             max={30}
                             step={0.5}
                             onValueChange={(val) => setExpectedReturn(val[0])}
+                            aria-label="Expected Return Slider"
                         />
                     </div>
 
                     {/* Time Period */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                            <Label>Time Period</Label>
+                            <Label htmlFor="time-period">Time Period</Label>
                             <div className="relative w-32">
                                 <Input
+                                    id="time-period"
                                     type="number"
                                     value={timePeriod}
                                     onChange={(e) => setTimePeriod(Number(e.target.value))}
@@ -136,6 +141,7 @@ export function SIPCalculator() {
                             max={40}
                             step={1}
                             onValueChange={(val) => setTimePeriod(val[0])}
+                            aria-label="Time Period Slider"
                         />
                     </div>
                 </CardContent>

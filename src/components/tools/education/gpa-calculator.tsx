@@ -122,6 +122,7 @@ export function GpaCalculator() {
                                             onChange={(e) => updateCourse(course.id, "name", e.target.value)}
                                             placeholder="Subject name"
                                             className="border-transparent hover:border-input focus:border-input transition-colors"
+                                            aria-label="Course Name"
                                         />
                                     </div>
                                     <div className="col-span-3 md:col-span-2">
@@ -129,7 +130,7 @@ export function GpaCalculator() {
                                             value={course.grade.toString()}
                                             onValueChange={(v) => updateCourse(course.id, "grade", parseFloat(v))}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="w-full" aria-label="Grade">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -149,6 +150,7 @@ export function GpaCalculator() {
                                             value={course.credits}
                                             onChange={(e) => updateCourse(course.id, "credits", parseFloat(e.target.value) || 0)}
                                             className="text-center"
+                                            aria-label="Credits"
                                         />
                                     </div>
                                     <div className="col-span-1 text-center">
@@ -157,6 +159,7 @@ export function GpaCalculator() {
                                             size="icon"
                                             onClick={() => removeCourse(course.id)}
                                             className="text-muted-foreground hover:text-destructive"
+                                            aria-label="Remove Course"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>

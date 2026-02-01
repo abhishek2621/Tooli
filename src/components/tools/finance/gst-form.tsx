@@ -42,14 +42,15 @@ export function GSTCalculatorForm() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label>GST Slab</Label>
-                        <div className="flex flex-wrap gap-2">
+                        <Label id="gst-slab-label">GST Slab</Label>
+                        <div className="flex flex-wrap gap-2" role="group" aria-labelledby="gst-slab-label">
                             {[5, 12, 18, 28].map((slab) => (
                                 <Button
                                     key={slab}
                                     variant={rate === slab ? "default" : "outline"}
                                     onClick={() => setRate(slab)}
                                     className="flex-1"
+                                    aria-pressed={rate === slab}
                                 >
                                     {slab}%
                                 </Button>

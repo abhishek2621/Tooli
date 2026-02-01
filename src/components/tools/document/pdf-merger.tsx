@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { PDFDocument } from "pdf-lib";
+
 import {
     Upload,
     FileText,
@@ -35,6 +35,7 @@ export function PdfMerger() {
             // For performance on large files, we might skip this or do it async lazy
             let pageCount = undefined;
             try {
+                const { PDFDocument } = await import("pdf-lib");
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
                 pageCount = pdf.getPageCount();
@@ -80,6 +81,8 @@ export function PdfMerger() {
         setIsMerging(true);
 
         try {
+            const { PDFDocument } = await import("pdf-lib");
+
             const mergedPdf = await PDFDocument.create();
 
             for (const pdfFile of files) {
@@ -119,11 +122,14 @@ export function PdfMerger() {
                         "border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
                         isDragActive ? "border-primary bg-primary/5" : "border-border"
                     )}
+                    role="button"
+                    aria-label="Upload PDF files dropzone"
+                    tabIndex={0}
                 >
-                    <input {...getInputProps()} />
+                    <input {...getInputProps()} aria-label="Upload PDF files input" />
                     <div className="flex flex-col items-center gap-4">
                         <div className="h-12 w-12 rounded-full bg-red-100/80 dark:bg-red-900/20 flex items-center justify-center text-red-600 mb-2">
-                            <Upload className="h-6 w-6" />
+                            <Upload className="h-6 w-6" aria-hidden="true" />
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold">

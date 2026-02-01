@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import jsPDF from "jspdf";
+
 import { Download, FileText, Upload, Trash2, FileType } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 
@@ -51,11 +51,12 @@ export function TextToPdfConverter() {
         multiple: false
     });
 
-    const generatePdf = () => {
+    const generatePdf = async () => {
         setIsGenerating(true);
         try {
             // Initialize jsPDF
             // Unit: pt (points) is standard for typography
+            const { jsPDF } = await import("jspdf");
             const doc = new jsPDF({
                 orientation: orientation as "portrait" | "landscape",
                 unit: "pt",
@@ -132,6 +133,9 @@ export function TextToPdfConverter() {
                                 "border-2 border-dashed rounded-xl h-[500px] flex flex-col items-center justify-center text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-900/30 dark:hover:bg-slate-900/50 p-12",
                                 isDragActive ? "border-primary bg-primary/5" : "border-border"
                             )}
+                            role="button"
+                            aria-label="Upload text file dropzone"
+                            tabIndex={0}
                         >
                             <input {...getInputProps()} />
                             <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">

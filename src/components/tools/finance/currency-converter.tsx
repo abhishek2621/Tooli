@@ -111,8 +111,9 @@ export function CurrencyConverter() {
 
                 {/* Amount Input */}
                 <div className="space-y-2">
-                    <Label>Amount</Label>
+                    <Label htmlFor="amount-input">Amount</Label>
                     <Input
+                        id="amount-input"
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
@@ -125,9 +126,9 @@ export function CurrencyConverter() {
                 <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-end">
                     {/* From Currency */}
                     <div className="space-y-2">
-                        <Label>From</Label>
+                        <Label htmlFor="from-currency">From</Label>
                         <Select value={fromCurrency} onValueChange={setFromCurrency}>
-                            <SelectTrigger className="h-12">
+                            <SelectTrigger id="from-currency" className="h-12" aria-label="From Currency">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -147,15 +148,16 @@ export function CurrencyConverter() {
                         size="icon"
                         className="rounded-full mb-1 hover:bg-slate-100 dark:hover:bg-slate-800"
                         onClick={handleSwap}
+                        aria-label="Swap currencies"
                     >
                         <ArrowRightLeft className="h-5 w-5 text-muted-foreground" />
                     </Button>
 
                     {/* To Currency */}
                     <div className="space-y-2">
-                        <Label>To</Label>
+                        <Label htmlFor="to-currency">To</Label>
                         <Select value={toCurrency} onValueChange={setToCurrency}>
-                            <SelectTrigger className="h-12">
+                            <SelectTrigger id="to-currency" className="h-12" aria-label="To Currency">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

@@ -78,8 +78,8 @@
 
   /* Slate 100 */
   --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  /* Slate 500 */
+  --muted-foreground: 215.4 25% 40%;
+  /* Slate 600 - Darker for accessibility */
 
   /* Slate 100 */
   --accent: 210 40% 96.1%;

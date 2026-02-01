@@ -78,8 +78,9 @@ export function QrCodeGenerator() {
 
                             <div className="space-y-4">
                                 <TabsContent value="url" className="mt-0">
-                                    <Label>Website URL</Label>
+                                    <Label htmlFor="url-input">Website URL</Label>
                                     <Input
+                                        id="url-input"
                                         placeholder="https://example.com"
                                         value={value}
                                         onChange={(e) => setValue(e.target.value)}
@@ -87,8 +88,9 @@ export function QrCodeGenerator() {
                                     />
                                 </TabsContent>
                                 <TabsContent value="text" className="mt-0">
-                                    <Label>Content</Label>
+                                    <Label htmlFor="text-input">Content</Label>
                                     <Input
+                                        id="text-input"
                                         placeholder="Enter your text here"
                                         value={value}
                                         onChange={(e) => setValue(e.target.value)}
@@ -96,8 +98,9 @@ export function QrCodeGenerator() {
                                     />
                                 </TabsContent>
                                 <TabsContent value="email" className="mt-0">
-                                    <Label>Email Address</Label>
+                                    <Label htmlFor="email-input">Email Address</Label>
                                     <Input
+                                        id="email-input"
                                         placeholder="name@example.com"
                                         value={value}
                                         onChange={(e) => setValue(e.target.value)}
@@ -115,9 +118,10 @@ export function QrCodeGenerator() {
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label>Foreground Color</Label>
+                                    <Label htmlFor="fg-color">Foreground Color</Label>
                                     <div className="flex gap-2">
                                         <Input
+                                            id="fg-color"
                                             type="color"
                                             value={fgColor}
                                             onChange={(e) => setFgColor(e.target.value)}
@@ -128,13 +132,15 @@ export function QrCodeGenerator() {
                                             onChange={(e) => setFgColor(e.target.value)}
                                             className="uppercase font-mono"
                                             maxLength={7}
+                                            aria-label="Foreground color hex code"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Background Color</Label>
+                                    <Label htmlFor="bg-color">Background Color</Label>
                                     <div className="flex gap-2">
                                         <Input
+                                            id="bg-color"
                                             type="color"
                                             value={bgColor}
                                             onChange={(e) => setBgColor(e.target.value)}
@@ -145,6 +151,7 @@ export function QrCodeGenerator() {
                                             onChange={(e) => setBgColor(e.target.value)}
                                             className="uppercase font-mono"
                                             maxLength={7}
+                                            aria-label="Background color hex code"
                                         />
                                     </div>
                                 </div>

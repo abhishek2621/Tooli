@@ -2,8 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
-import { PDFDocument } from "pdf-lib";
-import * as pdfjsLib from "pdfjs-dist";
+
 import {
     FileText,
     X,
@@ -26,11 +25,7 @@ import {
 import { Label } from "@/components/ui/label";
 
 // Initialize PDF.js worker
-// Initialize PDF.js worker
-if (typeof window !== "undefined") {
-    // Use unpkg for more reliable version matching with npm
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-}
+
 
 type CompressionLevel = "low" | "medium" | "high" | "extreme";
 
@@ -78,6 +73,19 @@ export function PdfCompressor() {
         setCompressionStats(null);
 
         try {
+            setStatusMessage("Loading PDF libraries...");
+
+            // Dynamic imports
+            const [pdfjsLib, { PDFDocument }] = await Promise.all([
+                import("pdfjs-dist"),
+                import("pdf-lib")
+            ]);
+
+            // Initialize worker if needed (client-side only)
+            if (typeof window !== "undefined" && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+            }
+
             setStatusMessage("Loading PDF...");
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });

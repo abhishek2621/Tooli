@@ -4,7 +4,11 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-sans',
+});
 
 // Define the base URL for the application
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL

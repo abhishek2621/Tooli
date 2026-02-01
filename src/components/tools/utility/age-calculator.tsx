@@ -80,10 +80,11 @@ export function AgeCalculator() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
-                        <Label>Date of Birth</Label>
+                        <Label htmlFor="dob-trigger">Date of Birth</Label>
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
+                                    id="dob-trigger"
                                     variant={"outline"}
                                     className={cn(
                                         "w-full justify-start text-left font-normal",
@@ -112,10 +113,11 @@ export function AgeCalculator() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Calculate Age At Date (Optional)</Label>
+                        <Label htmlFor="calc-date-trigger">Calculate Age At Date (Optional)</Label>
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
+                                    id="calc-date-trigger"
                                     variant={"outline"}
                                     className={cn(
                                         "w-full justify-start text-left font-normal",

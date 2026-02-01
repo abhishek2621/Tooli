@@ -136,11 +136,14 @@ export function ImageConverter() {
                     "border-2 border-dashed rounded-xl p-10 text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
                     isDragActive ? "border-primary bg-primary/5" : "border-border"
                 )}
+                role="button"
+                aria-label="Upload images dropzone"
+                tabIndex={0}
             >
-                <input {...getInputProps()} />
+                <input {...getInputProps()} aria-label="Upload images input" />
                 <div className="flex flex-col items-center gap-4">
                     <div className="h-16 w-16 rounded-full bg-blue-100/80 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 mb-2">
-                        <Upload className="h-8 w-8" />
+                        <Upload className="h-8 w-8" aria-hidden="true" />
                     </div>
                     <div>
                         <h3 className="text-xl font-semibold mb-2">
@@ -228,33 +231,33 @@ export function ImageConverter() {
                                         <Button size="sm" onClick={() => convertSingleFile(file.id)}>
                                             Convert
                                         </Button>
-                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)}>
-                                            <X className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)} aria-label={`Remove image ${file.file.name}`}>
+                                            <X className="h-4 w-4" aria-hidden="true" />
                                         </Button>
                                     </>
                                 )}
                                 {file.status === "converting" && (
                                     <Button disabled size="sm" variant="secondary">
-                                        <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
+                                        <RefreshCcw className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
                                         Processing
                                     </Button>
                                 )}
                                 {file.status === "done" && (
                                     <div className="flex gap-2">
                                         <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700" onClick={() => downloadFile(file)}>
-                                            <Download className="h-4 w-4 mr-2" />
+                                            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
                                             Download
                                         </Button>
-                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)}>
-                                            <X className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)} aria-label={`Remove image ${file.file.name}`}>
+                                            <X className="h-4 w-4" aria-hidden="true" />
                                         </Button>
                                     </div>
                                 )}
                                 {file.status === "error" && (
                                     <div className="flex items-center gap-2 text-red-500">
                                         <span className="text-sm font-medium">Error</span>
-                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)}>
-                                            <X className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)} aria-label={`Remove image ${file.file.name}`}>
+                                            <X className="h-4 w-4" aria-hidden="true" />
                                         </Button>
                                     </div>
                                 )}

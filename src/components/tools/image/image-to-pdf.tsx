@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import jsPDF from "jspdf";
+
 import {
     Download,
     Upload,
@@ -85,23 +85,21 @@ export function ImageToPdf() {
         });
     };
 
-    const generatePdf = () => {
+    const generatePdf = async () => {
         if (images.length === 0) return;
         setIsGenerating(true);
 
         try {
+            // Dynamic import for jsPDF to reduce initial bundle size
+            const { jsPDF } = await import("jspdf");
+
             const doc = new jsPDF({
                 orientation: orientation as "portrait" | "landscape",
                 unit: "pt",
                 format: pageSize === "fit" ? undefined : pageSize // 'fit' handled custom logic below logic? No, jspdf needs format.
                 // For 'fit', we might want to just set a default and resize pages per image? 
-                // Creating a new doc for each page if easy? 
                 // Simplest 'Fit' implementation: use A4 but scale image to fit perfectly on the page.
             });
-
-            // If pageSize is 'fit', we should probably iterate and addPage with specific dimensions?
-            // Actually jsPDF constructor sets the FIRST page.
-            // Let's stick to standard sizes first for stability, or custom logic.
 
             // Standard margin logic
             let marginPt = 0;
@@ -162,11 +160,14 @@ export function ImageToPdf() {
                         "border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
                         isDragActive ? "border-primary bg-primary/5" : "border-border"
                     )}
+                    role="button"
+                    aria-label="Upload images dropzone"
+                    tabIndex={0}
                 >
-                    <input {...getInputProps()} />
+                    <input {...getInputProps()} aria-label="Upload images input" />
                     <div className="flex flex-col items-center gap-4">
                         <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                            <Upload className="h-6 w-6" />
+                            <Upload className="h-6 w-6" aria-hidden="true" />
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold">

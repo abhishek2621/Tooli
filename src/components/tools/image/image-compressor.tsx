@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
-import imageCompression from "browser-image-compression";
 import { filesize } from "filesize";
 import { Download, Upload, X, Loader2, ArrowRight, Settings2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -74,6 +73,9 @@ export function ImageCompressor() {
         setImages(prev => prev.map((item, i) => i === index ? { ...item, status: "compressing", progress: 10 } : item));
 
         try {
+            // Dynamic imports for heavy libraries
+            const imageCompression = (await import("browser-image-compression")).default;
+
             const maxDimension = Math.max(img.settings.width || 0, img.settings.height || 0);
 
             // Calculate maxSizeMB
@@ -147,6 +149,15 @@ export function ImageCompressor() {
         document.body.removeChild(link);
     };
 
+    // We need a synchronous version for render, or better yet, just format it in component
+    // We can just use a simple formatter or keep filesize if it's small enough, but let's assume we want to chunk it.
+    // Actually filesize is small (2KB), maybe we keep it top level? 
+    // User request said "Split JS bundles... lazy load heavy modules". 
+    // Browser-image-compression is the big one. Filesize is tiny. I'll allow filesize at top level for render simplicity or dynamic import it. 
+    // To avoid async render issues in React, I will keep filesize in the main bundle IF it is small, OR dynamic import it in the effect. 
+    // `browser-image-compression` is the heavy one.
+    // Let's stick to dynamic import for the compressor only. `filesize` is small enough to keep or we can use a simple helper.
+
     return (
         <div className="space-y-8">
             {/* Dropzone */}
@@ -171,8 +182,11 @@ export function ImageCompressor() {
                                 <div className="relative group aspect-square bg-slate-100 dark:bg-slate-950 rounded-md overflow-hidden border">
                                     <img
                                         src={img.compressedPreview || img.originalPreview}
-                                        alt="Preview"
+                                        alt={`Preview of ${img.originalFile.name}`}
                                         className="h-full w-full object-cover"
+                                        loading="lazy"
+                                        width={200}
+                                        height={200}
                                     />
                                     {img.status === "done" && img.compressedFile && (
                                         <Badge className={cn(
@@ -185,7 +199,7 @@ export function ImageCompressor() {
                                         </Badge>
                                     )}
                                 </div>
-                                <div className="text-xs text-center text-muted-foreground truncate px-1">
+                                <div className="text-xs text-center text-muted-foreground truncate px-1" title={img.originalFile.name}>
                                     {img.originalFile.name}
                                 </div>
                             </div>
@@ -193,20 +207,21 @@ export function ImageCompressor() {
                             {/* Controls & Info Area */}
                             <div className="space-y-4 w-full bg-muted/30 rounded-lg border p-4">
                                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground/80 mb-4">
-                                    <Settings2 className="h-4 w-4" /> Compression Settings
+                                    <Settings2 className="h-4 w-4" aria-hidden="true" /> Compression Settings
                                 </div>
 
                                 <div className="space-y-6">
                                     {/* Resolution Control */}
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <Label>Resize Dimensions</Label>
+                                            <Label htmlFor={`use-original-res-${index}`}>Resize Dimensions</Label>
                                             <div className="flex items-center gap-2">
-                                                <Label htmlFor={`res-${index}`} className="text-xs font-normal text-muted-foreground">Maintain Resolution</Label>
+                                                <Label htmlFor={`use-original-res-${index}`} className="text-xs font-normal text-muted-foreground">Maintain Resolution</Label>
                                                 <Switch
-                                                    id={`res-${index}`}
+                                                    id={`use-original-res-${index}`}
                                                     checked={img.settings.useOriginalResolution}
                                                     onCheckedChange={(checked) => updateImageSettings(index, { useOriginalResolution: checked })}
+                                                    aria-label="Maintain original resolution"
                                                 />
                                             </div>
                                         </div>
@@ -214,8 +229,9 @@ export function ImageCompressor() {
                                         {!img.settings.useOriginalResolution && (
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-1">
-                                                    <Label className="text-xs text-muted-foreground">Max Width (px)</Label>
+                                                    <Label htmlFor={`width-${index}`} className="text-xs text-muted-foreground">Max Width (px)</Label>
                                                     <Input
+                                                        id={`width-${index}`}
                                                         type="number"
                                                         value={img.settings.width}
                                                         onChange={(e) => updateImageSettings(index, { width: Number(e.target.value) })}
@@ -224,8 +240,9 @@ export function ImageCompressor() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <Label className="text-xs text-muted-foreground">Max Height (px)</Label>
+                                                    <Label htmlFor={`height-${index}`} className="text-xs text-muted-foreground">Max Height (px)</Label>
                                                     <Input
+                                                        id={`height-${index}`}
                                                         type="number"
                                                         value={img.settings.height}
                                                         onChange={(e) => updateImageSettings(index, { height: Number(e.target.value) })}
@@ -240,23 +257,26 @@ export function ImageCompressor() {
                                     {/* Quality Control */}
                                     <div className="space-y-3">
                                         <div className="flex justify-between">
-                                            <Label>Quality: {img.settings.quality}%</Label>
+                                            <Label htmlFor={`quality-${index}`}>Quality: {img.settings.quality}%</Label>
                                         </div>
                                         <Slider
+                                            id={`quality-${index}`}
                                             value={[img.settings.quality]}
                                             min={10}
                                             max={100}
                                             step={5}
                                             onValueChange={(val) => updateImageSettings(index, { quality: val[0] })}
                                             className="py-2"
+                                            aria-label="Image quality"
                                         />
                                     </div>
 
                                     {/* Target Size Control */}
                                     <div className="space-y-3 pt-4 border-t">
-                                        <Label>Target Size (Optional)</Label>
+                                        <Label htmlFor={`target-size-${index}`}>Target Size (Optional)</Label>
                                         <div className="flex items-center gap-2">
                                             <Input
+                                                id={`target-size-${index}`}
                                                 type="number"
                                                 value={img.settings.targetSize || ''}
                                                 onChange={(e) => updateImageSettings(index, { targetSize: e.target.value ? Number(e.target.value) : undefined })}
@@ -267,7 +287,7 @@ export function ImageCompressor() {
                                                 value={img.settings.targetUnit}
                                                 onValueChange={(val: "KB" | "MB") => updateImageSettings(index, { targetUnit: val })}
                                             >
-                                                <SelectTrigger className="w-[80px]">
+                                                <SelectTrigger className="w-[80px]" aria-label="Target size unit">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -288,13 +308,13 @@ export function ImageCompressor() {
                                         <span className="text-xs text-muted-foreground">Original</span>
                                         <span className="font-mono text-sm">{filesize(img.originalFile.size, { standard: "jedec" }) as string}</span>
                                     </div>
-                                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                                     <div className="flex flex-col items-end">
                                         <span className="text-xs text-muted-foreground">Compressed</span>
                                         <div className="flex items-center gap-2">
                                             {img.status === "compressing" ? (
                                                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                    <Loader2 className="h-3 w-3 animate-spin" /> ...
+                                                    <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" /> ...
                                                 </span>
                                             ) : (
                                                 <span className={cn("font-mono text-sm font-bold", img.status === "done" && "text-primary")}>
@@ -310,7 +330,7 @@ export function ImageCompressor() {
                             <div className="flex lg:flex-col items-center gap-2 w-full">
                                 {img.status === "done" && (
                                     <Button onClick={() => downloadImage(img)} className="w-full">
-                                        <Download className="h-4 w-4 mr-2" />
+                                        <Download className="h-4 w-4 mr-2" aria-hidden="true" />
                                         Save
                                     </Button>
                                 )}
@@ -320,7 +340,7 @@ export function ImageCompressor() {
                                     className="w-full"
                                     disabled={img.status === "compressing"}
                                 >
-                                    <RefreshCw className={cn("h-4 w-4 mr-2", img.status === "compressing" && "animate-spin")} />
+                                    <RefreshCw className={cn("h-4 w-4 mr-2", img.status === "compressing" && "animate-spin")} aria-hidden="true" />
                                     {img.status === "compressing" ? "Working" : "Redo"}
                                 </Button>
                                 <Button
@@ -328,8 +348,9 @@ export function ImageCompressor() {
                                     size="icon"
                                     onClick={() => removeImage(index)}
                                     className="hover:text-destructive lg:w-full lg:h-8"
+                                    aria-label={`Remove image ${img.originalFile.name}`}
                                 >
-                                    <X className="h-4 w-4" />
+                                    <X className="h-4 w-4" aria-hidden="true" />
                                 </Button>
                             </div>
                         </div>

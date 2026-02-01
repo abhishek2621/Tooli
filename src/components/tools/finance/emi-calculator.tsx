@@ -85,10 +85,11 @@ export function EMICalculator() {
                     {/* Loan Amount */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                            <Label>Loan Amount</Label>
+                            <Label htmlFor="loan-amount">Loan Amount</Label>
                             <div className="relative w-36">
                                 <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
+                                    id="loan-amount"
                                     type="number"
                                     value={loanAmount}
                                     onChange={(e) => setLoanAmount(Number(e.target.value))}
@@ -102,15 +103,17 @@ export function EMICalculator() {
                             max={10000000}
                             step={10000}
                             onValueChange={(val) => setLoanAmount(val[0])}
+                            aria-label="Loan Amount Slider"
                         />
                     </div>
 
                     {/* Interest Rate */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                            <Label>Interest Rate (p.a)</Label>
+                            <Label htmlFor="interest-rate">Interest Rate (p.a)</Label>
                             <div className="relative w-36">
                                 <Input
+                                    id="interest-rate"
                                     type="number"
                                     value={interestRate}
                                     onChange={(e) => setInterestRate(Number(e.target.value))}
@@ -125,15 +128,17 @@ export function EMICalculator() {
                             max={30}
                             step={0.1}
                             onValueChange={(val) => setInterestRate(val[0])}
+                            aria-label="Interest Rate Slider"
                         />
                     </div>
 
                     {/* Tenure */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                            <Label>Loan Tenure</Label>
+                            <Label htmlFor="loan-tenure">Loan Tenure</Label>
                             <div className="flex gap-2 w-48">
                                 <Input
+                                    id="loan-tenure"
                                     type="number"
                                     value={tenure}
                                     onChange={(e) => setTenure(Number(e.target.value))}
@@ -143,7 +148,7 @@ export function EMICalculator() {
                                     value={tenureType}
                                     onValueChange={(v) => setTenureType(v as "years" | "months")}
                                 >
-                                    <SelectTrigger className="w-24">
+                                    <SelectTrigger className="w-24" aria-label="Tenure Type">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -159,6 +164,7 @@ export function EMICalculator() {
                             max={tenureType === "years" ? 30 : 360}
                             step={1}
                             onValueChange={(val) => setTenure(val[0])}
+                            aria-label="Tenure Slider"
                         />
                     </div>
                 </CardContent>
