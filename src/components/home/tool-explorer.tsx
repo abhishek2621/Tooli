@@ -6,7 +6,7 @@ import { Tool, ToolCategory } from "@/config/tools";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-    Search, ArrowRight,
+    Search, ArrowRight, X,
     Calculator, Percent, Landmark, TrendingUp, RefreshCcw,
     FileText, Minimize2, Merge, Type,
     Image as ImageIcon, FileImage, RefreshCw,
@@ -79,20 +79,48 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
         <div className="space-y-12">
             {/* Search Bar - Floating in Hero Area essentially */}
             <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="relative max-w-2xl mx-auto -mt-8 mb-12 shadow-xl shadow-primary/5 rounded-full"
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2, type: "spring", stiffness: 100 }}
+                className="relative w-full max-w-2xl mx-auto -mt-8 mb-16 px-4 z-20"
             >
-                <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                        type="text"
-                        placeholder="Search for tools (e.g. 'PDF', 'GST', 'Compressor')..."
-                        className="w-full h-14 pl-12 pr-4 rounded-full border-muted text-base bg-background/80 backdrop-blur-sm focus-visible:ring-primary/20 transition-all font-medium"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                <div className="relative group">
+                    {/* Animated Glow Effect */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 via-purple-500/50 to-blue-500/50 rounded-full opacity-20 group-hover:opacity-60 blur-md transition duration-500 group-focus-within:opacity-100 group-focus-within:blur-lg" />
+
+                    {/* Main Bar */}
+                    <div className="relative flex items-center bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg group-hover:shadow-2xl transition-all duration-300 rounded-full">
+                        <div className="pl-6 flex items-center justify-center text-muted-foreground group-focus-within:text-primary transition-colors duration-300">
+                            <Search className="h-6 w-6" />
+                        </div>
+                        <Input
+                            type="text"
+                            placeholder="Search for tools (e.g. 'PDF', 'Tax', 'Compress')..."
+                            className="w-full h-16 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-lg px-4 placeholder:text-muted-foreground/50"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <AnimatePresence>
+                            {searchQuery && (
+                                <motion.div
+                                    key="clear-button"
+                                    initial={{ opacity: 0, scale: 0.5 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.5 }}
+                                    className="pr-4"
+                                >
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
+                                        onClick={() => setSearchQuery("")}
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
             </motion.div>
 

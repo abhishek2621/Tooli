@@ -39,7 +39,7 @@ export default function Home() {
             <section className="relative space-y-6 pb-8 pt-12 md:pb-12 md:pt-16 lg:py-24 overflow-hidden">
                 <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
                     <div className="rounded-full border bg-muted/50 px-3 py-1 text-sm text-muted-foreground backdrop-blur-md">
-                        Phase-1 MVP is now live.
+                        100% Free  • No Sign-up • Secure
                     </div>
                     <h1 className="font-heading text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
                         Free Online Tools to <br className="hidden sm:inline" />
