@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function CurrencyConverterPage() {
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="flex flex-col gap-2 mb-8 text-center items-center">
+            <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">Currency Converter Online – Live Exchange Rates</h1>
                 <p className="text-lg text-muted-foreground">
                     Check live foreign exchange rates and convert currencies instantly.

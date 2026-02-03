@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function PasswordGeneratorPage() {
     return (
         <div className="space-y-6 max-w-2xl mx-auto">
-            <div className="flex flex-col gap-2 text-center items-center">
+            <div className="flex flex-col gap-2 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">Password Generator – Create Strong & Secure Passwords</h1>
                 <p className="text-lg text-muted-foreground">
                     Create strong, unique passwords with custom settings. Secure and client-side.

@@ -7,13 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
     Search, ArrowRight, X,
-    Calculator, Percent, Landmark, TrendingUp, RefreshCcw,
+    Calculator, Percent, TrendingUp, RefreshCcw,
     FileText, Minimize2, Merge, Type,
     Image as ImageIcon, FileImage, RefreshCw,
     Scale, QrCode, Lock, Calendar, Globe,
     GraduationCap
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
 const iconMap: Record<string, any> = {
@@ -89,7 +88,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 via-purple-500/50 to-blue-500/50 rounded-full opacity-20 group-hover:opacity-60 blur-md transition duration-500 group-focus-within:opacity-100 group-focus-within:blur-lg" />
 
                     {/* Main Bar */}
-                    <div className="relative flex items-center bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg group-hover:shadow-2xl transition-all duration-300 rounded-full">
+                    <div className="relative flex items-center bg-background/80 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg group-hover:shadow-2xl transition-all duration-300 rounded-full">
                         <div className="pl-6 flex items-center justify-center text-muted-foreground group-focus-within:text-primary transition-colors duration-300">
                             <Search className="h-6 w-6" />
                         </div>

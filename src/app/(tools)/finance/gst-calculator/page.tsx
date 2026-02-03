@@ -2,14 +2,17 @@ import type { Metadata } from 'next'
 import { GSTCalculatorForm } from '@/components/tools/finance/gst-form'
 
 export const metadata: Metadata = {
-    title: 'GST Calculator Online (India) – Inclusive & Exclusive',
-    description: 'Calculate GST inclusive and exclusive amounts easily. Supports 5%, 12%, 18%, and 28% tax slabs. Free GST tax calculator for India.',
+    title: 'GST Calculator India – Inclusive & Exclusive Tax Calculator',
+    description: 'Calculate GST (Goods and Services Tax) for India instantly. Easy calculations for 5%, 12%, 18%, and 28% tax slabs. Determine inclusive and exclusive amounts accurately.',
     keywords: [
-        'gst calculator online india', 'gst inclusive exclusive calculator', 'calculate gst amount',
-        'gst tax calculator india', 'gst calculation tool'
+        'gst calculator', 'gst calculator india', 'calculate gst inclusive',
+        'gst exclusive calculator', 'tax calculator india', 'gst amount formula'
     ],
+    alternates: {
+        canonical: '/finance/gst-calculator',
+    },
     openGraph: {
-        title: 'GST Calculator Online (India) – Inclusive & Exclusive',
+        title: 'GST Calculator India – Inclusive & Exclusive Tax Calculator',
         description: 'Calculate GST inclusive and exclusive amounts online instantly.',
         type: 'website',
     }
@@ -18,10 +21,28 @@ export const metadata: Metadata = {
 export default function GSTCalculatorPage() {
     return (
         <div className="space-y-6">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "SoftwareApplication",
+                        "name": "Tooli GST Calculator",
+                        "applicationCategory": "FinanceApplication",
+                        "operatingSystem": "Any",
+                        "description": "Calculate Goods and Services Tax (GST) inclusive and exclusive amounts for Indian tax slabs.",
+                        "offers": {
+                            "@type": "Offer",
+                            "price": "0",
+                            "priceCurrency": "INR"
+                        }
+                    })
+                }}
+            />
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">GST Calculator Online (India) – Inclusive & Exclusive</h1>
+                <h1 className="text-3xl font-bold tracking-tight">GST Calculator India – Inclusive & Exclusive</h1>
                 <p className="text-lg text-muted-foreground">
-                    Calculate Goods and Services Tax (GST) effortlessly. No signup.
+                    Instantly calculate Goods and Services Tax (GST). Select your tax slab (5%, 12%, 18%, 28%) to see final amounts.
                 </p>
             </div>
 

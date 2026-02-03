@@ -20,6 +20,9 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: "Tooli - Free Online Tools & Calculators",
     template: "%s | Tooli",
@@ -42,7 +45,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: baseUrl,
     title: "Tooli - Free Online Tools & Calculators",
-    description: "Simply your daily tasks with our collection of free online tools.",
+    description: "Simplify your daily tasks with our collection of free online tools.",
     siteName: "Tooli",
   },
   twitter: {

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ImageConverterPage() {
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
-            <div className="flex flex-col gap-2 text-center mb-8">
+            <div className="flex flex-col gap-2 text-left mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Image Converter Online – Convert JPG, PNG & WEBP</h1>
                 <p className="text-lg text-muted-foreground">
                     Change image file formats easily (JPG, PNG, WEBP). Works in browser.

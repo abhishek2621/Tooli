@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function QrCodePage() {
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
-            <div className="flex flex-col gap-2 mb-8 text-center items-center">
+            <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">QR Code Generator – Create QR Codes Online Free</h1>
                 <p className="text-lg text-muted-foreground">
                     Create and customize standard QR codes instantly. No signup, no watermark.

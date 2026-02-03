@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function GpaCalculatorPage() {
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
-            <div className="flex flex-col gap-2 mb-8 text-center items-center">
+            <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">GPA Calculator Online – Calculate Your Grade Point Average</h1>
                 <p className="text-lg text-muted-foreground">
                     Calculate your semester grades and grade point average.

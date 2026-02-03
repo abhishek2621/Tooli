@@ -32,9 +32,13 @@ export function RequestToolCta() {
             </div>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button size="lg" className="mt-4 md:mt-0 shrink-0">
-                        <MessageSquarePlus className="mr-2 h-4 w-4" />
-                        Request Feature
+                    <Button
+                        size="lg"
+                        className="mt-4 md:mt-0 shrink-0 bg-gradient-to-br from-primary/80 to-indigo-600/90 backdrop-blur-md border border-white/10 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 text-primary-foreground font-medium rounded-xl relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <MessageSquarePlus className="mr-2 h-4 w-4 relative z-10" />
+                        <span className="relative z-10">Request Feature</span>
                     </Button>
                 </DialogTrigger>
                 <DialogContent>

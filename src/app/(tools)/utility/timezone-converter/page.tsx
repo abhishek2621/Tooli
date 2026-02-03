@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function TimeZonePage() {
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="flex flex-col gap-2 mb-8 text-center items-center">
+            <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">Time Zone Converter – Compare Time Across Countries</h1>
                 <p className="text-lg text-muted-foreground">
                     Compare global times and schedule meetings easily.

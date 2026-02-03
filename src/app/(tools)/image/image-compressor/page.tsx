@@ -2,21 +2,42 @@ import type { Metadata } from 'next'
 import { ImageCompressor } from "@/components/tools/image/image-compressor";
 
 export const metadata: Metadata = {
-    title: 'Free Image Compressor Online (No Quality Loss)',
-    description: 'Compress images online without losing quality. Reduce image size by up to 90% for faster website loading. Free, secure, no tracking. Works in browser.',
+    title: 'Free Image Compressor – Reduce Image Size Online (WebP, PNG, JPG)',
+    description: 'Compress images online instantly. Reduce file size by up to 90% without losing quality. Secure, client-side compression for WebP, PNG, and JPG. No sign-up.',
     keywords: [
-        'image compressor online', 'compress image online free', 'reduce image size without quality loss',
-        'jpg png image compressor', 'image compressor no watermark', 'photo optimizer'
-    ]
+        'image compressor', 'compress image online', 'reduce image size',
+        'optimize images for web', 'compress jpg', 'compress png', 'webp compressor'
+    ],
+    alternates: {
+        canonical: '/image/image-compressor',
+    },
 }
 
 export default function ImageCompressorPage() {
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="flex flex-col gap-2 text-center items-center">
-                <h1 className="text-3xl font-bold tracking-tight">Free Image Compressor Online (No Quality Loss)</h1>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "SoftwareApplication",
+                        "name": "Tooli Image Compressor",
+                        "applicationCategory": "MultimediaApplication",
+                        "operatingSystem": "Any",
+                        "offers": {
+                            "@type": "Offer",
+                            "price": "0",
+                            "priceCurrency": "USD"
+                        },
+                        "description": "Compress and optimize images online without losing quality. Supports JPG, PNG, and WebP formats."
+                    })
+                }}
+            />
+            <div className="flex flex-col gap-2 text-left items-start">
+                <h1 className="text-3xl font-bold tracking-tight">Free Image Compressor – Reduce Image Size Online</h1>
                 <p className="text-lg text-muted-foreground">
-                    Reduce file size up to 90% while maintaining quality. No signup, no watermark.
+                    Optimize your images for the web. Compress JPG, PNG, and WebP files by up to 90% securely in your browser.
                 </p>
             </div>
 
