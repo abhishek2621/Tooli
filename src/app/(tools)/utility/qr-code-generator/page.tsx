@@ -1,5 +1,9 @@
 import type { Metadata } from 'next'
-import { QrCodeGenerator } from "@/components/tools/utility/qr-code-generator";
+import dynamic from 'next/dynamic';
+
+const QrCodeGenerator = dynamic(() => import("@/components/tools/utility/qr-code-generator").then(mod => mod.QrCodeGenerator), {
+    loading: () => <div className="h-[400px] w-full bg-slate-100/50 animate-pulse rounded-xl" />
+});
 
 export const metadata: Metadata = {
     title: 'QR Code Generator – Create QR Codes Online Free',

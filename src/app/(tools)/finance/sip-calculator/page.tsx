@@ -1,5 +1,9 @@
 import type { Metadata } from 'next'
-import { SIPCalculator } from "@/components/tools/finance/sip-calculator";
+import dynamic from 'next/dynamic';
+
+const SIPCalculator = dynamic(() => import("@/components/tools/finance/sip-calculator").then(mod => mod.SIPCalculator), {
+    loading: () => <div className="h-[600px] w-full bg-slate-100/50 animate-pulse rounded-xl" />
+});
 
 export const metadata: Metadata = {
     title: 'SIP Calculator Online – Calculate Mutual Fund Returns',

@@ -1,5 +1,9 @@
 import type { Metadata } from 'next'
-import { EMICalculator } from "@/components/tools/finance/emi-calculator";
+import dynamic from 'next/dynamic';
+
+const EMICalculator = dynamic(() => import("@/components/tools/finance/emi-calculator").then(mod => mod.EMICalculator), {
+    loading: () => <div className="h-[600px] w-full bg-slate-100/50 animate-pulse rounded-xl" />
+});
 
 export const metadata: Metadata = {
     title: 'EMI Calculator Online – Calculate Monthly Loan EMI',

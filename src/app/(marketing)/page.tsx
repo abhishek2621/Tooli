@@ -1,8 +1,10 @@
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import { toolsByCategory } from "@/config/tools";
 import { siteConfig } from "@/config/site";
 import { ToolExplorer } from "@/components/home/tool-explorer";
-import { BackgroundBlobs } from "@/components/shared/background-blobs";
+
+const BackgroundBlobs = dynamic(() => import("@/components/shared/background-blobs").then(mod => mod.BackgroundBlobs));
 
 export const metadata: Metadata = {
     title: "Tooli – Free Online Tools, Calculators & Converters (No Sign-up)",
