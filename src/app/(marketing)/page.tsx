@@ -64,6 +64,27 @@ export default function Home() {
 
             {/* Tool Explorer Section (Search + Grid) */}
             <ToolExplorer initialTools={toolsByCategory} />
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "WebSite",
+                        "name": siteConfig.name,
+                        "url": siteConfig.url,
+                        "description": siteConfig.description,
+                        "potentialAction": {
+                            "@type": "SearchAction",
+                            "target": {
+                                "@type": "EntryPoint",
+                                "urlTemplate": `${siteConfig.url}/?q={search_term_string}`
+                            },
+                            "query-input": "required name=search_term_string"
+                        }
+                    })
+                }}
+            />
         </div>
     );
 }
