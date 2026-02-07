@@ -81,7 +81,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                 initial={{ opacity: 0, y: -20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.2, type: "spring", stiffness: 100 }}
-                className="relative w-full max-w-2xl mx-auto -mt-8 mb-16 px-4 z-20"
+                className="relative w-full max-w-2xl mx-auto -mt-4 mb-8 px-4 z-20"
             >
                 <div className="relative group">
                     {/* Animated Glow Effect */}

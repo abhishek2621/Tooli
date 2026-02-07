@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { GSTCalculatorForm } from '@/components/tools/finance/gst-form'
+import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {
     title: 'GST Calculator India – Inclusive & Exclusive Tax Calculator',
@@ -50,12 +51,35 @@ export default function GSTCalculatorPage() {
                 <GSTCalculatorForm />
             </div>
 
-            <div className="prose prose-gray max-w-none dark:prose-invert">
-                <h2>How to use this GST Calculator</h2>
-                <p>1. Enter the net amount.</p>
-                <p>2. Select the applicable GST Slab.</p>
-                <p>3. View the tax breakup instantly.</p>
-            </div>
+            <SEOContent
+                title="GST Calculation Guide & Best Practices 2026"
+                items={[
+                    {
+                        heading: "GST Slabs in India",
+                        content: "The GST Council defines 5 main tax slabs: 0%, 5%, 12%, 18%, and 28%. Common goods like electronics usually fall under the 18% slab, while luxury items attract 28%."
+                    },
+                    {
+                        heading: "Inclusive vs Exclusive",
+                        content: "GST Inclusive means the tax is already added to the price. GST Exclusive is the net price before adding tax. Business owners must distinguish between these for accurate invoicing."
+                    },
+                    {
+                        heading: "CGST and SGST",
+                        content: "For intrastate transactions, GST is split equally into Central GST (CGST) and State GST (SGST). For interstate trade, Integrated GST (IGST) is applied."
+                    },
+                    {
+                        heading: "Filing Deadlines",
+                        content: "Regular taxpayers must file GSTR-1 and GSTR-3B monthly. Keeping track of tax liability using an accurate calculator helps avoid last-minute filing errors and penalties."
+                    },
+                    {
+                        heading: "Input Tax Credit (ITC)",
+                        content: "Registered businesses can claim ITC on tax paid on inputs. Accurate GST calculation is crucial for reconciling invoices and maximizing tax savings."
+                    },
+                    {
+                        heading: "2026 Tax Updates",
+                        content: "Stay updated with the latest council revisions. Digital invoicing and AI-driven compliance are now standard, requiring precise real-time tax calculations."
+                    }
+                ]}
+            />
         </div>
     )
 }

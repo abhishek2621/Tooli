@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Plus, X, Globe, Clock, Search } from "lucide-react";
+import { useState } from "react";
+import { Plus, X, Globe, Clock, Settings2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 import {
     Command,
     CommandEmpty,
@@ -20,6 +21,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 // Get all supported timezones
 const ALL_ZONES = Intl.supportedValuesOf('timeZone');
@@ -34,37 +36,23 @@ const POPULAR_ZONES = [
     "Australia/Sydney",
     "Europe/Paris",
     "America/Los_Angeles",
+    "Asia/Dubai",
+    "America/Chicago",
 ];
 
 export function TimezoneConverter() {
-    // Base time is the source of truth (keep it as a timestamp number for easier slider math)
     const [baseTime, setBaseTime] = useState<number>(new Date().getTime());
     const [selectedZones, setSelectedZones] = useState<string[]>([
-        Intl.DateTimeFormat().resolvedOptions().timeZone, // User's local time
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
         "UTC",
         "America/New_York",
         "Europe/London",
-        "Asia/Tokyo"
     ]);
     const [openCombobox, setOpenCombobox] = useState(false);
 
-    // Update base time every minute if user hasn't interacted recently? 
-    // For a converter, usually you want it static once you start messing with it.
-    // Let's just initialize it to now.
-
     const handleSliderChange = (value: number[]) => {
-        // Slider value is minutes from midnight (0-1440)
-        // We need to apply this to the current baseTime's date component *relative to the first zone*?
-        // Or simpler: Just shift the baseTime by the difference.
-
-        // Actually, a "time travel" slider usually shifts hours forward/backward from "now".
-        // Let's make the slider a +/- 24h offset or similar.
-
-        // Better UX: A time scrubber for the *first* card (Local time usually).
-        // Let's implement a time scrubber that sets the hour/minute of the baseTime.
-
         const date = new Date(baseTime);
-        date.setHours(0, 0, 0, 0); // Start of day
+        date.setHours(0, 0, 0, 0);
         date.setMinutes(value[0]);
         setBaseTime(date.getTime());
     };
@@ -79,7 +67,6 @@ export function TimezoneConverter() {
         setBaseTime(date.getTime());
     };
 
-    // Calculate minutes from midnight for the slider (based on local time for now)
     const getSliderValue = () => {
         const date = new Date(baseTime);
         return date.getHours() * 60 + date.getMinutes();
@@ -93,7 +80,9 @@ export function TimezoneConverter() {
     };
 
     const removeZone = (zone: string) => {
-        setSelectedZones(selectedZones.filter(z => z !== zone));
+        if (selectedZones.length > 1) {
+            setSelectedZones(selectedZones.filter(z => z !== zone));
+        }
     };
 
     const formatTime = (time: number, zone: string) => {
@@ -133,102 +122,75 @@ export function TimezoneConverter() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto space-y-8">
-            {/* Global Controls */}
-            <div className="bg-card border rounded-xl p-6 shadow-sm space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="flex items-center gap-2 text-muted-foreground mr-auto">
-                        <Clock className="h-5 w-5" />
-                        <span className="font-medium">Time Scrubber</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Input
-                            type="time"
-                            value={`${new Date(baseTime).getHours().toString().padStart(2, '0')}:${new Date(baseTime).getMinutes().toString().padStart(2, '0')}`}
-                            onChange={handleTimeInputChange}
-                            className="w-auto cursor-pointer"
-                            aria-label="Time Scrubber Input"
-                        />
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setBaseTime(new Date().getTime())}
-                        >
-                            Reset to Now
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="space-y-4">
-                    <Slider
-                        value={[getSliderValue()]}
-                        min={0}
-                        max={1439} // 24 * 60 - 1
-                        step={15}
-                        onValueChange={handleSliderChange}
-                        className="py-4"
-                        aria-label="Time Scrubber Slider"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground px-1">
-                        <span>12 AM</span>
-                        <span>6 AM</span>
-                        <span>12 PM</span>
-                        <span>6 PM</span>
-                        <span>11:59 PM</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Time Cards */}
-            <div className="space-y-3">
-                {selectedZones.map((zone) => (
-                    <Card key={zone} className="overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
-                        <CardContent className="p-4 flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-4 min-w-0">
-                                <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 shrink-0">
-                                    <Globe className="h-5 w-5" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
+            {/* Left Column: Time Zone Cards */}
+            <div className="lg:col-span-8 space-y-4">
+                {selectedZones.map((zone, index) => (
+                    <Card
+                        key={zone}
+                        className={`overflow-hidden transition-all hover:shadow-md ${index === 0 ? 'border-2 border-primary/20 bg-primary/5' : 'bg-slate-50/50 dark:bg-slate-900/50'
+                            }`}
+                    >
+                        <CardContent className="p-5 flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-4 min-w-0 flex-1">
+                                <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 ${index === 0
+                                        ? 'bg-primary/10 text-primary'
+                                        : 'bg-blue-100 dark:bg-blue-900/20 text-blue-600'
+                                    }`}>
+                                    {index === 0 ? <MapPin className="h-6 w-6" /> : <Globe className="h-6 w-6" />}
                                 </div>
-                                <div className="min-w-0">
-                                    <h3 className="font-semibold text-lg truncate mb-0.5">
-                                        {zone.split('/').pop()?.replace(/_/g, ' ')}
-                                    </h3>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="font-bold text-xl truncate">
+                                            {zone.split('/').pop()?.replace(/_/g, ' ')}
+                                        </h3>
+                                        {index === 0 && (
+                                            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                                                Local
+                                            </span>
+                                        )}
+                                    </div>
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <span>{getOffset(zone)}</span>
+                                        <span className="font-mono">{getOffset(zone)}</span>
                                         <span>•</span>
                                         <span>{formatDate(baseTime, zone)}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 shrink-0">
+                            <div className="flex items-center gap-3 shrink-0">
                                 <div className="text-right">
-                                    <div className="text-2xl font-bold font-mono tracking-tight">
+                                    <div className="text-3xl font-bold font-mono tracking-tight">
                                         {formatTime(baseTime, zone)}
                                     </div>
                                 </div>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="text-muted-foreground hover:text-destructive"
-                                    onClick={() => removeZone(zone)}
-                                    aria-label={`Remove ${zone}`}
-                                >
-                                    <X className="h-4 w-4" />
-                                </Button>
+                                {selectedZones.length > 1 && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-muted-foreground hover:text-destructive h-9 w-9"
+                                        onClick={() => removeZone(zone)}
+                                        aria-label={`Remove ${zone}`}
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
                 ))}
 
-                {/* Add New Zone */}
+                {/* Add New Zone Button */}
                 <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full h-12 border-dashed text-muted-foreground hover:text-primary hover:border-primary/50">
-                            <Plus className="h-4 w-4 mr-2" /> Add Time Zone
+                        <Button
+                            variant="outline"
+                            className="w-full h-14 border-2 border-dashed text-muted-foreground hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all"
+                        >
+                            <Plus className="h-5 w-5 mr-2" /> Add Time Zone
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0 w-[300px]" align="center">
+                    <PopoverContent className="p-0 w-[320px]" align="center">
                         <Command>
                             <CommandInput placeholder="Search city or timezone..." />
                             <CommandList>
@@ -239,7 +201,9 @@ export function TimezoneConverter() {
                                             key={zone}
                                             value={zone}
                                             onSelect={() => addZone(zone)}
+                                            disabled={selectedZones.includes(zone)}
                                         >
+                                            <Globe className="h-4 w-4 mr-2 text-muted-foreground" />
                                             {zone.replace(/_/g, ' ')}
                                         </CommandItem>
                                     ))}
@@ -251,6 +215,7 @@ export function TimezoneConverter() {
                                                 key={zone}
                                                 value={zone}
                                                 onSelect={() => addZone(zone)}
+                                                disabled={selectedZones.includes(zone)}
                                             >
                                                 {zone.replace(/_/g, ' ')}
                                             </CommandItem>
@@ -261,6 +226,76 @@ export function TimezoneConverter() {
                         </Command>
                     </PopoverContent>
                 </Popover>
+            </div>
+
+            {/* Right Column: Time Controls (Sticky) */}
+            <div className="lg:col-span-4 sticky top-6 space-y-4">
+                <Card className="border-2 shadow-sm">
+                    <CardHeader className="pb-4 border-b bg-muted/20">
+                        <CardTitle className="text-base font-bold flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            Time Control
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6 pt-6">
+                        {/* Time Input */}
+                        <div className="space-y-2">
+                            <Label>Set Time</Label>
+                            <Input
+                                type="time"
+                                value={`${new Date(baseTime).getHours().toString().padStart(2, '0')}:${new Date(baseTime).getMinutes().toString().padStart(2, '0')}`}
+                                onChange={handleTimeInputChange}
+                                className="h-11 text-lg font-mono cursor-pointer"
+                            />
+                        </div>
+
+                        <Separator />
+
+                        {/* Time Slider */}
+                        <div className="space-y-4">
+                            <Label className="text-sm text-muted-foreground">Time Scrubber</Label>
+                            <Slider
+                                value={[getSliderValue()]}
+                                min={0}
+                                max={1439}
+                                step={15}
+                                onValueChange={handleSliderChange}
+                                className="py-4"
+                            />
+                            <div className="flex justify-between text-xs text-muted-foreground font-mono">
+                                <span>12 AM</span>
+                                <span>6 AM</span>
+                                <span>12 PM</span>
+                                <span>6 PM</span>
+                                <span>11:59 PM</span>
+                            </div>
+                        </div>
+
+                        <Separator />
+
+                        <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => setBaseTime(new Date().getTime())}
+                        >
+                            Reset to Current Time
+                        </Button>
+
+                        <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
+                            <p className="text-xs text-muted-foreground mb-1">Current Selection</p>
+                            <p className="font-mono font-medium text-sm">
+                                {new Date(baseTime).toLocaleString('en-US', {
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: 'numeric',
+                                    hour12: true
+                                })}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );

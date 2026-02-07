@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function ImageToPdfPage() {
     return (
-        <div className="space-y-6 max-w-7xl mx-auto">
+        <div className="space-y-6 w-full">
             <div className="flex flex-col gap-2 mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Image to PDF Converter Online – Free & Secure</h1>
                 <p className="text-lg text-muted-foreground">

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { ImageConverter } from "@/components/tools/image/image-converter";
+import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {
     title: 'Image Converter Online – Convert JPG, PNG & WEBP',
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ImageConverterPage() {
     return (
-        <div className="space-y-6 max-w-5xl mx-auto">
+        <div className="space-y-6 w-full">
             <div className="flex flex-col gap-2 text-left mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Image Converter Online – Convert JPG, PNG & WEBP</h1>
                 <p className="text-lg text-muted-foreground">
@@ -17,7 +18,38 @@ export default function ImageConverterPage() {
                 </p>
             </div>
 
+
             <ImageConverter />
+
+            <SEOContent
+                title="Image Format Conversion Guide 2026"
+                items={[
+                    {
+                        heading: "JPG to WebP",
+                        content: "Convert JPEG to WebP for 25-35% smaller file sizes. WebP supports both lossy and lossless compression, ideal for modern websites."
+                    },
+                    {
+                        heading: "PNG to WebP",
+                        content: "WebP maintains transparency like PNG but with 26% smaller files. Perfect for logos, icons, and graphics with alpha channels."
+                    },
+                    {
+                        heading: "WebP to JPG",
+                        content: "Convert WebP to JPEG for legacy browser compatibility. Useful when sharing images on platforms without WebP support."
+                    },
+                    {
+                        heading: "Batch Conversion",
+                        content: "Convert multiple images at once to save time. Bulk processing essential for migrating entire websites to modern formats."
+                    },
+                    {
+                        heading: "Quality Preservation",
+                        content: "Lossless conversion maintains original quality. Choose format based on use case: WebP for web, PNG for editing, JPG for photos."
+                    },
+                    {
+                        heading: "Browser Support 2026",
+                        content: "WebP now supported by 97% of browsers. Safe to use as primary format with JPG fallback for maximum compatibility."
+                    }
+                ]}
+            />
         </div>
     )
 }

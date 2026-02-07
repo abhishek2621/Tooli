@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function UnitConverterPage() {
     return (
-        <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="space-y-6 w-full">
             <div className="flex flex-col gap-2 text-left items-start mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Unit Converter Online – Convert Measurements Instantly</h1>
                 <p className="text-lg text-muted-foreground">

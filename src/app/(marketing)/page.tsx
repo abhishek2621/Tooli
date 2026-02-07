@@ -37,7 +37,7 @@ export default function Home() {
         <div className="flex flex-col min-h-screen relative isolate">
             <BackgroundBlobs />
             {/* Hero Section */}
-            <section className="relative space-y-6 pb-8 pt-12 md:pb-12 md:pt-16 lg:py-24 overflow-hidden">
+            <section className="relative space-y-6 pb-4 pt-12 md:pb-6 md:pt-16 lg:pt-20 lg:pb-8 overflow-hidden">
                 <div className="container flex max-w-[64rem] flex-col items-center gap-6 text-center z-10">
                     <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-4 transition-all hover:bg-primary/10 hover:border-primary/30 cursor-default">
                         <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>

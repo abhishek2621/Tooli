@@ -1,19 +1,26 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
+import { useState, useCallback, useEffect } from "react";
+import { FileDropzone } from "@/components/shared/file-dropzone";
 import {
-    Upload,
-    Image as ImageIcon,
-    X,
     Download,
-    RefreshCcw,
+    Upload,
+    X,
+    Loader2,
+    ArrowRight,
+    Settings2,
+    RefreshCw,
+    Layers,
+    Image as ImageIcon,
+    Trash2,
     Check,
-    ArrowRight
+    FileType
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
@@ -21,63 +28,69 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { filesize } from "filesize";
 
-interface ImageFile {
-    file: File;
-    id: string;
-    preview: string;
-    targetFormat: "png" | "jpeg" | "webp";
-    status: "idle" | "converting" | "done" | "error";
-    convertedUrl?: string;
+type ImageFormat = "png" | "jpeg" | "webp";
+
+interface ConversionSettings {
+    format: ImageFormat;
 }
 
+interface ImageFile {
+    id: string;
+    originalFile: File;
+    convertedUrl: string | null;
+    originalPreview: string;
+    status: "pending" | "converting" | "done" | "error";
+    settings: ConversionSettings;
+}
+
+const DEFAULT_SETTINGS: ConversionSettings = {
+    format: "png"
+};
+
 export function ImageConverter() {
-    const [files, setFiles] = useState<ImageFile[]>([]);
-    const [globalFormat, setGlobalFormat] = useState<"png" | "jpeg" | "webp">("png");
+    const [globalSettings, setGlobalSettings] = useState<ConversionSettings>(DEFAULT_SETTINGS);
+    const [images, setImages] = useState<ImageFile[]>([]);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+
+    // Derived state
+    const selectedImageIndex = images.findIndex(img => img.id === selectedId);
+    const selectedImage = selectedImageIndex !== -1 ? images[selectedImageIndex] : null;
+
+    const activeSettings = selectedImage ? selectedImage.settings : globalSettings;
+    const isGlobalMode = !selectedImage;
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
-        const newFiles = acceptedFiles.map(file => ({
-            file,
+        const newImages = acceptedFiles.map(file => ({
             id: Math.random().toString(36).substring(7),
-            preview: URL.createObjectURL(file),
-            targetFormat: globalFormat,
-            status: "idle" as const
+            originalFile: file,
+            convertedUrl: null,
+            originalPreview: URL.createObjectURL(file),
+            status: "pending" as const,
+            settings: { ...globalSettings }
         }));
-        setFiles(prev => [...prev, ...newFiles]);
-    }, [globalFormat]);
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: {
-            'image/jpeg': [],
-            'image/png': [],
-            'image/webp': [],
-            'image/gif': [],
-            'image/bmp': []
-        }
-    });
+        setImages(prev => [...prev, ...newImages]);
+    }, [globalSettings]);
 
-    const removeFile = (id: string) => {
-        setFiles(prev => {
-            const newFiles = prev.filter(f => f.id !== id);
-            // Cleanup previews to avoid memory leaks
-            const fileToRemove = prev.find(f => f.id === id);
-            if (fileToRemove) URL.revokeObjectURL(fileToRemove.preview);
-            return newFiles;
-        });
-    };
+    const convertSingleFile = async (id: string, currentImages: ImageFile[]) => {
+        const index = currentImages.findIndex(img => img.id === id);
+        if (index === -1) return;
 
-    const convertSingleFile = async (id: string) => {
-        setFiles(prev => prev.map(f => f.id === id ? { ...f, status: "converting" } : f));
+        const imgData = currentImages[index];
 
-        const fileObj = files.find(f => f.id === id);
-        if (!fileObj) return;
+        // Update status to converting
+        setImages(prev => prev.map(item => item.id === id ? { ...item, status: "converting" } : item));
 
         try {
             const img = new Image();
-            img.src = fileObj.preview;
-            await new Promise((resolve) => { img.onload = resolve; });
+            img.src = imgData.originalPreview;
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+            });
 
             const canvas = document.createElement("canvas");
             canvas.width = img.width;
@@ -86,189 +99,272 @@ export function ImageConverter() {
 
             if (!ctx) throw new Error("Could not get canvas context");
 
-            // Handle transparency for JPEG
-            if (fileObj.targetFormat === "jpeg") {
+            // Handle transparency for JPEG (replace with white background)
+            if (imgData.settings.format === "jpeg") {
                 ctx.fillStyle = "#FFFFFF";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
             ctx.drawImage(img, 0, 0);
 
-            const mimeType = `image/${fileObj.targetFormat}`;
-            const dataUrl = canvas.toDataURL(mimeType, 0.9);
+            const mimeType = `image/${imgData.settings.format}`;
+            const dataUrl = canvas.toDataURL(mimeType, 0.9); // 0.9 quality default
 
-            setFiles(prev => prev.map(f => f.id === id ? {
-                ...f,
+            setImages(prev => prev.map(item => item.id === id ? {
+                ...item,
+                convertedUrl: dataUrl,
                 status: "done",
-                convertedUrl: dataUrl
-            } : f));
+            } : item));
 
-        } catch (err) {
-            console.error(err);
-            setFiles(prev => prev.map(f => f.id === id ? { ...f, status: "error" } : f));
+        } catch (error) {
+            console.error("Conversion error:", error);
+            setImages(prev => prev.map(item => item.id === id ? { ...item, status: "error" } : item));
         }
     };
 
-    const convertAll = () => {
-        files.forEach(f => {
-            if (f.status === "idle") convertSingleFile(f.id);
+    // Watch for pending images and convert them automatically
+    useEffect(() => {
+        images.forEach(img => {
+            if (img.status === "pending") {
+                convertSingleFile(img.id, images);
+            }
         });
+    }, [images]);
+
+    const updateActiveSettings = (newSettings: Partial<ConversionSettings>) => {
+        if (isGlobalMode) {
+            setGlobalSettings(prev => ({ ...prev, ...newSettings }));
+            // Apply to all images to keep them in sync with global content
+            setImages(prev => prev.map(img => ({
+                ...img,
+                status: "pending", // Re-convert
+                settings: { ...img.settings, ...newSettings }
+            })));
+        } else if (selectedImage) {
+            setImages(prev => prev.map(img => img.id === selectedId ? {
+                ...img,
+                status: "pending", // Re-convert
+                settings: { ...img.settings, ...newSettings }
+            } : img));
+        }
     };
 
-    const downloadFile = (file: ImageFile) => {
-        if (!file.convertedUrl) return;
+    const applyToAll = () => {
+        if (!activeSettings) return;
+        setImages(prev => prev.map(img => ({
+            ...img,
+            status: "pending",
+            settings: { ...activeSettings }
+        })));
+        if (selectedImage) {
+            setGlobalSettings(selectedImage.settings);
+        }
+    };
+
+    const removeImage = (id: string, e?: React.MouseEvent) => {
+        e?.stopPropagation();
+        const img = images.find(i => i.id === id);
+        if (img) {
+            URL.revokeObjectURL(img.originalPreview);
+        }
+        setImages(prev => prev.filter(i => i.id !== id));
+        if (selectedId === id) setSelectedId(null);
+    };
+
+    const downloadImage = (img: ImageFile, e?: React.MouseEvent) => {
+        e?.stopPropagation();
+        if (!img.convertedUrl) return;
 
         const link = document.createElement("a");
-        link.href = file.convertedUrl;
-        const nameWithoutExt = file.file.name.substring(0, file.file.name.lastIndexOf('.'));
-        link.download = `${nameWithoutExt}.${file.targetFormat}`;
+        link.href = img.convertedUrl;
+        const nameWithoutExt = img.originalFile.name.substring(0, img.originalFile.name.lastIndexOf('.'));
+        link.download = `${nameWithoutExt}.${img.settings.format}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
 
+    const downloadAll = () => {
+        images.forEach(img => {
+            if (img.status === "done") downloadImage(img);
+        });
+    };
+
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            {/* Upload Area */}
-            <div
-                {...getRootProps()}
-                className={cn(
-                    "border-2 border-dashed rounded-xl p-10 text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
-                    isDragActive ? "border-primary bg-primary/5" : "border-border"
-                )}
-                role="button"
-                aria-label="Upload images dropzone"
-                tabIndex={0}
-            >
-                <input {...getInputProps()} aria-label="Upload images input" />
-                <div className="flex flex-col items-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-blue-100/80 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 mb-2">
-                        <Upload className="h-8 w-8" aria-hidden="true" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-semibold mb-2">
-                            {isDragActive ? "Drop images here" : "Choose Images"}
-                        </h3>
-                        <p className="text-muted-foreground">
-                            Convert JPG, PNG, WEBP, and more
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
+            {/* Left Column: Dropzone & List */}
+            <div className="lg:col-span-8 space-y-6">
+                <FileDropzone
+                    onDrop={onDrop}
+                    accept={{
+                        'image/jpeg': [],
+                        'image/png': [],
+                        'image/webp': [],
+                        'image/gif': [],
+                        'image/bmp': []
+                    }}
+                    title="Upload Images to Convert"
+                    description="Drag & drop or click to select JPG, PNG, WEBP, GIF, BMP files"
+                />
 
-            {/* Controls */}
-            {files.length > 0 && (
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card border rounded-lg p-4 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-muted-foreground">Convert all to:</span>
-                        <Select
-                            value={globalFormat}
-                            onValueChange={(v: any) => {
-                                setGlobalFormat(v);
-                                setFiles(prev => prev.map(f => f.status === "idle" ? { ...f, targetFormat: v } : f));
-                            }}
-                        >
-                            <SelectTrigger className="w-[120px]">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="png">PNG</SelectItem>
-                                <SelectItem value="jpeg">JPG</SelectItem>
-                                <SelectItem value="webp">WEBP</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button onClick={convertAll} size="lg" className="w-full sm:w-auto">
-                        <RefreshCcw className="h-4 w-4 mr-2" />
-                        Convert All
-                    </Button>
-                </div>
-            )}
+                {images.length > 0 && (
+                    <div className="grid grid-cols-1 gap-4">
+                        {images.map((img) => (
+                            <div
+                                key={img.id}
+                                onClick={() => setSelectedId(img.id)}
+                                className={cn(
+                                    "group relative flex flex-col sm:flex-row gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer bg-card hover:bg-accent/50",
+                                    selectedId === img.id ? "border-primary ring-1 ring-primary/20 bg-accent/20" : "border-border hover:border-primary/50"
+                                )}
+                            >
+                                {/* Preview */}
+                                <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden border">
+                                    <img
+                                        src={img.originalPreview}
+                                        alt={img.originalFile.name}
+                                        className="h-full w-full object-cover"
+                                    />
+                                    {img.status === "done" && (
+                                        <Badge className="absolute bottom-1 right-1 px-1.5 py-0.5 text-[10px] bg-green-600">
+                                            {img.settings.format.toUpperCase()}
+                                        </Badge>
+                                    )}
+                                </div>
 
-            {/* File List */}
-            <div className="space-y-4">
-                {files.map(file => (
-                    <Card key={file.id} className="overflow-hidden">
-                        <CardContent className="p-4 flex flex-col sm:flex-row items-center gap-6">
-                            {/* Preview */}
-                            <div className="h-20 w-20 shrink-0 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 border">
-                                <img src={file.preview} alt="" className="h-full w-full object-cover" />
-                            </div>
+                                {/* Info */}
+                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div>
+                                            <h4 className="font-medium truncate text-sm sm:text-base pr-8" title={img.originalFile.name}>
+                                                {img.originalFile.name}
+                                            </h4>
+                                            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                                {filesize(img.originalFile.size, { standard: "jedec" }) as string}
+                                                <ArrowRight className="h-3 w-3" />
+                                                <span className="font-medium text-foreground">{img.settings.format.toUpperCase()}</span>
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            {/* Info */}
-                            <div className="flex-1 min-w-0 text-center sm:text-left space-y-1">
-                                <p className="font-medium truncate" title={file.file.name}>
-                                    {file.file.name}
-                                </p>
-                                <div className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-2">
-                                    <Badge variant="outline" className="uppercase font-normal">{file.file.name.split('.').pop()}</Badge>
-                                    <ArrowRight className="h-3 w-3" />
-                                    <Select
-                                        value={file.targetFormat}
-                                        onValueChange={(v: any) => {
-                                            if (file.status === "idle") {
-                                                setFiles(prev => prev.map(f => f.id === file.id ? { ...f, targetFormat: v } : f));
-                                            }
-                                        }}
-                                        disabled={file.status !== "idle"}
+                                    {/* Status Bar */}
+                                    <div className="mt-4">
+                                        {img.status === "converting" ? (
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                <Loader2 className="h-3 w-3 animate-spin" /> Converting...
+                                            </div>
+                                        ) : img.status === "done" ? (
+                                            <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
+                                                <Check className="h-3 w-3" /> Ready
+                                            </div>
+                                        ) : img.status === "error" ? (
+                                            <div className="text-xs text-destructive font-medium">Conversion Failed</div>
+                                        ) : (
+                                            <div className="text-xs text-muted-foreground">Pending...</div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Quick Actions */}
+                                <div className="flex sm:flex-col gap-2 items-center sm:justify-center">
+                                    {img.status === "done" && (
+                                        <Button
+                                            size="icon"
+                                            variant="secondary"
+                                            onClick={(e) => downloadImage(img, e)}
+                                            className="h-8 w-8 text-primary shrink-0"
+                                            title="Download"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        onClick={(e) => removeImage(img.id, e)}
+                                        className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
+                                        title="Remove"
                                     >
-                                        <SelectTrigger className="h-7 w-[90px] text-xs">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="png">PNG</SelectItem>
-                                            <SelectItem value="jpeg">JPG</SelectItem>
-                                            <SelectItem value="webp">WEBP</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
                                 </div>
                             </div>
-
-                            {/* Actions */}
-                            <div className="flex items-center gap-3">
-                                {file.status === "idle" && (
-                                    <>
-                                        <Button size="sm" onClick={() => convertSingleFile(file.id)}>
-                                            Convert
-                                        </Button>
-                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)} aria-label={`Remove image ${file.file.name}`}>
-                                            <X className="h-4 w-4" aria-hidden="true" />
-                                        </Button>
-                                    </>
-                                )}
-                                {file.status === "converting" && (
-                                    <Button disabled size="sm" variant="secondary">
-                                        <RefreshCcw className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
-                                        Processing
-                                    </Button>
-                                )}
-                                {file.status === "done" && (
-                                    <div className="flex gap-2">
-                                        <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700" onClick={() => downloadFile(file)}>
-                                            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
-                                            Download
-                                        </Button>
-                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)} aria-label={`Remove image ${file.file.name}`}>
-                                            <X className="h-4 w-4" aria-hidden="true" />
-                                        </Button>
-                                    </div>
-                                )}
-                                {file.status === "error" && (
-                                    <div className="flex items-center gap-2 text-red-500">
-                                        <span className="text-sm font-medium">Error</span>
-                                        <Button variant="ghost" size="icon" onClick={() => removeFile(file.id)} aria-label={`Remove image ${file.file.name}`}>
-                                            <X className="h-4 w-4" aria-hidden="true" />
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                        ))}
+                    </div>
+                )}
             </div>
 
-            <div className="text-center text-sm text-muted-foreground pt-8">
-                <p>Files are processed securely in your browser.</p>
+            {/* Right Column: Settings Panel (Sticky) */}
+            <div className="lg:col-span-4 sticky top-6 space-y-4">
+                <Card className="border-2 shadow-sm">
+                    <CardHeader className="pb-4 border-b bg-muted/20">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-base font-bold flex items-center gap-2">
+                                <Settings2 className="h-4 w-4" />
+                                {isGlobalMode ? "Global Settings" : "Image Settings"}
+                            </CardTitle>
+                            {!isGlobalMode && (
+                                <Badge variant="secondary" className="text-[10px] font-normal cursor-pointer" onClick={() => setSelectedId(null)}>
+                                    Switch to Global
+                                </Badge>
+                            )}
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6 pt-6">
+                        {/* Format Selection */}
+                        <div className="space-y-3">
+                            <Label className="text-sm font-medium flex items-center gap-2">
+                                <FileType className="h-4 w-4" /> Output Format
+                            </Label>
+                            <Select
+                                value={activeSettings.format}
+                                onValueChange={(val: ImageFormat) => updateActiveSettings({ format: val })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Format" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="png">PNG</SelectItem>
+                                    <SelectItem value="jpeg">JPG</SelectItem>
+                                    <SelectItem value="webp">WebP</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                                {activeSettings.format === "jpeg" && "Best for photos (smaller size). No transparency."}
+                                {activeSettings.format === "png" && "Good for graphics. Supports transparency."}
+                                {activeSettings.format === "webp" && "Modern format. Best compression & quality."}
+                            </p>
+                        </div>
+
+                        <Separator />
+
+                        {/* Action Buttons */}
+                        <div className="space-y-2 pt-2">
+                            {!isGlobalMode && (
+                                <Button variant="outline" className="w-full" onClick={applyToAll}>
+                                    <Layers className="h-4 w-4 mr-2" />
+                                    Apply to All Images
+                                </Button>
+                            )}
+
+                            {images.some(i => i.status === "done") && (
+                                <Button className="w-full" onClick={downloadAll}>
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download All {images.filter(i => i.status === "done").length > 0 && `(${images.filter(i => i.status === "done").length})`}
+                                </Button>
+                            )}
+                        </div>
+                    </CardContent>
+
+                    {/* Helper Text */}
+                    <div className="bg-muted/30 p-4 border-t text-xs text-muted-foreground">
+                        <p>
+                            {isGlobalMode
+                                ? "This format will apply to all uploaded images."
+                                : "You are changing the format for this specific image."}
+                        </p>
+                    </div>
+                </Card>
             </div>
         </div>
     );

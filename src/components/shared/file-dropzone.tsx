@@ -27,7 +27,7 @@ export function FileDropzone({
         <div
             {...getRootProps()}
             className={cn(
-                "border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
+                "min-h-[300px] flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
                 isDragActive ? "border-primary bg-primary/5" : "border-border",
                 className
             )}
