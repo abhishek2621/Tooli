@@ -13,7 +13,7 @@ import {
     Scale, QrCode, Lock, Calendar, Globe,
     GraduationCap
 } from "lucide-react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 const iconMap: Record<string, any> = {
     "percent": Percent,
@@ -71,21 +71,27 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
         show: {
             opacity: 1,
             transition: {
-                staggerChildren: isMobile ? 0 : 0.05
+                staggerChildren: 0.05
             }
         }
     };
 
     const itemVars: Variants = {
-        hidden: { opacity: 0, y: isMobile ? 0 : 20 },
+        hidden: { opacity: 0, y: 20 },
         show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 15 } }
     };
 
+    // SEO/UX: Render search bar statically for mobile to avoid hydration lag
+    const SearchBarWrapper = isMobile ? "div" : motion.div;
+    const GridWrapper = isMobile ? "div" : motion.div;
+
     return (
         <div className="space-y-12">
-            <motion.div
-                initial={isMobile ? false : { opacity: 0, y: -20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
+            <SearchBarWrapper
+                {...(!isMobile && {
+                    initial: { opacity: 0, y: -20, scale: 0.95 },
+                    animate: { opacity: 1, y: 0, scale: 1 },
+                })}
                 className="relative w-full max-w-2xl mx-auto -mt-4 mb-8 px-4 z-20"
             >
                 <div className="relative group">
@@ -115,7 +121,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                         )}
                     </div>
                 </div>
-            </motion.div>
+            </SearchBarWrapper>
 
             <div className="container space-y-12 py-8 bg-slate-50/50 dark:bg-slate-900/40 border border-transparent dark:border-slate-800 rounded-3xl mb-12 min-h-[400px]">
                 {filteredTools.length === 0 ? (
@@ -126,11 +132,13 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                         </Button>
                     </div>
                 ) : isSearching ? (
-                    <motion.div
+                    <GridWrapper
                         key="search-results"
-                        variants={containerVars}
-                        initial="hidden"
-                        animate="show"
+                        {...(!isMobile && {
+                            variants: containerVars,
+                            initial: "hidden",
+                            animate: "show",
+                        })}
                         className="space-y-6"
                     >
                         <div className="flex items-center gap-2">
@@ -141,16 +149,18 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                         </div>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {filteredTools.map((tool) => (
-                                <ToolCard key={tool.slug} tool={tool} variants={itemVars} />
+                                <ToolCard key={tool.slug} tool={tool} variants={itemVars} isMobile={isMobile} />
                             ))}
                         </div>
-                    </motion.div>
+                    </GridWrapper>
                 ) : (
-                    <motion.div
+                    <GridWrapper
                         key="categories"
-                        variants={containerVars}
-                        initial="hidden"
-                        animate="show"
+                        {...(!isMobile && {
+                            variants: containerVars,
+                            initial: "hidden",
+                            animate: "show",
+                        })}
                         className="space-y-12"
                     >
                         {(Object.keys(initialTools) as ToolCategory[]).map((category) => {
@@ -162,54 +172,55 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                 education: "Study & Education Tools Online"
                             };
                             return (
-                                <motion.div key={category} variants={itemVars} className="space-y-6">
+                                <div key={category} className="space-y-6">
                                     <div className="flex items-center gap-2">
                                         <h2 className="text-2xl font-bold capitalize tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
                                         <div className="h-px flex-1 bg-border/60"></div>
                                     </div>
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                         {initialTools[category].map((tool) => (
-                                            <ToolCard key={tool.slug} tool={tool} />
+                                            <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} />
                                         ))}
                                     </div>
-                                </motion.div>
+                                </div>
                             );
                         })}
-                    </motion.div>
+                    </GridWrapper>
                 )}
             </div>
         </div>
     );
 }
 
-function ToolCard({ tool, variants }: { tool: Tool, variants?: any }) {
+function ToolCard({ tool, variants, isMobile }: { tool: Tool, variants?: any, isMobile?: boolean }) {
     const IconComponent = iconMap[tool.icon] || ArrowRight;
+    const CardWrapper = isMobile ? "div" : motion.div;
 
     return (
-        <motion.div
-            variants={variants}
-            className="h-full transition-all duration-300 hover:-translate-y-2 active:scale-95"
+        <CardWrapper
+            {...(!isMobile && { variants })}
+            className="h-full transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
         >
             <Link
                 href={tool.path}
-                className="group relative flex flex-col h-full overflow-hidden rounded-xl border bg-card/40 hover:bg-card/80 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/30 backdrop-blur-sm"
+                className="group relative flex flex-col h-full overflow-hidden rounded-xl border bg-card/40 md:hover:bg-card/80 p-6 transition-all duration-300 md:hover:shadow-xl md:hover:shadow-primary/10 md:hover:border-primary/30 backdrop-blur-sm"
             >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                 <div className="flex items-start gap-4 flex-1 relative z-10">
-                    <div className="shrink-0 rounded-lg p-3 bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 shadow-sm">
+                    <div className="shrink-0 rounded-lg p-3 bg-primary/10 text-primary transition-all duration-300 md:group-hover:bg-primary md:group-hover:text-primary-foreground md:group-hover:scale-110 shadow-sm">
                         <IconComponent className="h-6 w-6" aria-hidden="true" />
                     </div>
                     <div className="flex flex-col gap-2 pt-0.5">
-                        <h3 className="font-semibold text-lg transition-colors group-hover:text-primary tracking-tight">{tool.name}</h3>
+                        <h3 className="font-semibold text-lg transition-colors md:group-hover:text-primary tracking-tight">{tool.name}</h3>
                         <p className="text-sm text-muted-foreground line-clamp-2">{tool.description}</p>
                     </div>
                 </div>
 
-                <div className="absolute right-4 bottom-4 opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 z-10">
+                <div className="absolute right-4 bottom-4 opacity-0 transform translate-x-2 md:group-hover:opacity-100 md:group-hover:translate-x-0 transition-all duration-500 z-10">
                     <ArrowRight className="h-5 w-5 text-primary" />
                 </div>
             </Link>
-        </motion.div>
+        </CardWrapper>
     );
 }
