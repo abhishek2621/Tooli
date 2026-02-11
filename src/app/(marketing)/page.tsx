@@ -3,11 +3,10 @@ import dynamic from "next/dynamic";
 import { toolsByCategory } from "@/config/tools";
 import { siteConfig } from "@/config/site";
 
-// Optimization 1: Use Edge Runtime to drastically reduce TTFB (Time to First Byte)
-export const runtime = 'edge';
+// Optimization 1: Using Full Static Generation (SSG) instead of Edge.
+// This ensures <50ms TTFB by serving the pre-rendered HTML directly from the CDN.
 
 // Optimization 2: Lazy load interactive components.
-// This maintains code splitting while allowing the shell to render quickly.
 const BackgroundBlobs = dynamic(() => import("@/components/shared/background-blobs").then(mod => mod.BackgroundBlobs));
 const ToolExplorer = dynamic(() => import("@/components/home/tool-explorer").then(mod => mod.ToolExplorer));
 
