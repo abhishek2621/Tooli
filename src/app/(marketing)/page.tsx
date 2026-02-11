@@ -6,10 +6,10 @@ import { siteConfig } from "@/config/site";
 // Optimization 1: Use Edge Runtime to drastically reduce TTFB (Time to First Byte)
 export const runtime = 'edge';
 
-// Optimization 2: Lazy load interactive components with SSR disabled.
-// This allows the static Hero section to render instantly (FCP/LCP) without waiting for JS.
-const BackgroundBlobs = dynamic(() => import("@/components/shared/background-blobs").then(mod => mod.BackgroundBlobs), { ssr: false });
-const ToolExplorer = dynamic(() => import("@/components/home/tool-explorer").then(mod => mod.ToolExplorer), { ssr: false });
+// Optimization 2: Lazy load interactive components.
+// This maintains code splitting while allowing the shell to render quickly.
+const BackgroundBlobs = dynamic(() => import("@/components/shared/background-blobs").then(mod => mod.BackgroundBlobs));
+const ToolExplorer = dynamic(() => import("@/components/home/tool-explorer").then(mod => mod.ToolExplorer));
 
 export const metadata: Metadata = {
     title: "Tooli – Free Online Tools, Calculators & Converters (No Sign-up)",
