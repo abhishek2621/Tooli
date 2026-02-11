@@ -2,9 +2,14 @@ import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { toolsByCategory } from "@/config/tools";
 import { siteConfig } from "@/config/site";
-import { ToolExplorer } from "@/components/home/tool-explorer";
 
-const BackgroundBlobs = dynamic(() => import("@/components/shared/background-blobs").then(mod => mod.BackgroundBlobs));
+// Optimization 1: Use Edge Runtime to drastically reduce TTFB (Time to First Byte)
+export const runtime = 'edge';
+
+// Optimization 2: Lazy load interactive components with SSR disabled.
+// This allows the static Hero section to render instantly (FCP/LCP) without waiting for JS.
+const BackgroundBlobs = dynamic(() => import("@/components/shared/background-blobs").then(mod => mod.BackgroundBlobs), { ssr: false });
+const ToolExplorer = dynamic(() => import("@/components/home/tool-explorer").then(mod => mod.ToolExplorer), { ssr: false });
 
 export const metadata: Metadata = {
     title: "Tooli – Free Online Tools, Calculators & Converters (No Sign-up)",
@@ -36,7 +41,7 @@ export default function Home() {
     return (
         <div className="flex flex-col min-h-screen relative isolate">
             <BackgroundBlobs />
-            {/* Hero Section */}
+            {/* Hero Section - This will now render instantly */}
             <section className="relative space-y-6 pb-4 pt-12 md:pb-6 md:pt-16 lg:pt-20 lg:pb-8 overflow-hidden">
                 <div className="container flex max-w-[64rem] flex-col items-center gap-6 text-center z-10">
                     <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-4 transition-all hover:bg-primary/10 hover:border-primary/30 cursor-default">
@@ -55,14 +60,10 @@ export default function Home() {
                         Your all-in-one privacy-focused utility platform. <br className="hidden sm:inline" />
                         Image, PDF, Finance & Utility tools directly in your browser.
                     </p>
-
-                    <div className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full justify-center">
-
-                    </div>
                 </div>
             </section>
 
-            {/* Tool Explorer Section (Search + Grid) */}
+            {/* Tool Explorer Section (Search + Grid) - Hydrates in background */}
             <ToolExplorer initialTools={toolsByCategory} />
 
             <script

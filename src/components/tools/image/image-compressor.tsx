@@ -56,6 +56,7 @@ export function ImageCompressor() {
     const [globalSettings, setGlobalSettings] = useState<CompressionSettings>(DEFAULT_SETTINGS);
     const [images, setImages] = useState<CompressedImage[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // Derived state
     const selectedImageIndex = images.findIndex(img => img.id === selectedId);
@@ -142,14 +143,20 @@ export function ImageCompressor() {
         }
     };
 
-    // Watch for pending images and compress them
+    // Watch for pending images and compress them ONE AT A TIME
+    // This is crucial for Mobile INP to prevent blocking the main thread with multiple workers
     useEffect(() => {
-        images.forEach(img => {
-            if (img.status === "pending") {
-                compressImage(img.id, images);
+        const processQueue = async () => {
+            if (isProcessing) return;
+            const nextPending = images.find(img => img.status === "pending");
+            if (nextPending) {
+                setIsProcessing(true);
+                await compressImage(nextPending.id, images);
+                setIsProcessing(false);
             }
-        });
-    }, [images]);
+        };
+        processQueue();
+    }, [images, isProcessing]);
 
     const updateActiveSettings = (newSettings: Partial<CompressionSettings>) => {
         if (isGlobalMode) {

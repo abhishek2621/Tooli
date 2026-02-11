@@ -30,12 +30,11 @@ export function PdfMerger() {
     const [filename, setFilename] = useState("merged-document");
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
-        const newFiles = await Promise.all(acceptedFiles.map(async (file) => {
-            // Optional: Load PDF to get page count for better UI
-            // For performance on large files, we might skip this or do it async lazy
+        const { PDFDocument } = await import("pdf-lib");
+
+        for (const file of acceptedFiles) {
             let pageCount = undefined;
             try {
-                const { PDFDocument } = await import("pdf-lib");
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
                 pageCount = pdf.getPageCount();
@@ -43,14 +42,12 @@ export function PdfMerger() {
                 console.warn("Could not read PDF page count", e);
             }
 
-            return {
+            setFiles(prev => [...prev, {
                 file,
                 id: Math.random().toString(36).substring(7),
                 pageCount
-            };
-        }));
-
-        setFiles(prev => [...prev, ...newFiles]);
+            }]);
+        }
     }, []);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({

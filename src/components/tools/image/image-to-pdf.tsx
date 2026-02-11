@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import {
     Download,
@@ -28,11 +28,13 @@ import {
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface PdfImage {
     id: string;
     file: File;
-    preview: string;
+    url: string;      // Full-res object URL
+    preview: string;  // Thumbnail object URL
     width: number;
     height: number;
 }
@@ -44,33 +46,83 @@ export function ImageToPdf() {
     const [margin, setMargin] = useState("normal");
     const [filename, setFilename] = useState("images-merged");
     const [isGenerating, setIsGenerating] = useState(false);
+    const [progress, setProgress] = useState(0);
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        acceptedFiles.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    setImages(prev => [...prev, {
-                        id: Math.random().toString(36).substring(7),
-                        file,
-                        preview: e.target?.result as string,
-                        width: img.naturalWidth,
-                        height: img.naturalHeight
-                    }]);
-                };
-                img.src = e.target?.result as string;
-            };
-            reader.readAsDataURL(file);
+    // Memory management: Revoke object URLs when images are removed or component unmounts
+    const revokeUrls = useCallback((imgs: PdfImage[]) => {
+        imgs.forEach(img => {
+            URL.revokeObjectURL(img.url);
+            URL.revokeObjectURL(img.preview);
         });
     }, []);
 
+    useEffect(() => {
+        return () => {
+            // Cleanup all URLs on unmount
+            setImages(prev => {
+                revokeUrls(prev);
+                return [];
+            });
+        };
+    }, [revokeUrls]);
+
+    const onDrop = useCallback(async (acceptedFiles: File[]) => {
+        const imageCompression = (await import("browser-image-compression")).default;
+        const newImagesBatch: PdfImage[] = [];
+
+        for (const file of acceptedFiles) {
+            // 1. Create original object URL
+            const url = URL.createObjectURL(file);
+
+            // 2. Get dimensions & Generate thumbnail
+            const imgElement = new Image();
+            const dimensionsPromise = new Promise<{ width: number, height: number }>(resolve => {
+                imgElement.onload = () => resolve({
+                    width: imgElement.naturalWidth,
+                    height: imgElement.naturalHeight
+                });
+                imgElement.src = url;
+            });
+
+            const dimensions = await dimensionsPromise;
+
+            // Generate small thumbnail for UI performance
+            const thumbOptions = {
+                maxWidthOrHeight: 400,
+                maxSizeMB: 0.1,
+                useWebWorker: true,
+            };
+
+            const thumbnailFile = await imageCompression(file, thumbOptions);
+            const preview = URL.createObjectURL(thumbnailFile);
+
+            newImagesBatch.push({
+                id: Math.random().toString(36).substring(7),
+                file,
+                url,
+                preview,
+                width: dimensions.width,
+                height: dimensions.height
+            });
+
+            // Update state periodically so user sees progress
+            setImages(prev => [...prev, newImagesBatch[newImagesBatch.length - 1]]);
+        }
+    }, []);
+
     const removeImage = (id: string) => {
-        setImages(prev => prev.filter(img => img.id !== id));
+        setImages(prev => {
+            const imgToRemove = prev.find(img => img.id === id);
+            if (imgToRemove) {
+                URL.revokeObjectURL(imgToRemove.url);
+                URL.revokeObjectURL(imgToRemove.preview);
+            }
+            return prev.filter(img => img.id !== id);
+        });
     };
 
     const moveImage = (index: number, direction: 'left' | 'right', e?: React.MouseEvent) => {
-        e?.stopPropagation(); // Prevent drag/drop interference if we add detailed DND later
+        e?.stopPropagation();
         if (direction === 'left' && index === 0) return;
         if (direction === 'right' && index === images.length - 1) return;
 
@@ -85,63 +137,63 @@ export function ImageToPdf() {
     const generatePdf = async () => {
         if (images.length === 0) return;
         setIsGenerating(true);
+        setProgress(0);
 
         try {
-            const { jsPDF } = await import("jspdf");
-
-            // Correct orientation type for jsPDF
-            const orientationMode = orientation === "portrait" ? "p" : "l";
-
-            const doc = new jsPDF({
-                orientation: orientationMode,
-                unit: "pt",
-                format: pageSize
-            });
-
             // Standard margin logic (pt)
             let marginPt = 0;
             if (margin === "small") marginPt = 20;
             if (margin === "normal") marginPt = 40;
             if (margin === "big") marginPt = 72;
 
-            images.forEach((img, index) => {
-                if (index > 0) {
-                    doc.addPage(pageSize, orientationMode);
+            // Prepare data for the worker (cannot pass File objects easily, use ArrayBuffers)
+            const imageData = await Promise.all(images.map(async (img) => {
+                const buffer = await img.file.arrayBuffer();
+                return {
+                    buffer,
+                    width: img.width,
+                    height: img.height
+                };
+            }));
+
+            // Initialize worker
+            const worker = new Worker(new URL('../../../workers/pdf-generator.worker', import.meta.url));
+
+            worker.onmessage = (e) => {
+                const { type, progress, blob, filename: outFilename, error } = e.data;
+
+                if (type === 'PROGRESS') {
+                    setProgress(progress);
+                } else if (type === 'COMPLETE') {
+                    const downloadUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = `${outFilename}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(downloadUrl);
+
+                    setIsGenerating(false);
+                    setProgress(0);
+                    worker.terminate();
+                } else if (type === 'ERROR') {
+                    console.error("PDF Worker Error:", error);
+                    setIsGenerating(false);
+                    worker.terminate();
                 }
+            };
 
-                // Get page dimensions
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const pageHeight = doc.internal.pageSize.getHeight();
+            worker.postMessage({
+                images: imageData,
+                pageSize,
+                orientation,
+                marginPt,
+                filename
+            }, imageData.map(img => img.buffer)); // Transfer the buffers instead of copying
 
-                const availableWidth = pageWidth - (marginPt * 2);
-                const availableHeight = pageHeight - (marginPt * 2);
-
-                // Calculate aspect ratios
-                const imgRatio = img.width / img.height;
-                const pageRatio = availableWidth / availableHeight;
-
-                let finalWidth, finalHeight;
-
-                // Fit image within available space while maintaining aspect ratio
-                if (imgRatio > pageRatio) {
-                    finalWidth = availableWidth;
-                    finalHeight = availableWidth / imgRatio;
-                } else {
-                    finalHeight = availableHeight;
-                    finalWidth = availableHeight * imgRatio;
-                }
-
-                // Center image
-                const x = (pageWidth - finalWidth) / 2;
-                const y = (pageHeight - finalHeight) / 2;
-
-                doc.addImage(img.preview, 'JPEG', x, y, finalWidth, finalHeight);
-            });
-
-            doc.save(`${filename}.pdf`);
         } catch (error) {
             console.error("PDF generation failed", error);
-        } finally {
             setIsGenerating(false);
         }
     };
@@ -169,6 +221,7 @@ export function ImageToPdf() {
                                     src={img.preview}
                                     alt={`Page ${index + 1}`}
                                     className="h-full w-full object-cover"
+                                    loading="lazy"
                                 />
 
                                 {/* Page Number Badge */}
@@ -306,6 +359,15 @@ export function ImageToPdf() {
                         <Separator />
 
                         <div className="pt-2">
+                            {isGenerating && (
+                                <div className="mb-4 space-y-2">
+                                    <div className="flex justify-between text-xs">
+                                        <span>Merging images...</span>
+                                        <span>{progress}%</span>
+                                    </div>
+                                    <Progress value={progress} className="h-1.5" />
+                                </div>
+                            )}
                             <Button
                                 className="w-full h-11 text-base"
                                 onClick={generatePdf}

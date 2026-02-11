@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Tool, ToolCategory } from "@/config/tools";
 import { Input } from "@/components/ui/input";
@@ -45,7 +45,16 @@ interface ToolExplorerProps {
 }
 
 export function ToolExplorer({ initialTools }: ToolExplorerProps) {
+    const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+
+    // Debounce search query to improve INP
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchQuery(inputValue);
+        }, 200);
+        return () => clearTimeout(timer);
+    }, [inputValue]);
 
     // Flatten tools for easier searching
     const allTools = Object.values(initialTools).flat();
@@ -96,11 +105,11 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                             type="text"
                             placeholder="Search for tools (e.g. 'PDF', 'Tax', 'Compress')..."
                             className="w-full h-16 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-lg px-4 placeholder:text-muted-foreground/50"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
                         />
                         <AnimatePresence>
-                            {searchQuery && (
+                            {inputValue && (
                                 <motion.div
                                     key="clear-button"
                                     initial={{ opacity: 0, scale: 0.5 }}
@@ -112,7 +121,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                         size="icon"
                                         variant="ghost"
                                         className="h-8 w-8 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground"
-                                        onClick={() => setSearchQuery("")}
+                                        onClick={() => setInputValue("")}
                                     >
                                         <X className="h-4 w-4" />
                                     </Button>
@@ -135,7 +144,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                             className="text-center py-20 text-muted-foreground"
                         >
                             <p className="text-xl">No tools found matching "{searchQuery}"</p>
-                            <Button variant="link" onClick={() => setSearchQuery("")} className="mt-2 text-primary">
+                            <Button variant="link" onClick={() => setInputValue("")} className="mt-2 text-primary">
                                 Clear search
                             </Button>
                         </motion.div>
@@ -203,22 +212,16 @@ function ToolCard({ tool, variants }: { tool: Tool, variants?: any }) {
     const IconComponent = iconMap[tool.icon] || ArrowRight;
 
     return (
-        <motion.div
-            variants={variants}
-            whileHover={{ y: -8, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            className="h-full"
-        >
+        <div className="h-full transition-all duration-300 hover:-translate-y-2 active:scale-95">
             <Link
                 href={tool.path}
-                className="group relative flex flex-col h-full overflow-hidden rounded-xl border bg-card/40 hover:bg-card/80 p-6 transition-colors duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 backdrop-blur-sm"
+                className="group relative flex flex-col h-full overflow-hidden rounded-xl border bg-card/40 hover:bg-card/80 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/30 backdrop-blur-sm"
             >
                 {/* Subtle gradient blob on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                 <div className="flex items-start gap-4 flex-1 relative z-10">
-                    <div className="shrink-0 rounded-lg p-3 bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 shadow-sm">
+                    <div className="shrink-0 rounded-lg p-3 bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 shadow-sm">
                         <IconComponent className="h-6 w-6" aria-hidden="true" />
                     </div>
                     <div className="flex flex-col gap-2 pt-0.5">
@@ -227,10 +230,10 @@ function ToolCard({ tool, variants }: { tool: Tool, variants?: any }) {
                     </div>
                 </div>
 
-                <div className="absolute right-4 bottom-4 opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 z-10">
+                <div className="absolute right-4 bottom-4 opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 z-10">
                     <ArrowRight className="h-5 w-5 text-primary" />
                 </div>
             </Link>
-        </motion.div>
+        </div>
     );
 }
