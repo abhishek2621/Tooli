@@ -3,11 +3,11 @@ import { PdfCompressorWrapper } from "@/components/tools/document/pdf-compressor
 import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {
-    title: 'Compress PDF Online – Reduce File Size for Free',
-    description: 'Reduce PDF file size instantly without compromising quality. Secure, browser-based PDF compression. Ideal for email attachments and uploads.',
+    title: 'Compress PDF Online – Free, Ad-Free & Instant',
+    description: 'Reduce PDF file size instantly without compromising quality. Ad-free, browser-based PDF compression. No sign-up, no upload necessary.',
     keywords: [
         'compress pdf', 'reduce pdf size', 'shrink pdf',
-        'pdf optimizer', 'online pdf tool', 'free pdf compressor'
+        'pdf optimizer', 'online pdf tool', 'free pdf compressor', 'ad-free pdf compressor'
     ],
     alternates: {
         canonical: '/document/pdf-compressor',
@@ -18,9 +18,9 @@ export default function PdfCompressorPage() {
     return (
         <div className="space-y-6 w-full">
             <div className="flex flex-col gap-2 mb-8 text-left items-start">
-                <h1 className="text-3xl font-bold tracking-tight">PDF Compressor Online – Reduce File Size Without Quality Loss</h1>
+                <h1 className="text-3xl font-bold tracking-tight">PDF Compressor Online – Free, Instant & Ad-Free</h1>
                 <p className="text-lg text-muted-foreground">
-                    Reduce file size while optimizing for quality. No signup, no watermark.
+                    Reduce file size while optimizing for quality in your browser. No ads, no signup, no watermark.
                 </p>
             </div>
 

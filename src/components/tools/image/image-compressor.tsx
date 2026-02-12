@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import { filesize } from "filesize";
-import { Download, Upload, X, Loader2, ArrowRight, Settings2, RefreshCw, Layers, Image as ImageIcon, Trash2, Check, ExternalLink } from "lucide-react";
+import { Download, Loader2, ArrowRight, Settings2, Layers, Trash2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
+import { cn, triggerHaptic } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -52,43 +52,42 @@ const DEFAULT_SETTINGS: CompressionSettings = {
 };
 
 export function ImageCompressor() {
-    // Global settings serve as the default for new uploads
     const [globalSettings, setGlobalSettings] = useState<CompressionSettings>(DEFAULT_SETTINGS);
     const [images, setImages] = useState<CompressedImage[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Derived state
-    const selectedImageIndex = images.findIndex(img => img.id === selectedId);
-    const selectedImage = selectedImageIndex !== -1 ? images[selectedImageIndex] : null;
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setSelectedId(null);
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
 
-    // Use global settings if no image is selected, otherwise use the selected image's settings
-    const activeSettings = selectedImage ? selectedImage.settings : globalSettings;
-    const isGlobalMode = !selectedImage;
+    // Optimization: Memorialize derived states
+    const { selectedImage, activeSettings, isGlobalMode } = useMemo(() => {
+        const img = images.find(img => img.id === selectedId) || null;
+        return {
+            selectedImage: img,
+            activeSettings: img ? img.settings : globalSettings,
+            isGlobalMode: !img
+        }
+    }, [images, selectedId, globalSettings]);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const newImages = acceptedFiles.map(file => ({
             id: Math.random().toString(36).substring(7),
             originalFile: file,
             compressedFile: null,
-            originalPreview: URL.createObjectURL(file), // Create object URL immediately
+            originalPreview: URL.createObjectURL(file),
             compressedPreview: null,
             status: "pending" as const,
             progress: 0,
-            settings: { ...globalSettings } // Copy current global settings
+            settings: { ...globalSettings }
         }));
 
-        setImages(prev => {
-            const combined = [...prev, ...newImages];
-            // If this is the first upload batch, select the first image
-            if (prev.length === 0 && newImages.length > 0) {
-                // We'll update selectedId in an effect or here if we could, 
-                // but setting state is async. We'll let the user select.
-                // Actually, staying on "Global" mode is often better for batch workflows.
-                // Let's NOT auto-select to keep "Global Settings" visible by default.
-            }
-            return combined;
-        });
+        setImages(prev => [...prev, ...newImages]);
     }, [globalSettings]);
 
     const compressImage = async (id: string, currentImages: CompressedImage[]) => {
@@ -96,23 +95,15 @@ export function ImageCompressor() {
         if (index === -1) return;
 
         const img = currentImages[index];
-
-        // Update status to compressing
         setImages(prev => prev.map(item => item.id === id ? { ...item, status: "compressing", progress: 10 } : item));
 
         try {
             const imageCompression = (await import("browser-image-compression")).default;
 
             const maxDimension = Math.max(img.settings.width || 0, img.settings.height || 0);
-
-            // Calculate maxSizeMB
             let maxSizeMB = undefined;
             if (img.settings.targetSize && img.settings.targetSize > 0) {
-                if (img.settings.targetUnit === "MB") {
-                    maxSizeMB = img.settings.targetSize;
-                } else {
-                    maxSizeMB = img.settings.targetSize / 1024;
-                }
+                maxSizeMB = img.settings.targetUnit === "MB" ? img.settings.targetSize : img.settings.targetSize / 1024;
             }
 
             const options = {
@@ -120,7 +111,7 @@ export function ImageCompressor() {
                 maxSizeMB: maxSizeMB,
                 useWebWorker: true,
                 initialQuality: img.settings.quality / 100,
-                fileType: img.settings.format === "original" ? undefined : `image/${img.settings.format}`,
+                fileType: img.settings.format === "original" ? undefined : `image/${img.settings.format}` as any,
                 onProgress: (p: number) => {
                     setImages(prev => prev.map(item => item.id === id ? { ...item, progress: p } : item));
                 }
@@ -129,22 +120,27 @@ export function ImageCompressor() {
             const compressedFile = await imageCompression(img.originalFile, options);
             const compressedPreview = URL.createObjectURL(compressedFile);
 
-            setImages(prev => prev.map(item => item.id === id ? {
-                ...item,
-                compressedFile,
-                compressedPreview,
-                status: "done",
-                progress: 100
-            } : item));
+            setImages(prev => prev.map(item => {
+                if (item.id === id) {
+                    if (item.compressedPreview) URL.revokeObjectURL(item.compressedPreview);
+                    return {
+                        ...item,
+                        compressedFile,
+                        compressedPreview,
+                        status: "done",
+                        progress: 100
+                    };
+                }
+                return item;
+            }));
 
+            triggerHaptic(10);
         } catch (error) {
             console.error("Compression error:", error);
             setImages(prev => prev.map(item => item.id === id ? { ...item, status: "error", progress: 0 } : item));
         }
     };
 
-    // Watch for pending images and compress them ONE AT A TIME
-    // This is crucial for Mobile INP to prevent blocking the main thread with multiple workers
     useEffect(() => {
         const processQueue = async () => {
             if (isProcessing) return;
@@ -158,29 +154,24 @@ export function ImageCompressor() {
         processQueue();
     }, [images, isProcessing]);
 
-    const updateActiveSettings = (newSettings: Partial<CompressionSettings>) => {
+    const updateActiveSettings = useCallback((newSettings: Partial<CompressionSettings>) => {
         if (isGlobalMode) {
             setGlobalSettings(prev => ({ ...prev, ...newSettings }));
-            // Optionally, apply to ALL pending/existing images? 
-            // Usually global settings only apply to NEW uploads or if explicitly applied.
-            // But for a "Global Settings" panel, users expect it to change everything.
-            // Let's update ALL images to match global settings if in global mode.
             setImages(prev => prev.map(img => ({
                 ...img,
-                status: "pending", // Re-compress
+                status: "pending",
                 settings: { ...img.settings, ...newSettings }
             })));
-        } else if (selectedImage) {
+        } else {
             setImages(prev => prev.map(img => img.id === selectedId ? {
                 ...img,
                 status: "pending",
                 settings: { ...img.settings, ...newSettings }
             } : img));
         }
-    };
+    }, [isGlobalMode, selectedId]);
 
-    // Apply current settings to all images (useful when in single selection mode but want to broadcast)
-    const applyToAll = () => {
+    const applyToAll = useCallback(() => {
         if (!activeSettings) return;
         setImages(prev => prev.map(img => ({
             ...img,
@@ -188,41 +179,66 @@ export function ImageCompressor() {
             settings: { ...activeSettings }
         })));
         if (selectedImage) {
-            setGlobalSettings(selectedImage.settings); // Sync global
+            setGlobalSettings(selectedImage.settings);
         }
-    };
+    }, [activeSettings, selectedImage]);
 
-    const removeImage = (id: string, e?: React.MouseEvent) => {
+    const removeImage = useCallback((id: string, e?: React.MouseEvent) => {
         e?.stopPropagation();
-        const img = images.find(i => i.id === id);
-        if (img) {
-            URL.revokeObjectURL(img.originalPreview);
-            if (img.compressedPreview) URL.revokeObjectURL(img.compressedPreview);
-        }
-        setImages(prev => prev.filter(i => i.id !== id));
+        setImages(prev => {
+            const img = prev.find(i => i.id === id);
+            if (img) {
+                URL.revokeObjectURL(img.originalPreview);
+                if (img.compressedPreview) URL.revokeObjectURL(img.compressedPreview);
+            }
+            return prev.filter(i => i.id !== id);
+        });
         if (selectedId === id) setSelectedId(null);
-    };
+    }, [selectedId]);
 
-    const downloadImage = (img: CompressedImage, e?: React.MouseEvent) => {
+    const downloadImage = useCallback((img: CompressedImage, e?: React.MouseEvent) => {
         e?.stopPropagation();
         if (!img.compressedFile) return;
+        const url = URL.createObjectURL(img.compressedFile);
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(img.compressedFile);
+        link.href = url;
         link.download = `compressed-${img.originalFile.name}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    };
+        URL.revokeObjectURL(url);
+    }, []);
 
-    const downloadAll = () => {
+    const downloadAll = useCallback(() => {
         images.forEach(img => {
             if (img.status === "done") downloadImage(img);
         });
-    };
+    }, [images, downloadImage]);
+
+    const downloadZip = useCallback(async () => {
+        const JSZip = (await import("jszip")).default;
+        const zip = new JSZip();
+
+        images.forEach(img => {
+            if (img.status === "done" && img.compressedFile) {
+                zip.file(`compressed-${img.originalFile.name}`, img.compressedFile);
+            }
+        });
+
+        const content = await zip.generateAsync({ type: "blob" });
+        triggerHaptic([50, 30, 50]);
+        const url = URL.createObjectURL(content);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "compressed-images.zip";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }, [images]);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
-            {/* Left Column: Dropzone & List */}
             <div className="lg:col-span-8 space-y-6">
                 <FileDropzone
                     onDrop={onDrop}
@@ -246,7 +262,6 @@ export function ImageCompressor() {
                                     selectedId === img.id ? "border-primary ring-1 ring-primary/20 bg-accent/20" : "border-border hover:border-primary/50"
                                 )}
                             >
-                                {/* Preview */}
                                 <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden border">
                                     <img
                                         src={img.compressedPreview || img.originalPreview}
@@ -265,7 +280,6 @@ export function ImageCompressor() {
                                     )}
                                 </div>
 
-                                {/* Info */}
                                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                                     <div className="flex items-start justify-between gap-2">
                                         <div>
@@ -286,7 +300,6 @@ export function ImageCompressor() {
                                         </div>
                                     </div>
 
-                                    {/* Status Bar */}
                                     <div className="mt-4">
                                         {img.status === "compressing" ? (
                                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -304,7 +317,6 @@ export function ImageCompressor() {
                                     </div>
                                 </div>
 
-                                {/* Quick Actions */}
                                 <div className="flex sm:flex-col gap-2 items-center sm:justify-center">
                                     {img.status === "done" && (
                                         <Button
@@ -333,7 +345,6 @@ export function ImageCompressor() {
                 )}
             </div>
 
-            {/* Right Column: Settings Panel (Sticky) */}
             <div className="lg:col-span-4 sticky top-6 space-y-4">
                 <Card className="border-2 shadow-sm">
                     <CardHeader className="pb-4 border-b bg-muted/20">
@@ -350,7 +361,6 @@ export function ImageCompressor() {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6 pt-6">
-                        {/* Quality Slider */}
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <Label className="text-sm font-medium">Quality</Label>
@@ -368,7 +378,6 @@ export function ImageCompressor() {
 
                         <Separator />
 
-                        {/* Format Selection */}
                         <div className="space-y-3">
                             <Label className="text-sm font-medium">Output Format</Label>
                             <Select
@@ -387,7 +396,6 @@ export function ImageCompressor() {
                             </Select>
                         </div>
 
-                        {/* Dimension Controls */}
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm font-medium">Maintain Aspect Ratio</Label>
@@ -425,7 +433,6 @@ export function ImageCompressor() {
 
                         <Separator />
 
-                        {/* Target File Size */}
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm font-medium">Set Target File Size</Label>
@@ -467,7 +474,6 @@ export function ImageCompressor() {
 
                         <Separator />
 
-                        {/* Action Buttons */}
                         <div className="space-y-2 pt-2">
                             {!isGlobalMode && (
                                 <Button variant="outline" className="w-full" onClick={applyToAll}>
@@ -477,15 +483,20 @@ export function ImageCompressor() {
                             )}
 
                             {images.some(i => i.status === "done") && (
-                                <Button className="w-full" onClick={downloadAll}>
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Download All {images.filter(i => i.status === "done").length > 0 && `(${images.filter(i => i.status === "done").length})`}
-                                </Button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <Button variant="outline" className="w-full" onClick={downloadAll}>
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Files
+                                    </Button>
+                                    <Button className="w-full" onClick={downloadZip}>
+                                        <Layers className="h-4 w-4 mr-2" />
+                                        ZIP
+                                    </Button>
+                                </div>
                             )}
                         </div>
                     </CardContent>
 
-                    {/* Helper Text */}
                     <div className="bg-muted/30 p-4 border-t text-xs text-muted-foreground">
                         <p>
                             {isGlobalMode
@@ -495,6 +506,6 @@ export function ImageCompressor() {
                     </div>
                 </Card>
             </div>
-        </div >
+        </div>
     );
 }

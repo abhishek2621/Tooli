@@ -1,7 +1,9 @@
 import { jsPDF } from "jspdf";
 
 /* eslint-disable no-restricted-globals */
-self.onmessage = async (event: MessageEvent) => {
+const ctx: Worker = self as unknown as Worker;
+
+ctx.onmessage = async (event: MessageEvent) => {
     const { images, pageSize, orientation, marginPt, filename } = event.data;
 
     try {
@@ -41,21 +43,22 @@ self.onmessage = async (event: MessageEvent) => {
             const x = (pageWidth - finalWidth) / 2;
             const y = (pageHeight - finalHeight) / 2;
 
-            // Use the ArrayBuffer directly
             doc.addImage(new Uint8Array(imgData.buffer), 'JPEG', x, y, finalWidth, finalHeight);
 
-            self.postMessage({
+            ctx.postMessage({
                 type: 'PROGRESS',
                 progress: Math.round(((i + 1) / images.length) * 100)
             });
         }
 
         const pdfBlob = doc.output('blob');
-        self.postMessage({ type: 'COMPLETE', blob: pdfBlob, filename });
+        ctx.postMessage({ type: 'COMPLETE', blob: pdfBlob, filename });
     } catch (error) {
-        self.postMessage({
+        ctx.postMessage({
             type: 'ERROR',
             error: error instanceof Error ? error.message : String(error)
         });
     }
 };
+
+export { };

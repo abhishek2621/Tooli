@@ -25,7 +25,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn, triggerHaptic } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -165,6 +165,7 @@ export function ImageToPdf() {
                 if (type === 'PROGRESS') {
                     setProgress(progress);
                 } else if (type === 'COMPLETE') {
+                    triggerHaptic([50, 30, 50]); // Success pulse
                     const downloadUrl = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = downloadUrl;

@@ -4,10 +4,10 @@ import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {
     title: 'Free Image Compressor – Reduce Image Size Online (WebP, PNG, JPG)',
-    description: 'Compress images online instantly. Reduce file size by up to 90% without losing quality. Secure, client-side compression for WebP, PNG, and JPG. No sign-up.',
+    description: 'Compress images online instantly. Reduce file size by up to 90% without losing quality. Ad-free, client-side compression for WebP, PNG, and JPG. No sign-up.',
     keywords: [
         'image compressor', 'compress image online', 'reduce image size',
-        'compress under 100kb', 'compress under 30kb', 'compress jpg', 'compress png', 'webp compressor'
+        'compress under 100kb', 'compress under 30kb', 'compress jpg', 'compress png', 'webp compressor', 'ad-free image compressor'
     ],
     alternates: {
         canonical: '/image/image-compressor',
@@ -31,14 +31,14 @@ export default function ImageCompressorPage() {
                             "price": "0",
                             "priceCurrency": "USD"
                         },
-                        "description": "Compress and optimize images online without losing quality. Supports JPG, PNG, and WebP formats."
+                        "description": "Compress and optimize images online without losing quality. Ad-free JPG, PNG, and WebP compression."
                     })
                 }}
             />
             <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">Free Image Compressor – Reduce Image Size Online</h1>
                 <p className="text-lg text-muted-foreground">
-                    Optimize your images for the web. Compress JPG, PNG, and WebP files by up to 90% securely in your browser.
+                    Optimize your images for the web. Compress JPG, PNG, and WebP files by up to 90% ad-free in your browser.
                 </p>
             </div>
 

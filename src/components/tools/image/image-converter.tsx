@@ -1,23 +1,20 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import {
     Download,
-    Upload,
     X,
     Loader2,
     ArrowRight,
     Settings2,
-    RefreshCw,
     Layers,
-    Image as ImageIcon,
     Trash2,
     Check,
     FileType
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, triggerHaptic } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -54,13 +51,25 @@ export function ImageConverter() {
     const [globalSettings, setGlobalSettings] = useState<ConversionSettings>(DEFAULT_SETTINGS);
     const [images, setImages] = useState<ImageFile[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    // Derived state
-    const selectedImageIndex = images.findIndex(img => img.id === selectedId);
-    const selectedImage = selectedImageIndex !== -1 ? images[selectedImageIndex] : null;
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setSelectedId(null);
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
 
-    const activeSettings = selectedImage ? selectedImage.settings : globalSettings;
-    const isGlobalMode = !selectedImage;
+    // Optimization: Memoize derived state
+    const { selectedImage, activeSettings, isGlobalMode } = useMemo(() => {
+        const img = images.find(img => img.id === selectedId) || null;
+        return {
+            selectedImage: img,
+            activeSettings: img ? img.settings : globalSettings,
+            isGlobalMode: !img
+        };
+    }, [images, selectedId, globalSettings]);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const newImages = acceptedFiles.map(file => ({
@@ -80,8 +89,6 @@ export function ImageConverter() {
         if (index === -1) return;
 
         const imgData = currentImages[index];
-
-        // Update status to converting
         setImages(prev => prev.map(item => item.id === id ? { ...item, status: "converting" } : item));
 
         try {
@@ -99,7 +106,6 @@ export function ImageConverter() {
 
             if (!ctx) throw new Error("Could not get canvas context");
 
-            // Handle transparency for JPEG (replace with white background)
             if (imgData.settings.format === "jpeg") {
                 ctx.fillStyle = "#FFFFFF";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -108,7 +114,11 @@ export function ImageConverter() {
             ctx.drawImage(img, 0, 0);
 
             const mimeType = `image/${imgData.settings.format}`;
-            const dataUrl = canvas.toDataURL(mimeType, 0.9); // 0.9 quality default
+            const dataUrl = canvas.toDataURL(mimeType, 0.9);
+
+            // Optimization: Memory cleanup
+            canvas.width = 0;
+            canvas.height = 0;
 
             setImages(prev => prev.map(item => item.id === id ? {
                 ...item,
@@ -116,40 +126,44 @@ export function ImageConverter() {
                 status: "done",
             } : item));
 
+            triggerHaptic(10);
         } catch (error) {
             console.error("Conversion error:", error);
             setImages(prev => prev.map(item => item.id === id ? { ...item, status: "error" } : item));
         }
     };
 
-    // Watch for pending images and convert them automatically
     useEffect(() => {
-        images.forEach(img => {
-            if (img.status === "pending") {
-                convertSingleFile(img.id, images);
+        const processQueue = async () => {
+            if (isProcessing) return;
+            const nextPending = images.find(img => img.status === "pending");
+            if (nextPending) {
+                setIsProcessing(true);
+                await convertSingleFile(nextPending.id, images);
+                setIsProcessing(false);
             }
-        });
-    }, [images]);
+        };
+        processQueue();
+    }, [images, isProcessing]);
 
-    const updateActiveSettings = (newSettings: Partial<ConversionSettings>) => {
+    const updateActiveSettings = useCallback((newSettings: Partial<ConversionSettings>) => {
         if (isGlobalMode) {
             setGlobalSettings(prev => ({ ...prev, ...newSettings }));
-            // Apply to all images to keep them in sync with global content
             setImages(prev => prev.map(img => ({
                 ...img,
-                status: "pending", // Re-convert
+                status: "pending",
                 settings: { ...img.settings, ...newSettings }
             })));
-        } else if (selectedImage) {
+        } else {
             setImages(prev => prev.map(img => img.id === selectedId ? {
                 ...img,
-                status: "pending", // Re-convert
+                status: "pending",
                 settings: { ...img.settings, ...newSettings }
             } : img));
         }
-    };
+    }, [isGlobalMode, selectedId]);
 
-    const applyToAll = () => {
+    const applyToAll = useCallback(() => {
         if (!activeSettings) return;
         setImages(prev => prev.map(img => ({
             ...img,
@@ -159,19 +173,19 @@ export function ImageConverter() {
         if (selectedImage) {
             setGlobalSettings(selectedImage.settings);
         }
-    };
+    }, [activeSettings, selectedImage]);
 
-    const removeImage = (id: string, e?: React.MouseEvent) => {
+    const removeImage = useCallback((id: string, e?: React.MouseEvent) => {
         e?.stopPropagation();
-        const img = images.find(i => i.id === id);
-        if (img) {
-            URL.revokeObjectURL(img.originalPreview);
-        }
-        setImages(prev => prev.filter(i => i.id !== id));
+        setImages(prev => {
+            const img = prev.find(i => i.id === id);
+            if (img) URL.revokeObjectURL(img.originalPreview);
+            return prev.filter(i => i.id !== id);
+        });
         if (selectedId === id) setSelectedId(null);
-    };
+    }, [selectedId]);
 
-    const downloadImage = (img: ImageFile, e?: React.MouseEvent) => {
+    const downloadImage = useCallback((img: ImageFile, e?: React.MouseEvent) => {
         e?.stopPropagation();
         if (!img.convertedUrl) return;
 
@@ -182,17 +196,41 @@ export function ImageConverter() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    };
+    }, []);
 
-    const downloadAll = () => {
+    const downloadAll = useCallback(() => {
         images.forEach(img => {
             if (img.status === "done") downloadImage(img);
         });
-    };
+    }, [images, downloadImage]);
+
+    const downloadZip = useCallback(async () => {
+        const JSZip = (await import("jszip")).default;
+        const zip = new JSZip();
+
+        for (const img of images) {
+            if (img.status === "done" && img.convertedUrl) {
+                const response = await fetch(img.convertedUrl);
+                const blob = await response.blob();
+                const nameWithoutExt = img.originalFile.name.substring(0, img.originalFile.name.lastIndexOf('.'));
+                zip.file(`${nameWithoutExt}.${img.settings.format}`, blob);
+            }
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        triggerHaptic([50, 30, 50]);
+        const url = URL.createObjectURL(content);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "converted-images.zip";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }, [images]);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
-            {/* Left Column: Dropzone & List */}
             <div className="lg:col-span-8 space-y-6">
                 <FileDropzone
                     onDrop={onDrop}
@@ -218,7 +256,6 @@ export function ImageConverter() {
                                     selectedId === img.id ? "border-primary ring-1 ring-primary/20 bg-accent/20" : "border-border hover:border-primary/50"
                                 )}
                             >
-                                {/* Preview */}
                                 <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden border">
                                     <img
                                         src={img.originalPreview}
@@ -232,7 +269,6 @@ export function ImageConverter() {
                                     )}
                                 </div>
 
-                                {/* Info */}
                                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                                     <div className="flex items-start justify-between gap-2">
                                         <div>
@@ -247,7 +283,6 @@ export function ImageConverter() {
                                         </div>
                                     </div>
 
-                                    {/* Status Bar */}
                                     <div className="mt-4">
                                         {img.status === "converting" ? (
                                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -265,7 +300,6 @@ export function ImageConverter() {
                                     </div>
                                 </div>
 
-                                {/* Quick Actions */}
                                 <div className="flex sm:flex-col gap-2 items-center sm:justify-center">
                                     {img.status === "done" && (
                                         <Button
@@ -294,7 +328,6 @@ export function ImageConverter() {
                 )}
             </div>
 
-            {/* Right Column: Settings Panel (Sticky) */}
             <div className="lg:col-span-4 sticky top-6 space-y-4">
                 <Card className="border-2 shadow-sm">
                     <CardHeader className="pb-4 border-b bg-muted/20">
@@ -311,7 +344,6 @@ export function ImageConverter() {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6 pt-6">
-                        {/* Format Selection */}
                         <div className="space-y-3">
                             <Label className="text-sm font-medium flex items-center gap-2">
                                 <FileType className="h-4 w-4" /> Output Format
@@ -338,7 +370,6 @@ export function ImageConverter() {
 
                         <Separator />
 
-                        {/* Action Buttons */}
                         <div className="space-y-2 pt-2">
                             {!isGlobalMode && (
                                 <Button variant="outline" className="w-full" onClick={applyToAll}>
@@ -348,15 +379,20 @@ export function ImageConverter() {
                             )}
 
                             {images.some(i => i.status === "done") && (
-                                <Button className="w-full" onClick={downloadAll}>
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Download All {images.filter(i => i.status === "done").length > 0 && `(${images.filter(i => i.status === "done").length})`}
-                                </Button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <Button variant="outline" className="w-full" onClick={downloadAll}>
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Files
+                                    </Button>
+                                    <Button className="w-full" onClick={downloadZip}>
+                                        <Layers className="h-4 w-4 mr-2" />
+                                        ZIP
+                                    </Button>
+                                </div>
                             )}
                         </div>
                     </CardContent>
 
-                    {/* Helper Text */}
                     <div className="bg-muted/30 p-4 border-t text-xs text-muted-foreground">
                         <p>
                             {isGlobalMode

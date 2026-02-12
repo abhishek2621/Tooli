@@ -13,18 +13,39 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Smartphone } from "lucide-react";
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+
+        const handleBeforeInstallPrompt = (e: Event) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
     }, []);
+
+    const handleInstall = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            setDeferredPrompt(null);
+        }
+    };
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -80,11 +101,32 @@ export function Navbar() {
                     </div>
 
                     <div className="hidden md:flex items-center gap-3">
+                        {deferredPrompt && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleInstall}
+                                className="flex items-center gap-2 border-primary/20 hover:bg-primary/5 text-primary"
+                            >
+                                <Smartphone className="h-4 w-4" />
+                                Install App
+                            </Button>
+                        )}
                         <Button size="sm" asChild className="shadow-md shadow-primary/20 hover:shadow-primary/30 transition-all bg-primary text-primary-foreground hover:bg-primary/90">
                         </Button>
                     </div>
 
-                    <div className="flex items-center md:hidden">
+                    <div className="flex items-center md:hidden gap-2">
+                        {deferredPrompt && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleInstall}
+                                className="h-10 w-10 rounded-full text-primary"
+                            >
+                                <Smartphone className="h-5 w-5" />
+                            </Button>
+                        )}
                         <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Toggle Menu" className="h-10 w-10 rounded-full hover:bg-muted/60 active:scale-95 transition-all">
                             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                         </Button>

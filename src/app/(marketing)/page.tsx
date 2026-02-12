@@ -12,7 +12,7 @@ const ToolExplorer = dynamic(() => import("@/components/home/tool-explorer").the
 
 export const metadata: Metadata = {
     title: "Tooli – Free Online Tools, Calculators & Converters (No Sign-up)",
-    description: "Access free, privacy-focused online tools: PDF compressor, Image converter, GST calculator, and more. No sign-up required. Fast, secure, and mobile-friendly.",
+    description: "Access free, privacy-focused online tools: PDF compressor, Image converter, GST calculator, and more. No sign-up required. Fast, ad-free, and mobile-friendly.",
     keywords: [
         "free online tools",
         "online utility tools",
@@ -45,7 +45,7 @@ export default function Home() {
                 <div className="container flex max-w-[64rem] flex-col items-center gap-6 text-center z-10">
                     <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-4 transition-all hover:bg-primary/10 hover:border-primary/30 cursor-default">
                         <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
-                        100% Free • No Sign-up • Secure
+                        100% Free • No Sign-up • No Ads
                     </div>
 
                     <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground drop-shadow-sm">

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn, triggerHaptic } from "@/lib/utils";
 
 interface PdfFile {
     file: File;
@@ -73,37 +73,60 @@ export function PdfMerger() {
         });
     };
 
+    const [progress, setProgress] = useState(0);
+
     const mergePdfs = async () => {
         if (files.length < 2) return;
         setIsMerging(true);
+        setProgress(0);
 
         try {
-            const { PDFDocument } = await import("pdf-lib");
+            // Prepare data for the worker
+            const fileData = await Promise.all(files.map(async (f) => {
+                const buffer = await f.file.arrayBuffer();
+                return { buffer };
+            }));
 
-            const mergedPdf = await PDFDocument.create();
+            // Initialize worker
+            const worker = new Worker(new URL('../../../workers/pdf-merger.worker', import.meta.url));
 
-            for (const pdfFile of files) {
-                const fileBytes = await pdfFile.file.arrayBuffer();
-                const pdf = await PDFDocument.load(fileBytes);
-                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                copiedPages.forEach((page) => mergedPdf.addPage(page));
-            }
+            worker.onmessage = (e) => {
+                const { type, progress, buffer, filename: outFilename, error } = e.data;
 
-            const pdfBytes = await mergedPdf.save();
+                if (type === 'PROGRESS') {
+                    setProgress(progress);
+                } else if (type === 'COMPLETE') {
+                    triggerHaptic([50, 30, 50]); // Triple tick for completion
+                    const blob = new Blob([buffer], { type: 'application/pdf' });
+                    const downloadUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = `${outFilename}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
 
-            // Trigger download
-            const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${filename}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                    // Cleanup
+                    setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
+
+                    setIsMerging(false);
+                    setProgress(0);
+                    worker.terminate();
+                } else if (type === 'ERROR') {
+                    console.error("Merge Worker Error:", error);
+                    alert("Failed to merge PDFs. One of the files might be encrypted or corrupted.");
+                    setIsMerging(false);
+                    worker.terminate();
+                }
+            };
+
+            worker.postMessage({
+                files: fileData,
+                filename
+            }, fileData.map(f => f.buffer)); // Transfer buffers
 
         } catch (error) {
-            console.error("Merge failed", error);
-            alert("Failed to merge PDFs. One of the files might be encrypted or corrupted.");
-        } finally {
+            console.error("Merge setup failed", error);
             setIsMerging(false);
         }
     };
@@ -222,6 +245,20 @@ export function PdfMerger() {
                         )}
 
                         <div className="pt-6 border-t">
+                            {isMerging && (
+                                <div className="mb-4 space-y-2">
+                                    <div className="flex justify-between text-xs">
+                                        <span>Merging files...</span>
+                                        <span>{progress}%</span>
+                                    </div>
+                                    <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-primary transition-all duration-300"
+                                            style={{ width: `${progress}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                             <Button
                                 className="w-full h-12 text-base shadow-lg shadow-red-500/20 bg-red-600 hover:bg-red-700 text-white"
                                 onClick={mergePdfs}

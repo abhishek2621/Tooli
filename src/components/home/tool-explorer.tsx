@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Tool, ToolCategory } from "@/config/tools";
 import { Input } from "@/components/ui/input";
@@ -52,17 +52,39 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
     }, []);
 
     useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+                e.preventDefault();
+                const input = document.getElementById("main-search") as HTMLInputElement;
+                input?.focus();
+            }
+            if (e.key === "Escape") {
+                setInputValue("");
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
+    // Debounce search input for better performance
+    useEffect(() => {
         const timer = setTimeout(() => {
             setSearchQuery(inputValue);
-        }, 200);
+        }, 150);
         return () => clearTimeout(timer);
     }, [inputValue]);
 
-    const allTools = Object.values(initialTools).flat();
-    const filteredTools = allTools.filter((tool) =>
-        tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Optimize: Memorialize flat tool list and filtered results
+    const allTools = useMemo(() => Object.values(initialTools).flat(), [initialTools]);
+
+    const filteredTools = useMemo(() => {
+        if (!searchQuery) return [];
+        const query = searchQuery.toLowerCase();
+        return allTools.filter((tool) =>
+            tool.name.toLowerCase().includes(query) ||
+            tool.description.toLowerCase().includes(query)
+        );
+    }, [allTools, searchQuery]);
 
     const isSearching = searchQuery.length > 0;
 
@@ -81,7 +103,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
         show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 15 } }
     };
 
-    // SEO/UX: Render search bar statically for mobile to avoid hydration lag
+    // Optimization: Skip motion overhead on mobile
     const SearchBarWrapper = isMobile ? "div" : motion.div;
     const GridWrapper = isMobile ? "div" : motion.div;
 
@@ -92,7 +114,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                     initial: { opacity: 0, y: -20, scale: 0.95 },
                     animate: { opacity: 1, y: 0, scale: 1 },
                 })}
-                className="relative w-full max-w-2xl mx-auto -mt-4 mb-8 px-4 z-20"
+                className="relative w-full max-w-2xl mx-auto -mt-4 mb-4 px-4 z-20"
             >
                 <div className="relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 via-purple-500/50 to-blue-500/50 rounded-full opacity-20 group-hover:opacity-60 blur-md transition duration-500 group-focus-within:opacity-100 group-focus-within:blur-lg" />
@@ -101,12 +123,19 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                             <Search className="h-6 w-6" />
                         </div>
                         <Input
+                            id="main-search"
                             type="text"
+                            autoComplete="off"
                             placeholder="Search for tools (e.g. 'PDF', 'Tax')..."
                             className="w-full h-16 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-lg px-4"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                         />
+                        <div className="hidden md:flex items-center gap-1 pr-4">
+                            <kbd className="pointer-events-none select-none rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                                <span className="text-xs">⌘</span>K
+                            </kbd>
+                        </div>
                         {inputValue && (
                             <div className="pr-4">
                                 <Button
@@ -124,7 +153,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
             </SearchBarWrapper>
 
             <div className="container space-y-12 py-8 bg-slate-50/50 dark:bg-slate-900/40 border border-transparent dark:border-slate-800 rounded-3xl mb-12 min-h-[400px]">
-                {filteredTools.length === 0 ? (
+                {isSearching && filteredTools.length === 0 ? (
                     <div className="text-center py-20 text-muted-foreground">
                         <p className="text-xl">No tools found matching "{searchQuery}"</p>
                         <Button variant="link" onClick={() => setInputValue("")} className="mt-2 text-primary">
@@ -171,7 +200,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                 utility: "Everyday Utility Tools",
                                 education: "Study & Education Tools Online"
                             };
-                            return (
+                            return (initialTools[category].length > 0 && (
                                 <div key={category} className="space-y-6">
                                     <div className="flex items-center gap-2">
                                         <h2 className="text-2xl font-bold capitalize tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
@@ -183,7 +212,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                         ))}
                                     </div>
                                 </div>
-                            );
+                            ));
                         })}
                     </GridWrapper>
                 )}
@@ -193,7 +222,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
 }
 
 function ToolCard({ tool, variants, isMobile }: { tool: Tool, variants?: any, isMobile?: boolean }) {
-    const IconComponent = iconMap[tool.icon] || ArrowRight;
+    const IconComponent = useMemo(() => iconMap[tool.icon] || ArrowRight, [tool.icon]);
     const CardWrapper = isMobile ? "div" : motion.div;
 
     return (

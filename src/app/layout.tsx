@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   title: {
-    default: "Tooli - Free Online Tools & Calculators",
+    default: "Tooli - Free Online Tools & Calculators (Ad-Free)",
     template: "%s | Tooli",
   },
-  description: "A comprehensive collection of free online calculators, converters, and productivity tools. No registration required.",
-  keywords: ["online tools", "calculators", "converters", "productivity", "free utilities", "developer tools"],
+  description: "A comprehensive collection of free, ad-free online calculators, converters, and productivity tools. No registration required.",
+  keywords: ["online tools", "calculators", "converters", "productivity", "free utilities", "developer tools", "ad-free online tools"],
   authors: [{ name: "Tooli Team" }],
   creator: "Tooli",
   publisher: "Tooli",
@@ -44,14 +44,23 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: baseUrl,
-    title: "Tooli - Free Online Tools & Calculators",
-    description: "Simplify your daily tasks with our collection of free online tools.",
+    title: "Tooli - 100% Free Online Tools & Calculators (Ad-Free)",
+    description: "Pro-grade online tools: PDF, Image, Finance, and Utilities. 100% Free, No Ads, No Sign-up.",
     siteName: "Tooli",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tooli - Free Online Tools",
-    description: "Your go-to place for free online utilities.",
+    title: "Tooli - Free Online Tools (No Ads)",
+    description: "Access pro-grade online tools for free. No ads, no registration.",
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Tooli",
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 
@@ -62,6 +71,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#6366f1" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
+      </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
         <ThemeProvider
           attribute="class"

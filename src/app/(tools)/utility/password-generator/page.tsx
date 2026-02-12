@@ -3,18 +3,18 @@ import { PasswordGeneratorForm } from '@/components/tools/utility/password-gener
 import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {
-    title: 'Password Generator – Create Strong & Secure Passwords',
-    description: 'Generate strong, secure random passwords online. Custom length and characters. Protect your accounts with this free tool.',
-    keywords: ['password generator online', 'strong password generator', 'random password generator', 'secure password generator']
+    title: 'Password Generator – Strong, Secure & Ad-Free',
+    description: 'Generate strong, secure random passwords online. Ad-free, custom length and characters. Protect your accounts with this free tool.',
+    keywords: ['password generator online', 'strong password generator', 'random password generator', 'secure password generator', 'ad-free password generator']
 }
 
 export default function PasswordGeneratorPage() {
     return (
         <div className="space-y-6 w-full">
             <div className="flex flex-col gap-2 text-left items-start">
-                <h1 className="text-3xl font-bold tracking-tight">Password Generator – Create Strong & Secure Passwords</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Password Generator – Strong, Secure & Ad-Free</h1>
                 <p className="text-lg text-muted-foreground">
-                    Create strong, unique passwords with custom settings. Secure and client-side.
+                    Create strong, unique passwords with custom settings. Secure, ad-free, and client-side.
                 </p>
             </div>
 

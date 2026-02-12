@@ -17,7 +17,7 @@ import {
     Minimize2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, triggerHaptic } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -118,6 +118,10 @@ export function PdfCompressor() {
                     message: `Processing page ${i} of ${totalPages}...`
                 } : null);
 
+                // YIELD to the main thread to keep UI responsive
+                // This allows the browser to paint the progress bar and respond to clicks
+                await new Promise(resolve => setTimeout(resolve, 0));
+
                 const page = await pdf.getPage(i);
 
                 // Increase scale for better quality rasterization before compression
@@ -149,6 +153,11 @@ export function PdfCompressor() {
                     width: embeddedImage.width,
                     height: embeddedImage.height,
                 });
+
+                // CLEANUP: Help GC by nulling out references and removing canvas
+                canvas.width = 0;
+                canvas.height = 0;
+                canvas.remove();
             }
 
             setPdfFile(prev => prev ? { ...prev, message: "Finalizing..." } : null);
@@ -164,6 +173,8 @@ export function PdfCompressor() {
                 progress: 100,
                 message: "Done!"
             } : null);
+
+            triggerHaptic([50, 30, 50]); // Triple tick for completion
 
         } catch (error) {
             console.error("Compression error:", error);
