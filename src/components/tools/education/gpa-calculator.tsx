@@ -77,8 +77,8 @@ export function GpaCalculator() {
         setCourses(courses.filter(c => c.id !== id));
     };
 
-    const updateCourse = (id: string, field: keyof Course, value: any) => {
-        setCourses(courses.map(c => c.id === id ? { ...c, [field]: value } : c));
+    const updateCourse = (id: string, field: keyof Course, value: string | number) => {
+        setCourses(courses.map(c => c.id === id ? { ...c, [field]: value } : c) as Course[]);
     };
 
     const reset = () => {

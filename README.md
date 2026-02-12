@@ -1,15 +1,14 @@
 # Tooli
 
 <div align="center">
-  <img src="public/screenshot.png" alt="Tooli - Free Online Tools" width="800" />
   <p align="center">
-    <strong>A privacy-focused, ad-free collection of essential online tools.</strong>
+    <strong>100% Free • No Ads • No Sign-up</strong>
   </p>
 </div>
 
 ## 🚀 Overview
 
-Tooli is a modern, responsive web application offering a suite of free utilities for finance, document management, image processing, and more. Built with Next.js 14, Tailwind CSS, and Framer Motion, it focuses on providing a premium user experience without the clutter of typical tool sites.
+Tooli is a modern, responsive web application offering a suite of free utilities for finance, document management, image processing, and more. Built with **Next.js**, **Tailwind CSS**, and **Framer Motion**, it focuses on providing a premium user experience without the clutter of typical tool sites.
 
 ### Key Features
 *   **Privacy First**: All file processing (PDF compression, Image conversion) happens **100% Client-Side**. Files never leave your browser.
