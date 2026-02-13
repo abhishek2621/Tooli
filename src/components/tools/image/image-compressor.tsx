@@ -111,7 +111,7 @@ export function ImageCompressor() {
                 maxSizeMB: maxSizeMB,
                 useWebWorker: true,
                 initialQuality: img.settings.quality / 100,
-                fileType: img.settings.format === "original" ? undefined : `image/${img.settings.format}` as any,
+                fileType: img.settings.format === "original" ? undefined : `image/${img.settings.format}` as string,
                 onProgress: (p: number) => {
                     setImages(prev => prev.map(item => item.id === id ? { ...item, progress: p } : item));
                 }
@@ -325,6 +325,7 @@ export function ImageCompressor() {
                                             onClick={(e) => downloadImage(img, e)}
                                             className="h-8 w-8 text-primary shrink-0"
                                             title="Download"
+                                            aria-label={`Download ${img.originalFile.name}`}
                                         >
                                             <Download className="h-4 w-4" />
                                         </Button>
@@ -335,6 +336,7 @@ export function ImageCompressor() {
                                         onClick={(e) => removeImage(img.id, e)}
                                         className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
                                         title="Remove"
+                                        aria-label={`Remove ${img.originalFile.name}`}
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -354,9 +356,15 @@ export function ImageCompressor() {
                                 {isGlobalMode ? "Global Settings" : "Image Settings"}
                             </CardTitle>
                             {!isGlobalMode && (
-                                <Badge variant="secondary" className="text-[10px] font-normal cursor-pointer" onClick={() => setSelectedId(null)}>
-                                    Switch to Global
-                                </Badge>
+                                <button
+                                    onClick={() => setSelectedId(null)}
+                                    className="focus:outline-none focus:ring-2 focus:ring-primary rounded-full"
+                                    aria-label="Switch to global settings"
+                                >
+                                    <Badge variant="secondary" className="text-[10px] font-normal cursor-pointer hover:bg-secondary/80">
+                                        Switch to Global
+                                    </Badge>
+                                </button>
                             )}
                         </div>
                     </CardHeader>
@@ -367,6 +375,7 @@ export function ImageCompressor() {
                                 <span className="text-sm font-mono text-muted-foreground">{activeSettings.quality}%</span>
                             </div>
                             <Slider
+                                aria-label="Image Quality"
                                 value={[activeSettings.quality]}
                                 min={10}
                                 max={100}
@@ -382,7 +391,7 @@ export function ImageCompressor() {
                             <Label className="text-sm font-medium">Output Format</Label>
                             <Select
                                 value={activeSettings.format}
-                                onValueChange={(val: any) => updateActiveSettings({ format: val })}
+                                onValueChange={(val: CompressionSettings['format']) => updateActiveSettings({ format: val })}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Original" />
@@ -400,6 +409,7 @@ export function ImageCompressor() {
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm font-medium">Maintain Aspect Ratio</Label>
                                 <Switch
+                                    aria-label="Maintain Aspect Ratio"
                                     checked={activeSettings.maintainAspectRatio}
                                     onCheckedChange={(checked) => updateActiveSettings({ maintainAspectRatio: checked, useOriginalResolution: checked })}
                                 />
@@ -437,6 +447,7 @@ export function ImageCompressor() {
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm font-medium">Set Target File Size</Label>
                                 <Switch
+                                    aria-label="Set Target File Size"
                                     checked={!!activeSettings.targetSize}
                                     onCheckedChange={(checked) => updateActiveSettings({ targetSize: checked ? 100 : undefined })}
                                 />

@@ -4,10 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { tools, Tool } from "@/config/tools";
 import { ArrowRight, Calculator, Percent, TrendingUp, RefreshCcw, FileText, Minimize2, Merge, Type, Image as ImageIcon, FileImage, RefreshCw, Scale, QrCode, Lock, Calendar, Globe, GraduationCap } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
-const iconMap: Record<string, any> = {
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     // Finance
     "percent": Percent,
     "calculator": Calculator,
@@ -81,7 +80,7 @@ export function RelatedTools() {
                 <div className="flex flex-col gap-2">
                     <h3 className="text-2xl font-bold tracking-tight">More Useful Tools</h3>
                     <p className="text-muted-foreground">
-                        Don't stop here. Check out these other free utilities.
+                        Don&apos;t stop here. Check out these other free utilities.
                     </p>
                 </div>
 
