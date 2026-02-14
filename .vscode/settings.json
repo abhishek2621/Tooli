@@ -1,4 +1,11 @@
 {
     "css.lint.unknownAtRules": "ignore",
-    "scss.lint.unknownAtRules": "ignore"
+    "scss.lint.unknownAtRules": "ignore",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "never",
+        "source.fixAll": "never"
+    },
+    "eslint.codeAction.showDocumentation": false,
+    "eslint.format.enable": false,
+    "eslint.run": "onSave"
 }
