@@ -9,6 +9,14 @@ export const metadata: Metadata = {
         'gst calculator', 'gst calculator india', 'calculate gst inclusive',
         'gst exclusive calculator', 'tax calculator india', 'gst amount formula'
     ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
     alternates: {
         canonical: '/finance/gst-calculator',
     },

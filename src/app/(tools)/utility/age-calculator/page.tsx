@@ -6,6 +6,14 @@ export const metadata: Metadata = {
     title: 'Age Calculator – Calculate Exact Age from Date of Birth',
     description: 'Calculate your exact age in years, months, days, and even minutes from your date of birth. Free, private, and instant age calculation tool.',
     keywords: ['age calculator', 'calculate age', 'date of birth calculator', 'exact age', 'how old am i'],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
     alternates: {
         canonical: '/utility/age-calculator',
     },

@@ -11,6 +11,14 @@ export const metadata: Metadata = {
         'image compressor', 'compress image online', 'reduce image size',
         'compress under 100kb', 'compress under 30kb', 'compress jpg', 'compress png', 'webp compressor', 'ad-free image compressor'
     ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
     alternates: {
         canonical: '/image/image-compressor',
     },

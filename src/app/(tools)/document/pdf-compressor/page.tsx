@@ -11,6 +11,14 @@ export const metadata: Metadata = {
         'compress pdf', 'reduce pdf size', 'shrink pdf',
         'pdf optimizer', 'online pdf tool', 'free pdf compressor', 'ad-free pdf compressor'
     ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
     alternates: {
         canonical: '/document/pdf-compressor',
     },

@@ -23,6 +23,14 @@ export const metadata: Metadata = {
         "pdf tools online",
         "finance calculators india"
     ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
     alternates: {
         canonical: '/',
     },
