@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "Tooli",
   description: "Your all-in-one free online utility belt. Calculators, converters, PDF tools, and image optimizers. No ads, no signup, privacy-first.",
-  url: process.env.NEXT_PUBLIC_APP_URL ? `https://${process.env.NEXT_PUBLIC_APP_URL}` : "http://localhost:3000",
-  ogImage: "https://tooli.com/og.jpg",
+  url: process.env.NEXT_PUBLIC_APP_URL ? `https://${process.env.NEXT_PUBLIC_APP_URL}` : "https://www.tooli.in",
+  ogImage: "https://www.tooli.in/opengraph-image",
   links: {
     twitter: "https://twitter.com/tooli",
     github: "https://github.com/tooli",

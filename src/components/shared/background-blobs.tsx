@@ -7,21 +7,21 @@ export function BackgroundBlobs() {
 
             <div
                 className={cn(
-                    "absolute top-0 left-[-20%] w-[70vh] h-[70vh] rounded-full bg-indigo-500/10 filter blur-[80px] opacity-40 will-change-transform",
+                    "hidden md:block absolute top-0 left-[-20%] w-[70vh] h-[70vh] rounded-full bg-indigo-500/10 filter blur-[80px] opacity-40 will-change-transform",
                     "animate-blob-1"
                 )}
             />
 
             <div
                 className={cn(
-                    "absolute top-[20%] right-[-20%] w-[60vh] h-[60vh] rounded-full bg-purple-500/10 filter blur-[80px] opacity-40 will-change-transform",
+                    "hidden md:block absolute top-[20%] right-[-20%] w-[60vh] h-[60vh] rounded-full bg-purple-500/10 filter blur-[80px] opacity-40 will-change-transform",
                     "animate-blob-2"
                 )}
             />
 
             <div
                 className={cn(
-                    "absolute bottom-[-20%] left-[20%] w-[80vh] h-[80vh] rounded-full bg-blue-500/10 filter blur-[80px] opacity-30 will-change-transform",
+                    "hidden md:block absolute bottom-[-20%] left-[20%] w-[80vh] h-[80vh] rounded-full bg-blue-500/10 filter blur-[80px] opacity-30 will-change-transform",
                     "animate-blob-3"
                 )}
             />

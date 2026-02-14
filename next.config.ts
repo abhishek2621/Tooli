@@ -19,7 +19,21 @@ const nextConfig: NextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
-          }
+          },
+          {
+            key: 'Expires',
+            value: 'Fri, 01 Jan 2100 00:00:00 GMT',
+          },
+        ],
+      },
+      {
+        // Custom headers for Open Graph images (dynamic)
+        source: '/opengraph-image',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
     ]

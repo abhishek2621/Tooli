@@ -16,7 +16,7 @@ const inter = Inter({
 // Define the base URL for the application
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL
   ? `https://${process.env.NEXT_PUBLIC_APP_URL}`
-  : "http://localhost:3000";
+  : "https://www.tooli.in";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -47,11 +47,20 @@ export const metadata: Metadata = {
     title: "Tooli - 100% Free Online Tools & Calculators (Ad-Free)",
     description: "Pro-grade online tools: PDF, Image, Finance, and Utilities. 100% Free, No Ads, No Sign-up.",
     siteName: "Tooli",
+    images: [
+      {
+        url: `/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: "Tooli - Free Online Tools",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Tooli - Free Online Tools (No Ads)",
     description: "Access pro-grade online tools for free. No ads, no registration.",
+    images: [`/opengraph-image`],
   },
   manifest: "/manifest.json",
   appleWebApp: {
