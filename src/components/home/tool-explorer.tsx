@@ -126,7 +126,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                             id="main-search"
                             type="text"
                             autoComplete="off"
-                            placeholder="Search for tools (e.g. 'PDF', 'Tax')..."
+                            placeholder="Search for tools (e.g. 'Compress', 'Convert', 'Resize' )..."
                             className="w-full h-16 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-lg px-4"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
