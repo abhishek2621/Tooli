@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 
 const SIPCalculator = dynamic(() => import("@/components/tools/finance/sip-calculator").then(mod => mod.SIPCalculator), {
-    loading: () => <div className="h-150 w-full bg-slate-100/50 animate-pulse rounded-xl" />
+    loading: () => <div className="h-[600px] w-full bg-slate-100/50 animate-pulse rounded-xl" />
 });
 
 export const metadata: Metadata = {
