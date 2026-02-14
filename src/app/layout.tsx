@@ -13,8 +13,8 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-// ✅ Use ONE clean base URL (no env to avoid double https bug)
-const baseUrl = "https://tooli.in";
+// ✅ Use www version as primary canonical domain
+const baseUrl = "https://www.tooli.in";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

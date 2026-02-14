@@ -9,7 +9,18 @@ export const metadata: Metadata = {
     keywords: [
         'merge pdf online', 'combine pdf files', 'pdf merger without watermark',
         'join pdf files free', 'merge pdf no signup'
-    ]
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/document/pdf-merger',
+    },
 }
 
 export default function PdfMergerPage() {

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         },
     },
     alternates: {
-        canonical: '/utility/age-calculator',
+        canonical: 'https://www.tooli.in/utility/age-calculator',
     },
 }
 

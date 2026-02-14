@@ -4,6 +4,17 @@ import Link from "next/link";
 export const metadata: Metadata = {
     title: "Privacy Policy - Tooli",
     description: "Read our privacy policy to understand how Tooli protects your data.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/privacy',
+    },
 };
 
 export default function PrivacyPage() {

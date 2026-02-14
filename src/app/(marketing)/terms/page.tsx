@@ -3,6 +3,17 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Terms of Service - Tooli",
     description: "Terms and conditions for using Tooli.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/terms',
+    },
 };
 
 export default function TermsPage() {

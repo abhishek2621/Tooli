@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         },
     },
     alternates: {
-        canonical: '/image/image-compressor',
+        canonical: 'https://www.tooli.in/image/image-compressor',
     },
 }
 

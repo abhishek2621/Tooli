@@ -3,6 +3,17 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
     title: "About Tooli - Privacy-First Online Tools",
     description: "Learn about Tooli's mission to provide free, secure, and client-side online tools for everyone.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/about',
+    },
 };
 
 export default function AboutPage() {

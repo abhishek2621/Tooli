@@ -10,6 +10,17 @@ export const metadata: Metadata = {
         'text to pdf online', 'convert text to pdf free', 'txt to pdf converter',
         'plain text to pdf', 'online pdf converter'
     ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/document/text-to-pdf',
+    },
     openGraph: {
         title: 'Text to PDF Converter – Convert Text Files Online',
         description: 'Convert plain text to PDF documents directly in your browser.',

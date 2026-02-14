@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         },
     },
     alternates: {
-        canonical: '/finance/gst-calculator',
+        canonical: 'https://www.tooli.in/finance/gst-calculator',
     },
     openGraph: {
         title: 'GST Calculator India – Inclusive & Exclusive Tax Calculator',
