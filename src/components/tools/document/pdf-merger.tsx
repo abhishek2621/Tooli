@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 
 import {
@@ -28,24 +28,54 @@ export function PdfMerger() {
     const [files, setFiles] = useState<PdfFile[]>([]);
     const [isMerging, setIsMerging] = useState(false);
     const [filename, setFilename] = useState("merged-document");
+    const [progress, setProgress] = useState(0);
+    const workerRef = useRef<Worker | null>(null);
+
+    useEffect(() => {
+        workerRef.current = new Worker(new URL('@/workers/pdf-merger.worker.ts', import.meta.url));
+
+        workerRef.current.onmessage = (e) => {
+            const { type, progress, data, message, error } = e.data;
+
+            if (type === 'STATUS') {
+                setProgress(progress);
+            } else if (type === 'DONE') {
+                triggerHaptic([50, 30, 50]);
+                const blob = new Blob([data], { type: 'application/pdf' });
+                const downloadUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = `${filename}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
+
+                setIsMerging(false);
+                setProgress(0);
+            } else if (type === 'ERROR') {
+                console.error("Merge Worker Error:", message || error);
+                alert("Failed to merge PDFs. One of the files might be encrypted or corrupted.");
+                setIsMerging(false);
+            }
+        };
+
+        return () => {
+            workerRef.current?.terminate();
+        };
+    }, [filename]);
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
-        const { PDFDocument } = await import("pdf-lib");
+        // We load pdf-lib only to get page count if needed, or we can skip it to save bundle
+        // For now, let's skip page count to keep main thread light, or move it to a small utility worker if critical.
+        // Or better: just show file size.
 
         for (const file of acceptedFiles) {
-            let pageCount = undefined;
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
-                pageCount = pdf.getPageCount();
-            } catch (e) {
-                console.warn("Could not read PDF page count", e);
-            }
-
             setFiles(prev => [...prev, {
                 file,
                 id: Math.random().toString(36).substring(7),
-                pageCount
+                pageCount: undefined // Optimizing bundle: removed lazy page count check on main thread
             }]);
         }
     }, []);
@@ -73,58 +103,20 @@ export function PdfMerger() {
         });
     };
 
-    const [progress, setProgress] = useState(0);
-
     const mergePdfs = async () => {
-        if (files.length < 2) return;
+        if (files.length < 2 || !workerRef.current) return;
         setIsMerging(true);
         setProgress(0);
 
         try {
-            // Prepare data for the worker
-            const fileData = await Promise.all(files.map(async (f) => {
-                const buffer = await f.file.arrayBuffer();
-                return { buffer };
+            const fileBuffers = await Promise.all(files.map(async (f) => {
+                return await f.file.arrayBuffer();
             }));
 
-            // Initialize worker
-            const worker = new Worker(new URL('../../../workers/pdf-merger.worker', import.meta.url));
-
-            worker.onmessage = (e) => {
-                const { type, progress, buffer, filename: outFilename, error } = e.data;
-
-                if (type === 'PROGRESS') {
-                    setProgress(progress);
-                } else if (type === 'COMPLETE') {
-                    triggerHaptic([50, 30, 50]); // Triple tick for completion
-                    const blob = new Blob([buffer], { type: 'application/pdf' });
-                    const downloadUrl = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = `${outFilename}.pdf`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-
-                    // Cleanup
-                    setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
-
-                    setIsMerging(false);
-                    setProgress(0);
-                    worker.terminate();
-                } else if (type === 'ERROR') {
-                    console.error("Merge Worker Error:", error);
-                    alert("Failed to merge PDFs. One of the files might be encrypted or corrupted.");
-                    setIsMerging(false);
-                    worker.terminate();
-                }
-            };
-
-            worker.postMessage({
-                files: fileData,
-                filename
-            }, fileData.map(f => f.buffer)); // Transfer buffers
-
+            workerRef.current.postMessage({
+                type: 'MERGE',
+                files: fileBuffers
+            }, fileBuffers); // Transfer buffers
         } catch (error) {
             console.error("Merge setup failed", error);
             setIsMerging(false);
@@ -173,7 +165,7 @@ export function PdfMerger() {
                                 <div className="flex-1 min-w-0">
                                     <p className="font-medium truncate text-sm" title={pdf.file.name}>{pdf.file.name}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        {(pdf.file.size / 1024 / 1024).toFixed(2)} MB • {pdf.pageCount ? `${pdf.pageCount} pages` : '...'}
+                                        {(pdf.file.size / 1024 / 1024).toFixed(2)} MB
                                     </p>
                                 </div>
 
@@ -240,7 +232,6 @@ export function PdfMerger() {
                         {files.length > 0 && (
                             <div className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg border">
                                 <p>Total Files: <span className="font-medium text-foreground">{files.length}</span></p>
-                                {/* <p>Total Size: <span className="font-medium text-foreground">{(files.reduce((a, b) => a + b.file.size, 0) / 1024 / 1024).toFixed(2)} MB</span> (Approx)</p> */}
                             </div>
                         )}
 

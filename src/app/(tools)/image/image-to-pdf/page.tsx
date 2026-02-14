@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { ImageToPdf } from "@/components/tools/image/image-to-pdf";
+import dynamic from 'next/dynamic';
+
+const ImageToPdf = dynamic(() => import("@/components/tools/image/image-to-pdf").then(mod => mod.ImageToPdf));
 
 export const metadata: Metadata = {
     title: 'Image to PDF Converter Online – Free & Ad-Free',

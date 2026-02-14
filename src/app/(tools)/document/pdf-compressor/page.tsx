@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { PdfCompressorWrapper } from "@/components/tools/document/pdf-compressor-wrapper";
+import dynamic from 'next/dynamic';
+
+const PdfCompressorWrapper = dynamic(() => import("@/components/tools/document/pdf-compressor-wrapper").then(mod => mod.PdfCompressorWrapper));
 import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {

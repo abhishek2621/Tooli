@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { PdfMerger } from "@/components/tools/document/pdf-merger";
+import dynamic from 'next/dynamic';
+
+const PdfMerger = dynamic(() => import("@/components/tools/document/pdf-merger").then(mod => mod.PdfMerger));
 
 export const metadata: Metadata = {
     title: 'Merge PDF Files Online – Combine PDFs for Free',

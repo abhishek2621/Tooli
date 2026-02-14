@@ -1,16 +1,13 @@
-import { MetadataRoute } from "next";
+import { MetadataRoute } from 'next'
+import { siteConfig } from "@/config/site";
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL
-        ? `https://${process.env.NEXT_PUBLIC_APP_URL}`
-        : "http://localhost:3000";
-
     return {
         rules: {
-            userAgent: "*",
-            allow: "/",
-            disallow: ["/api/"],
+            userAgent: '*',
+            allow: '/',
+            disallow: '/private/',
         },
-        sitemap: `${baseUrl}/sitemap.xml`,
-    };
+        sitemap: `${siteConfig.url}/sitemap.xml`,
+    }
 }

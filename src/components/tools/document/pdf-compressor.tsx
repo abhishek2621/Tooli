@@ -1,19 +1,14 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import {
     Download,
-    Upload,
     X,
     Loader2,
     ArrowRight,
     Settings2,
-    RefreshCw,
-    Layers,
     FileText,
-    Trash2,
-    Check,
     Minimize2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,18 +29,6 @@ import { filesize } from "filesize";
 
 type CompressionLevel = "low" | "medium" | "high" | "extreme";
 
-interface CompressionOptions {
-    scale: number;
-    quality: number;
-}
-
-const COMPRESSION_PRESETS: Record<CompressionLevel, CompressionOptions> = {
-    low: { scale: 1.0, quality: 0.8 },
-    medium: { scale: 0.8, quality: 0.6 },
-    high: { scale: 0.6, quality: 0.4 },
-    extreme: { scale: 0.5, quality: 0.2 },
-};
-
 interface PdfFile {
     id: string;
     originalFile: File;
@@ -58,10 +41,43 @@ interface PdfFile {
 }
 
 export function PdfCompressor() {
-    // Current PDF compressor is single file only for now, but we'll structure it for extensibility
     const [pdfFile, setPdfFile] = useState<PdfFile | null>(null);
     const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>("medium");
-    const [globalWorkerSrc, setGlobalWorkerSrc] = useState<string | null>(null);
+    const workerRef = useRef<Worker | null>(null);
+
+    useEffect(() => {
+        // Initialize worker
+        workerRef.current = new Worker(new URL('@/workers/pdf-compressor.worker.ts', import.meta.url));
+
+        workerRef.current.onmessage = (event) => {
+            const { type, data, progress, message } = event.data;
+
+            if (type === 'PROGRESS') {
+                setPdfFile(prev => prev ? { ...prev, progress, message } : null);
+            } else if (type === 'DONE') {
+                setPdfFile(prev => prev ? {
+                    ...prev,
+                    compressedPdf: data,
+                    newSize: data.byteLength,
+                    status: "done",
+                    progress: 100,
+                    message: "Done!"
+                } : null);
+                triggerHaptic([50, 30, 50]);
+            } else if (type === 'ERROR') {
+                console.error("Worker error:", message);
+                setPdfFile(prev => prev ? {
+                    ...prev,
+                    status: "error",
+                    message: "Compression failed. File might be corrupted."
+                } : null);
+            }
+        };
+
+        return () => {
+            workerRef.current?.terminate();
+        };
+    }, []);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -80,114 +96,27 @@ export function PdfCompressor() {
     }, []);
 
     const compressPdf = async () => {
-        if (!pdfFile) return;
+        if (!pdfFile || !workerRef.current) return;
 
         setPdfFile(prev => prev ? { ...prev, status: "compressing", progress: 0, message: "Initializing..." } : null);
 
         try {
-            // Dynamic imports
-            const [pdfjsLib, { PDFDocument }] = await Promise.all([
-                import("pdfjs-dist"),
-                import("pdf-lib")
-            ]);
-
-            // Initialize worker
-            if (typeof window !== "undefined" && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
-                // Use a local variable to track if we've set it to avoid race conditions or re-setting
-                if (!globalWorkerSrc) {
-                    const workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-                    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
-                    setGlobalWorkerSrc(workerSrc);
-                }
-            }
-
-            setPdfFile(prev => prev ? { ...prev, message: "Parsing PDF..." } : null);
-
             const arrayBuffer = await pdfFile.originalFile.arrayBuffer();
-            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-            const pdf = await loadingTask.promise;
-
-            const totalPages = pdf.numPages;
-            const newPdfDoc = await PDFDocument.create();
-            const options = COMPRESSION_PRESETS[compressionLevel];
-
-            for (let i = 1; i <= totalPages; i++) {
-                setPdfFile(prev => prev ? {
-                    ...prev,
-                    progress: Math.round(((i - 1) / totalPages) * 100),
-                    message: `Processing page ${i} of ${totalPages}...`
-                } : null);
-
-                // YIELD to the main thread to keep UI responsive
-                // This allows the browser to paint the progress bar and respond to clicks
-                await new Promise(resolve => setTimeout(resolve, 0));
-
-                const page = await pdf.getPage(i);
-
-                // Increase scale for better quality rasterization before compression
-                const viewport = page.getViewport({ scale: options.scale * 1.5 });
-
-                const canvas = document.createElement("canvas");
-                const context = canvas.getContext("2d");
-
-                if (!context) throw new Error("Canvas context not available");
-
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                await page.render({
-                    canvasContext: context,
-                    viewport: viewport,
-                } as any).promise;
-
-                // Compress to JPEG
-                const imageDataUrl = canvas.toDataURL("image/jpeg", options.quality);
-                const imageBytes = await fetch(imageDataUrl).then((res) => res.arrayBuffer());
-
-                const embeddedImage = await newPdfDoc.embedJpg(imageBytes);
-                const newPage = newPdfDoc.addPage([embeddedImage.width, embeddedImage.height]);
-
-                newPage.drawImage(embeddedImage, {
-                    x: 0,
-                    y: 0,
-                    width: embeddedImage.width,
-                    height: embeddedImage.height,
-                });
-
-                // CLEANUP: Help GC by nulling out references and removing canvas
-                canvas.width = 0;
-                canvas.height = 0;
-                canvas.remove();
-            }
-
-            setPdfFile(prev => prev ? { ...prev, message: "Finalizing..." } : null);
-
-            const pdfBytes = await newPdfDoc.save();
-            const newSize = pdfBytes.byteLength;
-
-            setPdfFile(prev => prev ? {
-                ...prev,
-                compressedPdf: pdfBytes,
-                newSize: newSize,
-                status: "done",
-                progress: 100,
-                message: "Done!"
-            } : null);
-
-            triggerHaptic([50, 30, 50]); // Triple tick for completion
-
+            workerRef.current.postMessage({
+                type: 'COMPRESS',
+                file: arrayBuffer,
+                level: compressionLevel
+            }, [arrayBuffer]); // Transferable
         } catch (error) {
-            console.error("Compression error:", error);
+            console.error("Compression start error:", error);
             setPdfFile(prev => prev ? {
                 ...prev,
                 status: "error",
-                message: "Failed to compress PDF. It might be password protected or corrupted."
+                message: "Failed to start compression."
             } : null);
         }
     };
 
-    // Auto-compress when file is added (optional, but consistent with others)
-    // For PDF, it might be heavy, so maybe manual trigger is better?
     const removeFile = () => {
         setPdfFile(null);
     };

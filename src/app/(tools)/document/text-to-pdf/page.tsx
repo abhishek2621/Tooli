@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { TextToPdfConverter } from "@/components/tools/document/text-to-pdf-converter";
+import dynamic from 'next/dynamic';
+
+const TextToPdfConverter = dynamic(() => import("@/components/tools/document/text-to-pdf-converter").then(mod => mod.TextToPdfConverter));
 
 export const metadata: Metadata = {
     title: 'Text to PDF Converter – Convert Text Files Online',

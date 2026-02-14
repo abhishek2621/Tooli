@@ -1,23 +1,28 @@
-import { MetadataRoute } from "next";
-import { tools } from "@/config/tools";
+import { MetadataRoute } from 'next'
+import { siteConfig } from "@/config/site";
+import { toolsByCategory } from "@/config/tools";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL
-        ? `https://${process.env.NEXT_PUBLIC_APP_URL}`
-        : "http://localhost:3000";
-
-    // Static routes
-    const routes = ["", "/about", "/privacy"];
-
-    // Dynamic tool routes
-    const toolRoutes = tools.map((tool) => tool.path);
-
-    const allRoutes = [...routes, ...toolRoutes];
-
-    return allRoutes.map((route) => ({
-        url: `${baseUrl}${route}`,
+    const routes = [
+        '',
+        '/about',
+        '/privacy',
+        '/terms',
+    ].map((route) => ({
+        url: `${siteConfig.url}${route}`,
         lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: route === "" ? 1 : 0.8,
+        changeFrequency: 'monthly' as const,
+        priority: route === '' ? 1 : 0.8,
     }));
+
+    const toolRoutes = Object.values(toolsByCategory).flatMap(categoryTools =>
+        categoryTools.map(tool => ({
+            url: `${siteConfig.url}${tool.path}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.9,
+        }))
+    );
+
+    return [...routes, ...toolRoutes];
 }

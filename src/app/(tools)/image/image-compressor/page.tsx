@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { ImageCompressor } from "@/components/tools/image/image-compressor";
+import dynamic from 'next/dynamic';
+
+const ImageCompressor = dynamic(() => import("@/components/tools/image/image-compressor").then(mod => mod.ImageCompressor));
 import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {
