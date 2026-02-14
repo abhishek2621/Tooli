@@ -9,7 +9,18 @@ export const metadata: Metadata = {
     keywords: [
         'image to pdf converter', 'jpg to pdf online', 'png to pdf converter',
         'convert image to pdf free', 'image to pdf without watermark', 'ad-free image to pdf'
-    ]
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/image/image-to-pdf',
+    },
 }
 
 export default function ImageToPdfPage() {

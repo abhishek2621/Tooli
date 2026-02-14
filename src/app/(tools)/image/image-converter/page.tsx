@@ -8,6 +8,17 @@ export const metadata: Metadata = {
     title: 'Image Converter Online – Convert JPG, PNG & WEBP',
     description: 'Convert images between formats (JPG, PNG, WEBP). Free online image converter with no file size limit.',
     keywords: ['image format converter', 'jpg to png converter', 'png to webp converter', 'convert images online', 'image converter free online'],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/image/image-converter',
+    },
 }
 
 export default function ImageConverterPage() {

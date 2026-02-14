@@ -5,6 +5,17 @@ import { CategoryPage } from "@/components/shared/category-page";
 export const metadata: Metadata = {
     title: "Education Tools | GPA Calculator & More",
     description: "Free education tools for students. Calculate GPA, organize assignments, and more.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/education',
+    },
 };
 
 export default function EducationCategory() {

@@ -5,6 +5,17 @@ import { CategoryPage } from "@/components/shared/category-page";
 export const metadata: Metadata = {
     title: "Image Tools | Compress & Convert Images",
     description: "Optimize your images for the web. Compress JPGs/PNGs and convert image formats quickly.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/image',
+    },
 };
 
 export default function ImageCategory() {

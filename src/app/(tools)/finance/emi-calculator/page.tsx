@@ -11,7 +11,18 @@ export const metadata: Metadata = {
     keywords: [
         'emi calculator online', 'loan emi calculator', 'monthly emi calculator',
         'home loan emi calculator', 'loan repayment calculator'
-    ]
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/finance/emi-calculator',
+    },
 }
 
 export default function EMICalculatorPage() {

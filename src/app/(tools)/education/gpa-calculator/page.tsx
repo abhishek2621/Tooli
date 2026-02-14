@@ -5,6 +5,17 @@ export const metadata: Metadata = {
     title: 'GPA Calculator Online – Calculate Your Grade Point Average',
     description: 'Calculate your semester and cumulative GPA easily. Supports 4.0 scale and custom credits. Free GPA calculator for students.',
     keywords: ['gpa calculator online', 'college gpa calculator', 'semester gpa calculator', 'grade point average calculator'],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/education/gpa-calculator',
+    },
 }
 
 export default function GpaCalculatorPage() {

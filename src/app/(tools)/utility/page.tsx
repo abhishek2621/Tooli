@@ -5,6 +5,17 @@ import { CategoryPage } from "@/components/shared/category-page";
 export const metadata: Metadata = {
     title: "Utility Tools | Unit Converters, Password Generators & More",
     description: "Helpful utilities for everyday tasks. Generate passwords, calculate age, and convert units.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/utility',
+    },
 };
 
 export default function UtilityCategory() {

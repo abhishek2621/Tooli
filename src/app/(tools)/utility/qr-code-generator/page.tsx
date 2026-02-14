@@ -9,6 +9,17 @@ export const metadata: Metadata = {
     title: 'QR Code Generator – Create QR Codes Online Free',
     description: 'Generate free custom QR codes for URLs, text, and email. Download high-quality PNGs with custom colors. No watermark.',
     keywords: ['qr code generator free', 'generate qr code online', 'qr code generator for url', 'qr code no watermark', 'online qr code maker'],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/utility/qr-code-generator',
+    },
 }
 
 export default function QrCodePage() {

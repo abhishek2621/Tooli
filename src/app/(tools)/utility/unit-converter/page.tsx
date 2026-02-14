@@ -7,7 +7,18 @@ export const metadata: Metadata = {
     keywords: [
         'unit converter online', 'convert units online', 'measurement converter',
         'length weight unit converter', 'online converter'
-    ]
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/utility/unit-converter',
+    },
 }
 
 export default function UnitConverterPage() {

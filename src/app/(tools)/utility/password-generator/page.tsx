@@ -5,7 +5,18 @@ import { SEOContent } from "@/components/shared/seo-content";
 export const metadata: Metadata = {
     title: 'Password Generator – Strong, Secure & Ad-Free',
     description: 'Generate strong, secure random passwords online. Ad-free, custom length and characters. Protect your accounts with this free tool.',
-    keywords: ['password generator online', 'strong password generator', 'random password generator', 'secure password generator', 'ad-free password generator']
+    keywords: ['password generator online', 'strong password generator', 'random password generator', 'secure password generator', 'ad-free password generator'],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/utility/password-generator',
+    },
 }
 
 export default function PasswordGeneratorPage() {

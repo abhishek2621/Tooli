@@ -5,6 +5,17 @@ import { CategoryPage } from "@/components/shared/category-page";
 export const metadata: Metadata = {
     title: "Document Tools | Convert, Compress & Merge PDFs",
     description: "All-in-one document management. Compress PDFs, merge files, and convert text to PDF without uploading.",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/document',
+    },
 };
 
 export default function DocumentCategory() {

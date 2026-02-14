@@ -7,7 +7,18 @@ export const metadata: Metadata = {
     keywords: [
         'currency converter online', 'usd to inr converter', 'convert currency online',
         'forex rate converter', 'live currency converter'
-    ]
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/finance/currency-converter',
+    },
 }
 
 export default function CurrencyConverterPage() {

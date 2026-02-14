@@ -7,7 +7,18 @@ export const metadata: Metadata = {
     keywords: [
         'word counter online', 'character counter', 'sentence counter',
         'online word count tool', 'free word counter'
-    ]
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/document/word-counter',
+    },
 }
 
 export default function WordCounterPage() {

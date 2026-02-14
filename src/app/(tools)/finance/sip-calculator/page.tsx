@@ -11,7 +11,18 @@ export const metadata: Metadata = {
     keywords: [
         'sip calculator online', 'mutual fund sip calculator', 'monthly sip calculator',
         'sip return calculator', 'sip investment calculator'
-    ]
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+        },
+    },
+    alternates: {
+        canonical: 'https://www.tooli.in/finance/sip-calculator',
+    },
 }
 
 export default function SIPCalculatorPage() {
