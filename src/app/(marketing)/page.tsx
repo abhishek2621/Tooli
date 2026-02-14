@@ -50,7 +50,7 @@ export default function Home() {
             <BackgroundBlobs />
             {/* Hero Section - This will now render instantly */}
             <section className="relative space-y-6 pb-4 pt-12 md:pb-6 md:pt-16 lg:pt-20 lg:pb-8 overflow-hidden">
-                <div className="container flex max-w-[64rem] flex-col items-center gap-6 text-center z-10">
+                <div className="container flex max-w-5xl flex-col items-center gap-6 text-center z-10">
                     <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-4 transition-all hover:bg-primary/10 hover:border-primary/30 cursor-default">
                         <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
                         100% Free • No Sign-up • No Ads
@@ -63,7 +63,7 @@ export default function Home() {
                         </span>
                     </h1>
 
-                    <p className="max-w-[42rem] mx-auto leading-relaxed text-muted-foreground sm:text-xl sm:leading-8">
+                    <p className="max-w-2xl mx-auto leading-relaxed text-muted-foreground sm:text-xl sm:leading-8">
                         Your all-in-one privacy-focused utility platform. <br className="hidden sm:inline" />
                         Image, PDF, Finance & Utility tools directly in your browser.
                     </p>

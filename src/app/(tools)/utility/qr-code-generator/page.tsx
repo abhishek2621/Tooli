@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 
 const QrCodeGenerator = dynamic(() => import("@/components/tools/utility/qr-code-generator").then(mod => mod.QrCodeGenerator), {
-    loading: () => <div className="h-[400px] w-full bg-slate-100/50 animate-pulse rounded-xl" />
+    loading: () => <div className="h-96 w-full bg-slate-100/50 animate-pulse rounded-xl" />
 });
 
 export const metadata: Metadata = {
