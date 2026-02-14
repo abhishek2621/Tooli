@@ -9,21 +9,6 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.tooli.in',
-          },
-        ],
-        destination: 'https://tooli.in/:path*',
-        permanent: true,
-      },
-    ];
-  },
   async headers() {
     return [
       {
