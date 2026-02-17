@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import {
     Download,
@@ -52,6 +52,40 @@ export function ImageConverter() {
     const [images, setImages] = useState<ImageFile[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const workerRef = useRef<Worker | null>(null);
+
+    // Initialize worker
+    useEffect(() => {
+        const worker = new Worker(new URL('../../../workers/image-converter.worker', import.meta.url));
+        workerRef.current = worker;
+
+        worker.onmessage = (e) => {
+            const { type, id, blob, message } = e.data;
+
+            if (type === 'DONE') {
+                const convertedUrl = URL.createObjectURL(blob);
+                setImages(prev => prev.map(item => item.id === id ? {
+                    ...item,
+                    convertedUrl,
+                    status: "done" as const,
+                } : item));
+                triggerHaptic(10);
+                setIsProcessing(false);
+            } else if (type === 'ERROR') {
+                console.error("Conversion worker error:", message);
+                setImages(prev => prev.map(item => item.id === id ? {
+                    ...item,
+                    status: "error" as const,
+                } : item));
+                setIsProcessing(false);
+            }
+        };
+
+        return () => {
+            worker.terminate();
+            workerRef.current = null;
+        };
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -84,14 +118,15 @@ export function ImageConverter() {
         setImages(prev => [...prev, ...newImages]);
     }, [globalSettings]);
 
-    const convertSingleFile = async (id: string, currentImages: ImageFile[]) => {
-        const index = currentImages.findIndex(img => img.id === id);
-        if (index === -1) return;
+    // Dispatch conversion to worker
+    const convertSingleFile = useCallback(async (id: string, currentImages: ImageFile[]) => {
+        const imgData = currentImages.find(img => img.id === id);
+        if (!imgData || !workerRef.current) return;
 
-        const imgData = currentImages[index];
-        setImages(prev => prev.map(item => item.id === id ? { ...item, status: "converting" } : item));
+        setImages(prev => prev.map(item => item.id === id ? { ...item, status: "converting" as const } : item));
 
         try {
+            // Get image dimensions
             const img = new Image();
             img.src = imgData.originalPreview;
             await new Promise((resolve, reject) => {
@@ -99,52 +134,28 @@ export function ImageConverter() {
                 img.onerror = reject;
             });
 
-            const canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext("2d");
+            const buffer = await imgData.originalFile.arrayBuffer();
 
-            if (!ctx) throw new Error("Could not get canvas context");
-
-            if (imgData.settings.format === "jpeg") {
-                ctx.fillStyle = "#FFFFFF";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-
-            ctx.drawImage(img, 0, 0);
-
-            const mimeType = `image/${imgData.settings.format}`;
-            const dataUrl = canvas.toDataURL(mimeType, 0.9);
-
-            // Optimization: Memory cleanup
-            canvas.width = 0;
-            canvas.height = 0;
-
-            setImages(prev => prev.map(item => item.id === id ? {
-                ...item,
-                convertedUrl: dataUrl,
-                status: "done",
-            } : item));
-
-            triggerHaptic(10);
+            workerRef.current.postMessage(
+                { id, buffer, width: img.width, height: img.height, format: imgData.settings.format },
+                [buffer] // Transfer the buffer (zero-copy)
+            );
         } catch (error) {
-            console.error("Conversion error:", error);
-            setImages(prev => prev.map(item => item.id === id ? { ...item, status: "error" } : item));
+            console.error("Conversion dispatch error:", error);
+            setImages(prev => prev.map(item => item.id === id ? { ...item, status: "error" as const } : item));
+            setIsProcessing(false);
         }
-    };
+    }, []);
 
+    // Process queue: pick next pending file
     useEffect(() => {
-        const processQueue = async () => {
-            if (isProcessing) return;
-            const nextPending = images.find(img => img.status === "pending");
-            if (nextPending) {
-                setIsProcessing(true);
-                await convertSingleFile(nextPending.id, images);
-                setIsProcessing(false);
-            }
-        };
-        processQueue();
-    }, [images, isProcessing]);
+        if (isProcessing) return;
+        const nextPending = images.find(img => img.status === "pending");
+        if (nextPending) {
+            setIsProcessing(true);
+            convertSingleFile(nextPending.id, images);
+        }
+    }, [images, isProcessing, convertSingleFile]);
 
     const updateActiveSettings = useCallback((newSettings: Partial<ConversionSettings>) => {
         if (isGlobalMode) {
@@ -205,28 +216,44 @@ export function ImageConverter() {
     }, [images, downloadImage]);
 
     const downloadZip = useCallback(async () => {
-        const JSZip = (await import("jszip")).default;
-        const zip = new JSZip();
+        const doneImages = images.filter(img => img.status === "done" && img.convertedUrl);
+        if (doneImages.length === 0) return;
 
-        for (const img of images) {
-            if (img.status === "done" && img.convertedUrl) {
-                const response = await fetch(img.convertedUrl);
-                const blob = await response.blob();
-                const nameWithoutExt = img.originalFile.name.substring(0, img.originalFile.name.lastIndexOf('.'));
-                zip.file(`${nameWithoutExt}.${img.settings.format}`, blob);
+        // Prepare file entries for the worker
+        const fileEntries = await Promise.all(doneImages.map(async (img) => {
+            const response = await fetch(img.convertedUrl!);
+            const blob = await response.blob();
+            const buffer = await blob.arrayBuffer();
+            const nameWithoutExt = img.originalFile.name.substring(0, img.originalFile.name.lastIndexOf('.'));
+            return { name: `${nameWithoutExt}.${img.settings.format}`, data: buffer };
+        }));
+
+        const worker = new Worker(new URL('../../../workers/zip-generator.worker', import.meta.url));
+
+        worker.onmessage = (e) => {
+            const { type, blob } = e.data;
+
+            if (type === 'DONE') {
+                triggerHaptic([50, 30, 50]);
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = "converted-images.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                worker.terminate();
+            } else if (type === 'ERROR') {
+                console.error("ZIP worker error:", e.data.message);
+                worker.terminate();
             }
-        }
+        };
 
-        const content = await zip.generateAsync({ type: "blob" });
-        triggerHaptic([50, 30, 50]);
-        const url = URL.createObjectURL(content);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = "converted-images.zip";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        worker.postMessage(
+            { type: 'GENERATE', files: fileEntries, zipFilename: 'converted-images' },
+            fileEntries.map(f => f.data) // Transfer buffers
+        );
     }, [images]);
 
     return (

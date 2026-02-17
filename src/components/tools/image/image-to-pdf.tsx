@@ -68,45 +68,47 @@ export function ImageToPdf() {
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         const imageCompression = (await import("browser-image-compression")).default;
-        const newImagesBatch: PdfImage[] = [];
 
-        for (const file of acceptedFiles) {
-            // 1. Create original object URL
+        const thumbOptions = {
+            maxWidthOrHeight: 400,
+            maxSizeMB: 0.1,
+            useWebWorker: true,
+        };
+
+        const processFile = async (file: File): Promise<PdfImage> => {
             const url = URL.createObjectURL(file);
 
-            // 2. Get dimensions & Generate thumbnail
+            // Get dimensions
             const imgElement = new Image();
-            const dimensionsPromise = new Promise<{ width: number, height: number }>(resolve => {
+            const dimensions = await new Promise<{ width: number, height: number }>((resolve, reject) => {
                 imgElement.onload = () => resolve({
                     width: imgElement.naturalWidth,
                     height: imgElement.naturalHeight
                 });
+                imgElement.onerror = reject;
                 imgElement.src = url;
             });
 
-            const dimensions = await dimensionsPromise;
-
-            // Generate small thumbnail for UI performance
-            const thumbOptions = {
-                maxWidthOrHeight: 400,
-                maxSizeMB: 0.1,
-                useWebWorker: true,
-            };
-
+            // Generate small thumbnail
             const thumbnailFile = await imageCompression(file, thumbOptions);
             const preview = URL.createObjectURL(thumbnailFile);
 
-            newImagesBatch.push({
+            return {
                 id: Math.random().toString(36).substring(7),
                 file,
                 url,
                 preview,
                 width: dimensions.width,
                 height: dimensions.height
-            });
+            };
+        };
 
-            // Update state periodically so user sees progress
-            setImages(prev => [...prev, newImagesBatch[newImagesBatch.length - 1]]);
+        // Process in parallel batches of 4 for responsiveness
+        const BATCH_SIZE = 4;
+        for (let i = 0; i < acceptedFiles.length; i += BATCH_SIZE) {
+            const batch = acceptedFiles.slice(i, i + BATCH_SIZE);
+            const results = await Promise.all(batch.map(processFile));
+            setImages(prev => [...prev, ...results]);
         }
     }, []);
 
@@ -146,15 +148,19 @@ export function ImageToPdf() {
             if (margin === "normal") marginPt = 40;
             if (margin === "big") marginPt = 72;
 
-            // Prepare data for the worker (cannot pass File objects easily, use ArrayBuffers)
-            const imageData = await Promise.all(images.map(async (img) => {
-                const buffer = await img.file.arrayBuffer();
-                return {
-                    buffer,
-                    width: img.width,
-                    height: img.height
-                };
-            }));
+            // Prepare data for the worker in batches to reduce peak memory
+            const BUFFER_BATCH = 4;
+            const imageData: { buffer: ArrayBuffer; width: number; height: number }[] = [];
+
+            for (let i = 0; i < images.length; i += BUFFER_BATCH) {
+                const batch = images.slice(i, i + BUFFER_BATCH);
+                const batchResults = await Promise.all(batch.map(async (img) => {
+                    const buffer = await img.file.arrayBuffer();
+                    return { buffer, width: img.width, height: img.height };
+                }));
+                imageData.push(...batchResults);
+                setProgress(Math.round((imageData.length / images.length) * 10)); // 0-10% for loading
+            }
 
             // Initialize worker
             const worker = new Worker(new URL('../../../workers/pdf-generator.worker', import.meta.url));
@@ -163,7 +169,7 @@ export function ImageToPdf() {
                 const { type, progress, blob, filename: outFilename, error } = e.data;
 
                 if (type === 'PROGRESS') {
-                    setProgress(progress);
+                    setProgress(10 + Math.round(progress * 0.9)); // 10-100% for generation
                 } else if (type === 'COMPLETE') {
                     triggerHaptic([50, 30, 50]); // Success pulse
                     const downloadUrl = URL.createObjectURL(blob);

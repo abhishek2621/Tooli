@@ -216,25 +216,41 @@ export function ImageCompressor() {
     }, [images, downloadImage]);
 
     const downloadZip = useCallback(async () => {
-        const JSZip = (await import("jszip")).default;
-        const zip = new JSZip();
+        const doneImages = images.filter(img => img.status === "done" && img.compressedFile);
+        if (doneImages.length === 0) return;
 
-        images.forEach(img => {
-            if (img.status === "done" && img.compressedFile) {
-                zip.file(`compressed-${img.originalFile.name}`, img.compressedFile);
+        // Prepare file entries for the worker
+        const fileEntries = await Promise.all(doneImages.map(async (img) => {
+            const buffer = await img.compressedFile!.arrayBuffer();
+            return { name: `compressed-${img.originalFile.name}`, data: buffer };
+        }));
+
+        const worker = new Worker(new URL('../../../workers/zip-generator.worker', import.meta.url));
+
+        worker.onmessage = (e) => {
+            const { type, blob, zipFilename } = e.data;
+
+            if (type === 'DONE') {
+                triggerHaptic([50, 30, 50]);
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = "compressed-images.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                worker.terminate();
+            } else if (type === 'ERROR') {
+                console.error("ZIP worker error:", e.data.message);
+                worker.terminate();
             }
-        });
+        };
 
-        const content = await zip.generateAsync({ type: "blob" });
-        triggerHaptic([50, 30, 50]);
-        const url = URL.createObjectURL(content);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = "compressed-images.zip";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        worker.postMessage(
+            { type: 'GENERATE', files: fileEntries, zipFilename: 'compressed-images' },
+            fileEntries.map(f => f.data) // Transfer buffers
+        );
     }, [images]);
 
     return (

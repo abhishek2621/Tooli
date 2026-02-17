@@ -109,9 +109,15 @@ export function PdfMerger() {
         setProgress(0);
 
         try {
-            const fileBuffers = await Promise.all(files.map(async (f) => {
-                return await f.file.arrayBuffer();
-            }));
+            // Read file buffers in batches to reduce peak memory
+            const BATCH_SIZE = 4;
+            const fileBuffers: ArrayBuffer[] = [];
+
+            for (let i = 0; i < files.length; i += BATCH_SIZE) {
+                const batch = files.slice(i, i + BATCH_SIZE);
+                const batchBuffers = await Promise.all(batch.map(f => f.file.arrayBuffer()));
+                fileBuffers.push(...batchBuffers);
+            }
 
             workerRef.current.postMessage({
                 type: 'MERGE',

@@ -49,48 +49,39 @@ export function TextToPdfConverter() {
     const generatePdf = async () => {
         setIsGenerating(true);
         try {
-            const { jsPDF } = await import("jspdf");
-            const doc = new jsPDF({
-                orientation: orientation as "portrait" | "landscape",
-                unit: "pt",
-                format: pageSize
-            });
+            const worker = new Worker(new URL('../../../workers/text-to-pdf.worker', import.meta.url));
 
-            // Set Font
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(fontSize);
+            worker.onmessage = (e) => {
+                const { type, blob, filename: outFilename } = e.data;
 
-            // Page Config
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const margin = 40; // 40pt margin
-            const maxWidth = pageWidth - (margin * 2);
-
-            // Validate Text
-            const textToPrint = text || " ";
-
-            // Logic to split text into lines that fit the page width
-            const lines = doc.splitTextToSize(textToPrint, maxWidth);
-
-            // Render text
-            // Manual pagination loop
-            let cursorY = margin + fontSize; // Start position
-            const lineHeightPt = fontSize * lineHeight;
-
-            lines.forEach((line: string) => {
-                if (cursorY + lineHeightPt > pageHeight - margin) {
-                    doc.addPage();
-                    cursorY = margin + fontSize;
+                if (type === 'DONE') {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${outFilename}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    setIsGenerating(false);
+                    worker.terminate();
+                } else if (type === 'ERROR') {
+                    console.error("Text-to-PDF worker error:", e.data.message);
+                    setIsGenerating(false);
+                    worker.terminate();
                 }
-                doc.text(line, margin, cursorY);
-                cursorY += lineHeightPt;
-            });
+            };
 
-            // Save
-            doc.save(`${filename}.pdf`);
+            worker.postMessage({
+                text,
+                pageSize,
+                orientation,
+                fontSize,
+                lineHeight,
+                filename
+            });
         } catch (error) {
             console.error("PDF Generation failed", error);
-        } finally {
             setIsGenerating(false);
         }
     };
