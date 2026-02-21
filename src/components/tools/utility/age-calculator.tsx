@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, ElementType } from "react";
 import { Calendar as CalendarIcon, Cake, Clock, Settings2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,10 +24,22 @@ interface AgeResult {
     daysUntilBirthday: number;
 }
 
+const StatCard = ({ icon: Icon, label, value, unit }: { icon: ElementType, label: string, value: number, unit: string }) => (
+    <div className="p-4 rounded-lg bg-muted/50 border hover:border-primary/50 transition-colors">
+        <div className="flex items-center gap-2 mb-2">
+            <Icon className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">{label}</span>
+        </div>
+        <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold text-primary">{value.toLocaleString()}</span>
+            <span className="text-sm text-muted-foreground">{unit}</span>
+        </div>
+    </div>
+);
+
 export function AgeCalculator() {
     const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
     const [targetDate, setTargetDate] = useState<Date>(new Date());
-    const [ageResult, setAgeResult] = useState<AgeResult | null>(null);
 
     const calculateAge = (birth: Date, target: Date): AgeResult => {
         let years = target.getFullYear() - birth.getFullYear();
@@ -72,24 +84,7 @@ export function AgeCalculator() {
         };
     };
 
-    useEffect(() => {
-        if (birthDate) {
-            setAgeResult(calculateAge(birthDate, targetDate));
-        }
-    }, [birthDate, targetDate]);
-
-    const StatCard = ({ icon: Icon, label, value, unit }: { icon: any, label: string, value: number, unit: string }) => (
-        <div className="p-4 rounded-lg bg-muted/50 border hover:border-primary/50 transition-colors">
-            <div className="flex items-center gap-2 mb-2">
-                <Icon className="h-4 w-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">{label}</span>
-            </div>
-            <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-bold text-primary">{value.toLocaleString()}</span>
-                <span className="text-sm text-muted-foreground">{unit}</span>
-            </div>
-        </div>
-    );
+    const ageResult = birthDate ? calculateAge(birthDate, targetDate) : null;
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">

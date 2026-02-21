@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ElementType> = {
     "percent": Percent,
     "calculator": Calculator,
     "trending-up": TrendingUp,
@@ -221,7 +221,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
     );
 }
 
-function ToolCard({ tool, variants, isMobile }: { tool: Tool, variants?: any, isMobile?: boolean }) {
+function ToolCard({ tool, variants, isMobile }: { tool: Tool, variants?: import("framer-motion").Variants, isMobile?: boolean }) {
     const IconComponent = useMemo(() => iconMap[tool.icon] || ArrowRight, [tool.icon]);
     const CardWrapper = isMobile ? "div" : motion.div;
 

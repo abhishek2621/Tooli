@@ -211,6 +211,7 @@ export function ImageToPdf() {
             <div className="lg:col-span-8 space-y-6">
                 <FileDropzone
                     onDrop={onDrop}
+                    fileType="image"
                     accept={{
                         'image/jpeg': [],
                         'image/png': [],

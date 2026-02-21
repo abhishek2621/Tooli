@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 
-/* eslint-disable no-restricted-globals */
+ 
 const ctx: Worker = self as unknown as Worker;
 
 ctx.onmessage = async (event: MessageEvent) => {

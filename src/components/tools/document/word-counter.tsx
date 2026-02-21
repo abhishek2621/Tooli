@@ -1,36 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Copy, Trash2, AlignLeft, CaseSensitive, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 
 export function WordCounter() {
     const [text, setText] = useState("");
-    const [stats, setStats] = useState({
-        words: 0,
-        characters: 0,
-        sentences: 0,
-        paragraphs: 0,
-        readTime: 0
-    });
+    const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+    const characters = text.length;
+    const sentences = text.trim() === "" ? 0 : text.split(/[.!?]+/).filter(Boolean).length;
+    const paragraphs = text.trim() === "" ? 0 : text.split(/\n+/).filter(Boolean).length;
+    const readTime = Math.ceil(words / 200); // Avg reading speed 200 wpm
 
-    useEffect(() => {
-        analyzeText(text);
-    }, [text]);
-
-    const analyzeText = (inputText: string) => {
-        const words = inputText.trim() === "" ? 0 : inputText.trim().split(/\s+/).length;
-        const characters = inputText.length;
-        const sentences = inputText.trim() === "" ? 0 : inputText.split(/[.!?]+/).filter(Boolean).length;
-        const paragraphs = inputText.trim() === "" ? 0 : inputText.split(/\n+/).filter(Boolean).length;
-        const readTime = Math.ceil(words / 200); // Avg reading speed 200 wpm
-
-        setStats({ words, characters, sentences, paragraphs, readTime });
-    };
+    const stats = { words, characters, sentences, paragraphs, readTime };
 
     const handleCopy = () => {
         navigator.clipboard.writeText(text);

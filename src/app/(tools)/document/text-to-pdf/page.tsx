@@ -1,7 +1,18 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
 
-const TextToPdfConverter = dynamic(() => import("@/components/tools/document/text-to-pdf-converter").then(mod => mod.TextToPdfConverter));
+const TextToPdfConverter = dynamic(
+    () => import("@/components/tools/document/text-to-pdf-converter").then(mod => mod.TextToPdfConverter),
+    { 
+        loading: () => (
+            <div className="space-y-6">
+                <Skeleton className="h-48 rounded-xl" />
+                <Skeleton className="h-96 rounded-xl" />
+            </div>
+        )
+    }
+);
 
 export const metadata: Metadata = {
     title: 'Text to PDF Converter – Convert Text Files Online',

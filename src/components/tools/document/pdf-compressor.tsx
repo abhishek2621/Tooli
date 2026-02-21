@@ -123,7 +123,7 @@ export function PdfCompressor() {
 
     const downloadPdf = () => {
         if (!pdfFile || !pdfFile.compressedPdf) return;
-        const blob = new Blob([pdfFile.compressedPdf as any], { type: 'application/pdf' });
+        const blob = new Blob([pdfFile.compressedPdf as BlobPart], { type: 'application/pdf' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `compressed-${pdfFile.originalFile.name}`;
@@ -139,6 +139,7 @@ export function PdfCompressor() {
                 {!pdfFile ? (
                     <FileDropzone
                         onDrop={onDrop}
+                        fileType="pdf"
                         accept={{ 'application/pdf': ['.pdf'] }}
                         maxFiles={1}
                         title="Upload PDF"

@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-globals */
+ 
 const ctx: Worker = self as unknown as Worker;
 
 interface ConvertMessage {

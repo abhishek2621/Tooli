@@ -1,7 +1,18 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
 
-const PdfCompressorWrapper = dynamic(() => import("@/components/tools/document/pdf-compressor-wrapper").then(mod => mod.PdfCompressorWrapper));
+const PdfCompressorWrapper = dynamic(
+    () => import("@/components/tools/document/pdf-compressor-wrapper").then(mod => mod.PdfCompressorWrapper),
+    { 
+        loading: () => (
+            <div className="space-y-6">
+                <Skeleton className="h-48 rounded-xl" />
+                <Skeleton className="h-96 rounded-xl" />
+            </div>
+        )
+    }
+);
 import { SEOContent } from "@/components/shared/seo-content";
 
 export const metadata: Metadata = {

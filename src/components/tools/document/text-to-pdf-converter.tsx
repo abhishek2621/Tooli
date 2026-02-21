@@ -113,6 +113,7 @@ export function TextToPdfConverter() {
                     <TabsContent value="upload" className="mt-6 animate-in fade-in-50 duration-300">
                         <FileDropzone
                             onDrop={onDrop}
+                            fileType="text"
                             accept={{ 'text/plain': ['.txt', '.md', '.json', '.csv'] }}
                             title="Upload Text File"
                             description="Drag & drop .txt, .md, .json, or .csv files here"

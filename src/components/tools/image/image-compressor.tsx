@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import { filesize } from "filesize";
 import { Download, Loader2, ArrowRight, Settings2, Layers, Trash2, Check } from "lucide-react";
+import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn, triggerHaptic } from "@/lib/utils";
@@ -137,6 +138,9 @@ export function ImageCompressor() {
             triggerHaptic(10);
         } catch (error) {
             console.error("Compression error:", error);
+            toast.error("Compression failed", {
+                description: "Please try again with a different image."
+            });
             setImages(prev => prev.map(item => item.id === id ? { ...item, status: "error", progress: 0 } : item));
         }
     };
@@ -232,6 +236,9 @@ export function ImageCompressor() {
 
             if (type === 'DONE') {
                 triggerHaptic([50, 30, 50]);
+                toast.success("ZIP downloaded", {
+                    description: "Your compressed images are ready."
+                });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
@@ -239,10 +246,14 @@ export function ImageCompressor() {
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                URL.revokeObjectURL(url);
+                
+                setTimeout(() => URL.revokeObjectURL(url), 100);
                 worker.terminate();
             } else if (type === 'ERROR') {
                 console.error("ZIP worker error:", e.data.message);
+                toast.error("Failed to create ZIP", {
+                    description: "Please try downloading files individually."
+                });
                 worker.terminate();
             }
         };
@@ -258,6 +269,7 @@ export function ImageCompressor() {
             <div className="lg:col-span-8 space-y-6">
                 <FileDropzone
                     onDrop={onDrop}
+                    fileType="image"
                     accept={{
                         'image/jpeg': [],
                         'image/png': [],
@@ -283,6 +295,7 @@ export function ImageCompressor() {
                                         src={img.compressedPreview || img.originalPreview}
                                         alt={img.originalFile.name}
                                         className="h-full w-full object-cover"
+                                        loading="lazy"
                                     />
                                     {img.status === "done" && img.compressedFile && (
                                         <Badge className={cn(

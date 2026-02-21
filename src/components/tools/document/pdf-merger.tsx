@@ -10,18 +10,36 @@ import {
     MoveLeft,
     MoveRight,
     Download,
-    Settings2
+    Settings2,
+    RotateCcw,
+    AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, triggerHaptic } from "@/lib/utils";
+import { toast } from "@/lib/toast";
 
 interface PdfFile {
     file: File;
     id: string;
     pageCount?: number;
+    error?: string;
+}
+
+function formatPdfError(error: string): string {
+    const lower = error.toLowerCase();
+    if (lower.includes("encrypt") || lower.includes("password")) {
+        return "One of the files is password protected.";
+    }
+    if (lower.includes("corrupt") || lower.includes("invalid")) {
+        return "One of the files appears to be corrupted.";
+    }
+    if (lower.includes("size") || lower.includes("memory")) {
+        return "Files are too large. Try merging fewer files.";
+    }
+    return "Please try again with different files.";
 }
 
 export function PdfMerger() {
@@ -29,18 +47,51 @@ export function PdfMerger() {
     const [isMerging, setIsMerging] = useState(false);
     const [filename, setFilename] = useState("merged-document");
     const [progress, setProgress] = useState(0);
+    const [error, setError] = useState<string | null>(null);
     const workerRef = useRef<Worker | null>(null);
+    const retryCountRef = useRef(0);
+    const MAX_RETRIES = 2;
+
+    const triggerMerge = useCallback(async () => {
+        if (files.length < 2 || !workerRef.current) return;
+        setIsMerging(true);
+        setProgress(0);
+        setError(null);
+
+        try {
+            const BATCH_SIZE = 4;
+            const fileBuffers: ArrayBuffer[] = [];
+
+            for (let i = 0; i < files.length; i += BATCH_SIZE) {
+                const batch = files.slice(i, i + BATCH_SIZE);
+                const batchBuffers = await Promise.all(batch.map(f => f.file.arrayBuffer()));
+                fileBuffers.push(...batchBuffers);
+            }
+
+            workerRef.current.postMessage({
+                type: 'MERGE',
+                files: fileBuffers
+            }, fileBuffers);
+        } catch (error) {
+            console.error("Merge setup failed", error);
+            setError("Failed to prepare files for merging.");
+            setIsMerging(false);
+        }
+    }, [files]);
 
     useEffect(() => {
         workerRef.current = new Worker(new URL('@/workers/pdf-merger.worker.ts', import.meta.url));
 
         workerRef.current.onmessage = (e) => {
-            const { type, progress, data, message, error } = e.data;
+            const { type, progress, data, message, error: workerError } = e.data;
 
             if (type === 'STATUS') {
                 setProgress(progress);
             } else if (type === 'DONE') {
                 triggerHaptic([50, 30, 50]);
+                toast.success("PDF merged successfully!", {
+                    description: "Your file is ready to download."
+                });
                 const blob = new Blob([data], { type: 'application/pdf' });
                 const downloadUrl = URL.createObjectURL(blob);
                 const link = document.createElement('a');
@@ -54,17 +105,39 @@ export function PdfMerger() {
 
                 setIsMerging(false);
                 setProgress(0);
+                setError(null);
+                retryCountRef.current = 0;
             } else if (type === 'ERROR') {
-                console.error("Merge Worker Error:", message || error);
-                alert("Failed to merge PDFs. One of the files might be encrypted or corrupted.");
-                setIsMerging(false);
+                console.error("Merge Worker Error:", message || workerError);
+
+                const errorMessage = message || workerError || "Unknown error";
+
+                if (retryCountRef.current < MAX_RETRIES) {
+                    retryCountRef.current += 1;
+                    toast.warning("Retrying merge...", {
+                        description: `Attempt ${retryCountRef.current}/${MAX_RETRIES}`
+                    });
+
+                    setTimeout(() => {
+                        if (files.length >= 2 && workerRef.current) {
+                            triggerMerge();
+                        }
+                    }, 1000);
+                } else {
+                    setError(errorMessage);
+                    toast.error("Failed to merge PDFs", {
+                        description: formatPdfError(errorMessage)
+                    });
+                    setIsMerging(false);
+                    retryCountRef.current = 0;
+                }
             }
         };
 
         return () => {
             workerRef.current?.terminate();
         };
-    }, [filename]);
+    }, [filename, files, triggerMerge]);
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         // We load pdf-lib only to get page count if needed, or we can skip it to save bundle
@@ -104,29 +177,20 @@ export function PdfMerger() {
     };
 
     const mergePdfs = async () => {
-        if (files.length < 2 || !workerRef.current) return;
-        setIsMerging(true);
+        retryCountRef.current = 0;
+        triggerMerge();
+    };
+
+    const handleRetry = () => {
+        retryCountRef.current = 0;
+        triggerMerge();
+    };
+
+    const resetTool = () => {
+        setFiles([]);
+        setError(null);
         setProgress(0);
-
-        try {
-            // Read file buffers in batches to reduce peak memory
-            const BATCH_SIZE = 4;
-            const fileBuffers: ArrayBuffer[] = [];
-
-            for (let i = 0; i < files.length; i += BATCH_SIZE) {
-                const batch = files.slice(i, i + BATCH_SIZE);
-                const batchBuffers = await Promise.all(batch.map(f => f.file.arrayBuffer()));
-                fileBuffers.push(...batchBuffers);
-            }
-
-            workerRef.current.postMessage({
-                type: 'MERGE',
-                files: fileBuffers
-            }, fileBuffers); // Transfer buffers
-        } catch (error) {
-            console.error("Merge setup failed", error);
-            setIsMerging(false);
-        }
+        setIsMerging(false);
     };
 
     return (
@@ -256,14 +320,43 @@ export function PdfMerger() {
                                     </div>
                                 </div>
                             )}
-                            <Button
-                                className="w-full h-12 text-base shadow-lg shadow-red-500/20 bg-red-600 hover:bg-red-700 text-white"
-                                onClick={mergePdfs}
-                                disabled={isMerging || files.length < 2}
-                            >
-                                <Download className="h-4 w-4 mr-2" />
-                                {isMerging ? "Merging..." : "Merge Files"}
-                            </Button>
+
+                            {error && !isMerging && (
+                                <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                                    <div className="flex items-start gap-2 text-sm text-destructive">
+                                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                        <span>{error}</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {error ? (
+                                <div className="flex gap-2">
+                                    <Button
+                                        className="flex-1 h-12 text-base"
+                                        onClick={handleRetry}
+                                    >
+                                        <RotateCcw className="h-4 w-4 mr-2" />
+                                        Try Again
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="h-12"
+                                        onClick={resetTool}
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button
+                                    className="w-full h-12 text-base shadow-lg shadow-red-500/20 bg-red-600 hover:bg-red-700 text-white"
+                                    onClick={mergePdfs}
+                                    disabled={isMerging || files.length < 2}
+                                >
+                                    <Download className="h-4 w-4 mr-2" />
+                                    {isMerging ? "Merging..." : "Merge Files"}
+                                </Button>
+                            )}
                         </div>
                     </CardContent>
                 </Card>

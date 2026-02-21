@@ -1,29 +1,24 @@
 import type { Metadata } from 'next'
 import { CurrencyConverter } from "@/components/tools/finance/currency-converter";
+import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
+import { CURRENCY_FAQS } from "@/components/shared/faq-section";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generateToolMetadata({
     title: 'Currency Converter Online – Live Exchange Rates',
-    description: 'Convert between USD, EUR, INR, GBP and more with live exchange rates. Free currency converter online.',
-    keywords: [
-        'currency converter online', 'usd to inr converter', 'convert currency online',
-        'forex rate converter', 'live currency converter'
-    ],
-    robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-            index: true,
-            follow: true,
-        },
-    },
-    alternates: {
-        canonical: 'https://www.tooli.in/finance/currency-converter',
-    },
-}
+    description: 'Convert between USD, EUR, INR, GBP and more with live exchange rates. Free currency converter online with real-time updates.',
+    canonical: 'https://www.tooli.in/finance/currency-converter',
+    keywords: ['currency converter online', 'usd to inr converter', 'convert currency online', 'forex rate converter', 'live currency converter'],
+})
 
 export default function CurrencyConverterPage() {
     return (
-        <div className="space-y-6 max-w-4xl mx-auto">
+        <ToolSEOWrapper
+            title="Currency Converter"
+            description="Convert between currencies with live exchange rates."
+            canonical="https://www.tooli.in/finance/currency-converter"
+            category="FinanceApplication"
+            faqs={CURRENCY_FAQS}
+        >
             <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">Currency Converter Online – Live Exchange Rates</h1>
                 <p className="text-lg text-muted-foreground">
@@ -32,6 +27,6 @@ export default function CurrencyConverterPage() {
             </div>
 
             <CurrencyConverter />
-        </div>
+        </ToolSEOWrapper>
     )
 }

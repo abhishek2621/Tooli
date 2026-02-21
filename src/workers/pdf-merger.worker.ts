@@ -1,7 +1,7 @@
-/* eslint-disable no-restricted-globals */
+
 import { PDFDocument } from 'pdf-lib';
 
-const ctx: Worker = self as any;
+const ctx: Worker = self as unknown as Worker;
 
 interface MergeMessage {
     type: 'MERGE';

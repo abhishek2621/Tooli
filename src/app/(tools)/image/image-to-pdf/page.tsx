@@ -1,7 +1,18 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
 
-const ImageToPdf = dynamic(() => import("@/components/tools/image/image-to-pdf").then(mod => mod.ImageToPdf));
+const ImageToPdf = dynamic(
+    () => import("@/components/tools/image/image-to-pdf").then(mod => mod.ImageToPdf),
+    { 
+        loading: () => (
+            <div className="space-y-6">
+                <Skeleton className="h-48 rounded-xl" />
+                <Skeleton className="h-96 rounded-xl" />
+            </div>
+        )
+    }
+);
 
 export const metadata: Metadata = {
     title: 'Image to PDF Converter Online – Free & Ad-Free',

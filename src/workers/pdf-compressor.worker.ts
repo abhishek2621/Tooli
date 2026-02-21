@@ -1,9 +1,9 @@
-/* eslint-disable no-restricted-globals */
+
 import { PDFDocument } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Initialize worker context
-const ctx: Worker = self as any;
+const ctx: Worker = self as unknown as Worker;
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
@@ -59,7 +59,7 @@ ctx.onmessage = async (event: MessageEvent<CompressionMessage>) => {
                 await page.render({
                     canvasContext: context,
                     viewport: viewport,
-                } as any).promise;
+                } as unknown as Parameters<typeof page.render>[0]).promise;
 
                 // Convert to blob/buffer
                 const blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: options.quality });

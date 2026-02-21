@@ -1,50 +1,37 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
+import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
+import { IMAGE_FAQS } from "@/components/shared/faq-section";
 
-const ImageCompressor = dynamic(() => import("@/components/tools/image/image-compressor").then(mod => mod.ImageCompressor));
-import { SEOContent } from "@/components/shared/seo-content";
+const ImageCompressor = dynamic(
+    () => import("@/components/tools/image/image-compressor").then(mod => mod.ImageCompressor),
+    { 
+        loading: () => (
+            <div className="space-y-6">
+                <Skeleton className="h-48 rounded-xl" />
+                <Skeleton className="h-96 rounded-xl" />
+            </div>
+        )
+    }
+);
 
-export const metadata: Metadata = {
-    title: 'Free Image Compressor – Reduce Image Size Online (WebP, PNG, JPG)',
-    description: 'Compress images online instantly. Reduce file size by up to 90% without losing quality. Ad-free, client-side compression for WebP, PNG, and JPG. No sign-up.',
-    keywords: [
-        'image compressor', 'compress image online', 'reduce image size',
-        'compress under 100kb', 'compress under 30kb', 'compress jpg', 'compress png', 'webp compressor', 'ad-free image compressor'
-    ],
-    robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-            index: true,
-            follow: true,
-        },
-    },
-    alternates: {
-        canonical: 'https://www.tooli.in/image/image-compressor',
-    },
-}
+export const metadata: Metadata = generateToolMetadata({
+    title: 'Free Image Compressor – Reduce Image Size Online',
+    description: 'Compress images online instantly. Reduce file size by up to 90% without losing quality. Ad-free, client-side compression for WebP, PNG, and JPG.',
+    canonical: 'https://www.tooli.in/image/image-compressor',
+    keywords: ['image compressor', 'compress image online', 'reduce image size', 'compress under 100kb', 'compress jpg', 'compress png', 'webp compressor'],
+})
 
 export default function ImageCompressorPage() {
     return (
-        <div className="space-y-6 w-full">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "SoftwareApplication",
-                        "name": "Tooli Image Compressor",
-                        "applicationCategory": "MultimediaApplication",
-                        "operatingSystem": "Any",
-                        "offers": {
-                            "@type": "Offer",
-                            "price": "0",
-                            "priceCurrency": "USD"
-                        },
-                        "description": "Compress and optimize images online without losing quality. Ad-free JPG, PNG, and WebP compression."
-                    })
-                }}
-            />
+        <ToolSEOWrapper
+            title="Image Compressor"
+            description="Compress images online instantly. Reduce file size by up to 90% without losing quality."
+            canonical="https://www.tooli.in/image/image-compressor"
+            category="MultimediaApplication"
+            faqs={IMAGE_FAQS}
+        >
             <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">Free Image Compressor – Reduce Image Size Online</h1>
                 <p className="text-lg text-muted-foreground">
@@ -53,37 +40,6 @@ export default function ImageCompressorPage() {
             </div>
 
             <ImageCompressor />
-
-
-            <SEOContent
-                title="Image Compression Best Practices 2026"
-                items={[
-                    {
-                        heading: "WebP Format",
-                        content: "Modern WebP delivers 30% better compression than JPEG with superior quality. Essential for Core Web Vitals and page speed optimization."
-                    },
-                    {
-                        heading: "Target File Size",
-                        content: "Compress images under 100KB for hero sections, under 30KB for thumbnails. Smaller files boost SEO rankings and mobile performance."
-                    },
-                    {
-                        heading: "Quality vs Size",
-                        content: "Use 80-85% quality for photos, 90-95% for graphics. Maintain visual quality while maximizing compression ratio."
-                    },
-                    {
-                        heading: "Batch Processing",
-                        content: "Compress multiple images simultaneously to save time. Bulk optimization improves workflow efficiency for web developers."
-                    },
-                    {
-                        heading: "Privacy First",
-                        content: "100% client-side compression. Your images never upload to servers, ensuring complete data privacy and GDPR compliance."
-                    },
-                    {
-                        heading: "SEO Impact",
-                        content: "Compressed images improve page load speed, reduce bounce rates, and boost Google rankings. Critical for mobile-first indexing."
-                    }
-                ]}
-            />
-        </div>
+        </ToolSEOWrapper>
     )
 }

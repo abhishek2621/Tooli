@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { IndianRupee, Calculator, Percent } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -23,11 +23,6 @@ const Cell = dynamic(() => import("recharts").then(mod => mod.Cell), { ssr: fals
 const Tooltip = dynamic(() => import("recharts").then(mod => mod.Tooltip), { ssr: false });
 const Legend = dynamic(() => import("recharts").then(mod => mod.Legend), { ssr: false });
 
-interface EMIResult {
-    monthlyEMI: number;
-    totalInterest: number;
-    totalAmount: number;
-}
 
 export function EMICalculator() {
     const [loanAmount, setLoanAmount] = useState(1000000);
@@ -193,7 +188,7 @@ export function EMICalculator() {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    formatter={(value: any) => formatRupee(Number(value) || 0)}
+                                    formatter={(value: unknown) => formatRupee(Number(value) || 0)}
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}
                                 />
                                 <Legend />

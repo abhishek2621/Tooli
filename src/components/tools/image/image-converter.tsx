@@ -152,6 +152,7 @@ export function ImageConverter() {
         if (isProcessing) return;
         const nextPending = images.find(img => img.status === "pending");
         if (nextPending) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsProcessing(true);
             convertSingleFile(nextPending.id, images);
         }
@@ -261,6 +262,7 @@ export function ImageConverter() {
             <div className="lg:col-span-8 space-y-6">
                 <FileDropzone
                     onDrop={onDrop}
+                    fileType="image"
                     accept={{
                         'image/jpeg': [],
                         'image/png': [],

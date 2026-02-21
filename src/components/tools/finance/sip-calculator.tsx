@@ -156,7 +156,7 @@ export function SIPCalculator() {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    formatter={(value: any) => formatRupee(Number(value) || 0)}
+                                    formatter={(value: unknown) => formatRupee(Number(value) || 0)}
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}
                                 />
                                 <Legend />

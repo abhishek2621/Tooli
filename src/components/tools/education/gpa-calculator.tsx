@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus, Trash2, Calculator, GraduationCap, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
 interface Course {
     id: string;
@@ -42,27 +41,17 @@ export function GpaCalculator() {
         { id: "3", name: "Course 3", credits: 4, grade: 3.7 },
         { id: "4", name: "Course 4", credits: 2, grade: 4.0 },
     ]);
-    const [gpa, setGpa] = useState<number>(0);
-    const [totalCredits, setTotalCredits] = useState<number>(0);
+    let totalPoints = 0;
+    let totalCredits = 0;
 
-    const calculateGPA = () => {
-        let totalPoints = 0;
-        let credits = 0;
+    courses.forEach(course => {
+        if (course.credits > 0) {
+            totalPoints += course.grade * course.credits;
+            totalCredits += course.credits;
+        }
+    });
 
-        courses.forEach(course => {
-            if (course.credits > 0) {
-                totalPoints += course.grade * course.credits;
-                credits += course.credits;
-            }
-        });
-
-        setTotalCredits(credits);
-        setGpa(credits > 0 ? totalPoints / credits : 0);
-    };
-
-    useEffect(() => {
-        calculateGPA();
-    }, [courses]);
+    const gpa = totalCredits > 0 ? totalPoints / totalCredits : 0;
 
     const addCourse = () => {
         setCourses([...courses, {
