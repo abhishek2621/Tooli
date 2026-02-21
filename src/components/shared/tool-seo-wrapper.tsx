@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FAQSection, FAQItem } from "@/components/shared/faq-section";
 import { SEOJsonLd } from "@/components/shared/seo-json-ld";
+import { RelatedTools } from "@/components/shared/related-tools";
 import { ReactNode } from "react";
 
 interface ToolSEOProps {
@@ -68,7 +69,8 @@ export function ToolSEOWrapper({
       />
       <div className="space-y-6 w-full">
         {children}
-        {faqs && faqs.length > 0 && <FAQSection items={faqs} />}
+        <RelatedTools />
+        {faqs ? <FAQSection items={faqs} /> : null}
       </div>
     </>
   );

@@ -2,7 +2,6 @@ import { Footer } from "@/components/shared/layout/footer";
 import { Navbar } from "@/components/shared/layout/navbar";
 import { ToolSidebar } from "@/components/shared/layout/sidebar";
 import { BackgroundBlobs } from "@/components/shared/background-blobs";
-import { RelatedTools } from "@/components/shared/related-tools";
 
 export default function ToolsLayout({
     children,
@@ -18,7 +17,6 @@ export default function ToolsLayout({
                 <main className="relative py-6 lg:gap-10 lg:py-8">
                     <div className="mx-auto w-full min-w-0 max-w-5xl">
                         {children}
-                        <RelatedTools />
                     </div>
                 </main>
             </div>

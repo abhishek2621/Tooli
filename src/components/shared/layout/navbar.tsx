@@ -63,7 +63,7 @@ export function Navbar() {
                         </Link>
                         <NavigationMenu className="hidden md:flex">
                             <NavigationMenuList>
-                                {((["image", "document", "finance", "utility", "education"] as const)).map((category) => (
+                                {((["image", "document", "finance", "utility"] as const)).map((category) => (
                                     <NavigationMenuItem key={category}>
                                         <NavigationMenuTrigger className="capitalize bg-transparent">
                                             {category}
@@ -153,7 +153,7 @@ export function Navbar() {
                     >
                         <div className="flex flex-col min-h-full p-6">
                             <div className="space-y-6 flex-1">
-                                {((["image", "document", "finance", "utility", "education"] as const)).map((category) => (
+                                {((["image", "document", "finance", "utility"] as const)).map((category) => (
                                     <div key={category} className="space-y-3">
                                         <div className="flex items-center justify-between">
                                             <h4 className="text-sm font-bold capitalize text-primary flex items-center gap-2">

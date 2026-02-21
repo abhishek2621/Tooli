@@ -197,16 +197,15 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                 image: "Free Image Tools Online",
                                 document: "Online PDF & Document Tools",
                                 finance: "Finance & Calculator Tools Online",
-                                utility: "Everyday Utility Tools",
-                                education: "Study & Education Tools Online"
+                                utility: "Everyday Utility Tools"
                             };
                             return (initialTools[category].length > 0 && (
                                 <div key={category} className="space-y-6">
-                                    <div className="flex items-center gap-2">
-                                        <h2 className="text-2xl font-bold capitalize tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
-                                        <div className="h-px flex-1 bg-border/60"></div>
-                                    </div>
-                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-2xl font-bold capitalize tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
+                            <div className="h-px flex-1 bg-border/60"></div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                         {initialTools[category].map((tool) => (
                                             <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} />
                                         ))}

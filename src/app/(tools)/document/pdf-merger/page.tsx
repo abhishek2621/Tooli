@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { PDF_FAQS } from "@/components/shared/faq-section";
+import { PDF_MERGER_FAQS } from "@/components/shared/faq-section";
 
 const PdfMerger = dynamic(
     () => import("@/components/tools/document/pdf-merger").then(mod => mod.PdfMerger),
@@ -29,7 +29,7 @@ export default function PdfMergerPage() {
             description="Merge multiple PDF files into one document instantly. Free, secure, and purely client-side."
             canonical="https://www.tooli.in/document/pdf-merger"
             category="UtilitiesApplication"
-            faqs={PDF_FAQS}
+            faqs={PDF_MERGER_FAQS}
         >
             <div className="flex flex-col gap-2 mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Merge PDF Files Online – Combine PDFs for Free</h1>

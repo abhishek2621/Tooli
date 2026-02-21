@@ -10,17 +10,13 @@ export type ToolName =
   | "image-compressor"
   | "image-converter"
   | "image-to-pdf"
-  | "currency-converter"
   | "gst-calculator"
   | "emi-calculator"
   | "sip-calculator"
-  | "gpa-calculator"
   | "unit-converter"
   | "qr-code-generator"
   | "password-generator"
-  | "age-calculator"
-  | "timezone-converter"
-  | "word-counter";
+  | "age-calculator";
 
 export type EventCategory = "tool" | "conversion" | "download" | "error";
 

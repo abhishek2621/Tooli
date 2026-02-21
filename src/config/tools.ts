@@ -3,7 +3,7 @@
 // but for config it's fine or use string names.
 // For now we will just define the shape.
 
-export type ToolCategory = "finance" | "document" | "image" | "utility" | "education";
+export type ToolCategory = "finance" | "document" | "image" | "utility";
 
 export interface Tool {
     name: string;
@@ -66,14 +66,6 @@ export const tools: Tool[] = [
         path: "/document/pdf-merger",
         icon: "merge",
     },
-    {
-        name: "Word Counter",
-        slug: "word-counter",
-        category: "document",
-        description: "Count words, characters, and sentences in your text.",
-        path: "/document/word-counter",
-        icon: "type",
-    },
 
     // Finance (Ordered 3rd)
     {
@@ -99,14 +91,6 @@ export const tools: Tool[] = [
         description: "Calculate returns on your monthly SIP investments.",
         path: "/finance/sip-calculator",
         icon: "trending-up",
-    },
-    {
-        name: "Currency Converter",
-        slug: "currency-converter",
-        category: "finance",
-        description: "Convert currencies between different countries.",
-        path: "/finance/currency-converter",
-        icon: "refresh-ccw",
     },
 
     // Utility (Ordered 4th - counting 5th in user list but 4th unique)
@@ -141,24 +125,6 @@ export const tools: Tool[] = [
         description: "Calculate your exact age in years, months, and days.",
         path: "/utility/age-calculator",
         icon: "calendar",
-    },
-    {
-        name: "Time Zone Converter",
-        slug: "timezone-converter",
-        category: "utility",
-        description: "Convert time between different time zones.",
-        path: "/utility/timezone-converter",
-        icon: "globe",
-    },
-
-    // Education (Ordered 5th - User said 6th but finance repeated)
-    {
-        name: "GPA Calculator",
-        slug: "gpa-calculator",
-        category: "education",
-        description: "Calculate your Grade Point Average.",
-        path: "/education/gpa-calculator",
-        icon: "graduation-cap",
     },
 ];
 

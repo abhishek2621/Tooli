@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { IMAGE_FAQS } from "@/components/shared/faq-section";
+import { IMAGE_COMPRESSOR_FAQS } from "@/components/shared/faq-section";
 
 const ImageCompressor = dynamic(
     () => import("@/components/tools/image/image-compressor").then(mod => mod.ImageCompressor),
@@ -30,7 +30,7 @@ export default function ImageCompressorPage() {
             description="Compress images online instantly. Reduce file size by up to 90% without losing quality."
             canonical="https://www.tooli.in/image/image-compressor"
             category="MultimediaApplication"
-            faqs={IMAGE_FAQS}
+            faqs={IMAGE_COMPRESSOR_FAQS}
         >
             <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">Free Image Compressor – Reduce Image Size Online</h1>
