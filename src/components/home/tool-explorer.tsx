@@ -43,8 +43,10 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
     const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobile, setIsMobile] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
@@ -103,17 +105,15 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
         show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 15 } }
     };
 
-    // Optimization: Skip motion overhead on mobile
-    const SearchBarWrapper = isMobile ? "div" : motion.div;
-    const GridWrapper = isMobile ? "div" : motion.div;
+    // Optimization: Handle motion overhead safely
+    const shouldAnimate = mounted && !isMobile;
 
     return (
         <div className="space-y-12">
-            <SearchBarWrapper
-                {...(!isMobile && {
-                    initial: { opacity: 0, y: -20, scale: 0.95 },
-                    animate: { opacity: 1, y: 0, scale: 1 },
-                })}
+            <motion.div
+                initial={shouldAnimate ? { opacity: 0, y: -20, scale: 0.95 } : false}
+                animate={shouldAnimate ? { opacity: 1, y: 0, scale: 1 } : false}
+                transition={{ duration: 0.5 }}
                 className="relative w-full max-w-2xl mx-auto -mt-4 mb-4 px-4 z-20"
             >
                 <div className="relative group">
@@ -150,7 +150,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                         )}
                     </div>
                 </div>
-            </SearchBarWrapper>
+            </motion.div>
 
             <div className="container space-y-12 py-8 bg-slate-50/50 dark:bg-slate-900/40 border border-transparent dark:border-slate-800 rounded-3xl mb-12 min-h-[400px]">
                 {isSearching && filteredTools.length === 0 ? (
@@ -161,13 +161,11 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                         </Button>
                     </div>
                 ) : isSearching ? (
-                    <GridWrapper
+                    <motion.div
                         key="search-results"
-                        {...(!isMobile && {
-                            variants: containerVars,
-                            initial: "hidden",
-                            animate: "show",
-                        })}
+                        initial={shouldAnimate ? "hidden" : false}
+                        animate={shouldAnimate ? "show" : false}
+                        variants={containerVars}
                         className="space-y-6"
                     >
                         <div className="flex items-center gap-2">
@@ -176,20 +174,18 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                             </h2>
                             <div className="h-px flex-1 bg-border/60"></div>
                         </div>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
                             {filteredTools.map((tool) => (
-                                <ToolCard key={tool.slug} tool={tool} variants={itemVars} isMobile={isMobile} />
+                                <ToolCard key={tool.slug} tool={tool} variants={itemVars} isMobile={isMobile} mounted={mounted} />
                             ))}
                         </div>
-                    </GridWrapper>
+                    </motion.div>
                 ) : (
-                    <GridWrapper
+                    <motion.div
                         key="categories"
-                        {...(!isMobile && {
-                            variants: containerVars,
-                            initial: "hidden",
-                            animate: "show",
-                        })}
+                        initial={shouldAnimate ? "hidden" : false}
+                        animate={shouldAnimate ? "show" : false}
+                        variants={containerVars}
                         className="space-y-12"
                     >
                         {(Object.keys(initialTools) as ToolCategory[]).map((category) => {
@@ -199,35 +195,48 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                 finance: "Finance & Calculator Tools Online",
                                 utility: "Everyday Utility Tools"
                             };
+                            const categoryDescriptions: Record<ToolCategory, string> = {
+                                image: "Professional-grade image processing tools. Compress, convert, and resize images without losing quality.",
+                                document: "Fast and secure document management. Compress, merge, and convert PDF files directly in your browser.",
+                                finance: "Accurate financial calculators for GST, interest, and loans. Simplified math for smarter decisions.",
+                                utility: "Essential daily utility tools. From QR codes to unit conversions, everything you need in one place."
+                            };
                             return (initialTools[category].length > 0 && (
                                 <div key={category} className="space-y-6">
-                        <div className="flex items-center gap-2">
-                            <h2 className="text-2xl font-bold capitalize tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
-                            <div className="h-px flex-1 bg-border/60"></div>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <h2 className="text-2xl font-bold tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
+                                            <div className="h-px flex-1 bg-border/60"></div>
+                                        </div>
+                                        <p className="text-sm md:text-base text-muted-foreground/70">
+                                            {categoryDescriptions[category]}
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
                                         {initialTools[category].map((tool) => (
-                                            <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} />
+                                            <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} mounted={mounted} />
                                         ))}
                                     </div>
                                 </div>
                             ));
                         })}
-                    </GridWrapper>
+                    </motion.div>
                 )}
             </div>
         </div>
     );
 }
 
-function ToolCard({ tool, variants, isMobile }: { tool: Tool, variants?: import("framer-motion").Variants, isMobile?: boolean }) {
+function ToolCard({ tool, variants, isMobile, mounted }: { tool: Tool, variants?: Variants, isMobile?: boolean, mounted?: boolean }) {
     const IconComponent = useMemo(() => iconMap[tool.icon] || ArrowRight, [tool.icon]);
-    const CardWrapper = isMobile ? "div" : motion.div;
+    const shouldAnimate = mounted && !isMobile;
 
     return (
-        <CardWrapper
-            {...(!isMobile && { variants })}
-            className="h-full transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
+        <motion.div
+            initial={shouldAnimate ? (variants ? "hidden" : { opacity: 0, y: 20 }) : false}
+            animate={shouldAnimate ? (variants ? "show" : { opacity: 1, y: 0 }) : false}
+            variants={variants}
+            className="flex-none w-[280px] sm:w-[320px] transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
         >
             <Link
                 href={tool.path}
@@ -249,6 +258,6 @@ function ToolCard({ tool, variants, isMobile }: { tool: Tool, variants?: import(
                     <ArrowRight className="h-5 w-5 text-primary" />
                 </div>
             </Link>
-        </CardWrapper>
+        </motion.div>
     );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { UnitConverter } from "@/components/tools/utility/unit-converter";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { UNIT_CONVERTER_FAQS } from "@/components/shared/faq-section";
 
 export const metadata: Metadata = generateToolMetadata({
     title: 'Unit Converter Online – Convert Measurements Instantly',
@@ -17,7 +16,6 @@ export default function UnitConverterPage() {
             description="Convert between different units of measurement instantly. Supports Length, Mass, Volume, Temperature, and Digital Storage."
             canonical="https://www.tooli.in/utility/unit-converter"
             category="UtilitiesApplication"
-            faqs={UNIT_CONVERTER_FAQS}
         >
             <div className="flex flex-col gap-2 text-left items-start mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Unit Converter Online – Convert Measurements Instantly</h1>

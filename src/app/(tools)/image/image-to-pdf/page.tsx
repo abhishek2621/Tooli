@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { IMAGE_TO_PDF_FAQS } from "@/components/shared/faq-section";
 
 const ImageToPdf = dynamic(
     () => import("@/components/tools/image/image-to-pdf").then(mod => mod.ImageToPdf),
-    { 
+    {
         loading: () => (
             <div className="space-y-6">
                 <Skeleton className="h-48 rounded-xl" />
@@ -30,7 +29,6 @@ export default function ImageToPdfPage() {
             description="Convert JPG, PNG to PDF instantly. Ad-free, works in browser, no upload necessary for privacy."
             canonical="https://www.tooli.in/image/image-to-pdf"
             category="MultimediaApplication"
-            faqs={IMAGE_TO_PDF_FAQS}
         >
             <div className="flex flex-col gap-2 mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Image to PDF Converter Online – Free & Ad-Free</h1>

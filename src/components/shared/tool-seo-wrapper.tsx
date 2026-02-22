@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { FAQSection, FAQItem } from "@/components/shared/faq-section";
 import { SEOJsonLd } from "@/components/shared/seo-json-ld";
 import { RelatedTools } from "@/components/shared/related-tools";
 import { ReactNode } from "react";
@@ -10,7 +9,7 @@ interface ToolSEOProps {
   canonical: string;
   keywords?: string[];
   category?: string;
-  faqs?: FAQItem[];
+  showRelatedAtBottom?: boolean;
   children: ReactNode;
 }
 
@@ -45,9 +44,8 @@ export function ToolSEOWrapper({
   title,
   description,
   canonical,
-  keywords,
   category,
-  faqs,
+  showRelatedAtBottom = true,
   children,
 }: ToolSEOProps) {
   const jsonLd = {
@@ -61,7 +59,6 @@ export function ToolSEOWrapper({
     <>
       <SEOJsonLd
         softwareApp={jsonLd}
-        faq={faqs}
         breadcrumbs={[
           { name: "Home", url: "https://www.tooli.in" },
           { name: title, url: canonical },
@@ -69,8 +66,7 @@ export function ToolSEOWrapper({
       />
       <div className="space-y-6 w-full">
         {children}
-        <RelatedTools />
-        {faqs ? <FAQSection items={faqs} /> : null}
+        {showRelatedAtBottom && <RelatedTools />}
       </div>
     </>
   );

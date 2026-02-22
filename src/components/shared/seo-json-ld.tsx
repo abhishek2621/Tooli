@@ -87,10 +87,14 @@ export function SEOJsonLd({ softwareApp, faq, breadcrumbs }: SEOJsonLdProps) {
 
   if (schemas.length === 0) return null;
 
+  const result = schemas.length === 1
+    ? schemas[0]
+    : { "@context": "https://schema.org", "@graph": schemas };
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.length === 1 ? schemas[0] : schemas) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(result) }}
     />
   );
 }

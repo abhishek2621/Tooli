@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { PDF_FAQS } from "@/components/shared/faq-section";
 
 const PdfCompressorWrapper = dynamic(
     () => import("@/components/tools/document/pdf-compressor-wrapper").then(mod => mod.PdfCompressorWrapper),
-    { 
+    {
         loading: () => (
             <div className="space-y-6">
                 <Skeleton className="h-48 rounded-xl" />
@@ -31,7 +30,6 @@ export default function PdfCompressorPage() {
             description="Reduce PDF file size instantly without compromising quality. Ad-free, browser-based PDF compression."
             canonical="https://www.tooli.in/document/pdf-compressor"
             category="UtilitiesApplication"
-            faqs={PDF_FAQS}
         >
             <div className="flex flex-col gap-2 mb-8 text-left items-start">
                 <h1 className="text-3xl font-bold tracking-tight">PDF Compressor Online – Free, Instant & Ad-Free</h1>

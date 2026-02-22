@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { GSTCalculatorForm } from '@/components/tools/finance/gst-form'
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { GST_CALCULATOR_FAQS } from "@/components/shared/faq-section";
 
 export const metadata: Metadata = generateToolMetadata({
     title: 'GST Calculator India – Inclusive & Exclusive Tax Calculator',
@@ -17,7 +16,6 @@ export default function GSTCalculatorPage() {
             description="Calculate GST (Goods and Services Tax) for India instantly. Easy calculations for 5%, 12%, 18%, and 28% tax slabs."
             canonical="https://www.tooli.in/finance/gst-calculator"
             category="FinanceApplication"
-            faqs={GST_CALCULATOR_FAQS}
         >
             <div className="flex flex-col gap-2">
                 <h1 className="text-3xl font-bold tracking-tight">GST Calculator India – Inclusive & Exclusive</h1>

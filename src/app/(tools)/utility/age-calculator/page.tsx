@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { AgeCalculator } from "@/components/tools/utility/age-calculator";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { AGE_CALCULATOR_FAQS } from "@/components/shared/faq-section";
 
 export const metadata: Metadata = generateToolMetadata({
     title: 'Age Calculator – Calculate Exact Age from Date of Birth',
@@ -17,7 +16,6 @@ export default function AgeCalculatorPage() {
             description="Calculate your exact age in years, months, days, and even minutes from your date of birth."
             canonical="https://www.tooli.in/utility/age-calculator"
             category="UtilitiesApplication"
-            faqs={AGE_CALCULATOR_FAQS}
         >
             <div className="flex flex-col gap-2 text-left items-start mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Age Calculator – Calculate Exact Age</h1>

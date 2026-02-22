@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { TEXT_TO_PDF_FAQS } from "@/components/shared/faq-section";
 
 const TextToPdfConverter = dynamic(
     () => import("@/components/tools/document/text-to-pdf-converter").then(mod => mod.TextToPdfConverter),
-    { 
+    {
         loading: () => (
             <div className="space-y-6">
                 <Skeleton className="h-48 rounded-xl" />
@@ -30,7 +29,6 @@ export default function TextToPdfPage() {
             description="Convert plain text files (.txt) or specific text content to high-quality PDF documents quickly."
             canonical="https://www.tooli.in/document/text-to-pdf"
             category="UtilitiesApplication"
-            faqs={TEXT_TO_PDF_FAQS}
         >
             <div className="flex flex-col gap-2 mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Text to PDF Converter – Convert Text Files Online</h1>

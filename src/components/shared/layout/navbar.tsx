@@ -14,8 +14,10 @@ import {
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Menu, X, Smartphone } from "lucide-react";
+import { DesktopNav } from "./desktop-nav";
 
 export function Navbar() {
+    const [mounted, setMounted] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     interface BeforeInstallPromptEvent extends Event {
@@ -25,6 +27,7 @@ export function Navbar() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
     useEffect(() => {
+        setMounted(true);
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
@@ -61,47 +64,9 @@ export function Navbar() {
                         <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
                             <span className="font-bold text-xl inline-block tracking-tight">{siteConfig.name}</span>
                         </Link>
-                        <NavigationMenu className="hidden md:flex">
-                            <NavigationMenuList>
-                                {((["image", "document", "finance", "utility"] as const)).map((category) => (
-                                    <NavigationMenuItem key={category}>
-                                        <NavigationMenuTrigger className="capitalize bg-transparent">
-                                            {category}
-                                        </NavigationMenuTrigger>
-                                        <NavigationMenuContent>
-                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-background">
-                                                {toolsByCategory[category]?.map((tool) => (
-                                                    <li key={tool.slug}>
-                                                        <NavigationMenuLink asChild>
-                                                            <Link
-                                                                href={tool.path}
-                                                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                                            >
-                                                                <div className="text-sm font-medium leading-none">{tool.name}</div>
-                                                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                                                                    {tool.description}
-                                                                </p>
-                                                            </Link>
-                                                        </NavigationMenuLink>
-                                                    </li>
-                                                ))}
-                                                <li className="col-span-full border-t pt-2 mt-1">
-                                                    <NavigationMenuLink asChild>
-                                                        <Link
-                                                            href={`/${category}`}
-                                                            className="flex items-center justify-center w-full py-2.5 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 border border-primary/10 rounded-md transition-all group"
-                                                        >
-                                                            View all {category} tools
-                                                            <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                                                        </Link>
-                                                    </NavigationMenuLink>
-                                                </li>
-                                            </ul>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                ))}
-                            </NavigationMenuList>
-                        </NavigationMenu>
+                        <div className="hidden md:flex">
+                            {mounted && <DesktopNav />}
+                        </div>
                     </div>
 
                     <div className="hidden md:flex items-center gap-3">
@@ -116,8 +81,6 @@ export function Navbar() {
                                 Install App
                             </Button>
                         )}
-                        <Button size="sm" asChild className="shadow-md shadow-primary/20 hover:shadow-primary/30 transition-all bg-primary text-primary-foreground hover:bg-primary/90">
-                        </Button>
                     </div>
 
                     <div className="flex items-center md:hidden gap-2">

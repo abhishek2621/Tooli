@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic';
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
-import { SIP_CALCULATOR_FAQS } from "@/components/shared/faq-section";
 
 const SIPCalculator = dynamic(() => import("@/components/tools/finance/sip-calculator").then(mod => mod.SIPCalculator), {
     loading: () => <div className="h-[600px] w-full bg-slate-100/50 animate-pulse rounded-xl" />
@@ -21,7 +20,6 @@ export default function SIPCalculatorPage() {
             description="Calculate returns on your monthly SIP investments accurately. Visualise growth with charts."
             canonical="https://www.tooli.in/finance/sip-calculator"
             category="FinanceApplication"
-            faqs={SIP_CALCULATOR_FAQS}
         >
             <div className="flex flex-col gap-2 mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">SIP Calculator Online – Calculate Mutual Fund Returns</h1>
