@@ -35,6 +35,22 @@ const iconMap: Record<string, React.ElementType> = {
     "graduation-cap": GraduationCap,
 };
 
+const containerVars: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.05
+        }
+    }
+};
+
+const itemVars: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 15 } }
+};
+
+
 interface ToolExplorerProps {
     initialTools: Record<ToolCategory, Tool[]>;
 }
@@ -90,20 +106,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
 
     const isSearching = searchQuery.length > 0;
 
-    const containerVars: Variants = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.05
-            }
-        }
-    };
 
-    const itemVars: Variants = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 15 } }
-    };
 
     // Optimization: Handle motion overhead safely
     const shouldAnimate = mounted && !isMobile;
@@ -111,10 +114,11 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
     return (
         <div className="space-y-12">
             <motion.div
-                initial={shouldAnimate ? { opacity: 0, y: -20, scale: 0.95 } : false}
-                animate={shouldAnimate ? { opacity: 1, y: 0, scale: 1 } : false}
+                initial={false}
+                animate={mounted && !isMobile ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="relative w-full max-w-2xl mx-auto -mt-4 mb-4 px-4 z-20"
+                style={!mounted && !isMobile ? { opacity: 0, transform: "translateY(-20px) scale(0.95)" } : undefined}
             >
                 <div className="relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 via-purple-500/50 to-blue-500/50 rounded-full opacity-20 group-hover:opacity-60 blur-md transition duration-500 group-focus-within:opacity-100 group-focus-within:blur-lg" />
@@ -163,8 +167,8 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                 ) : isSearching ? (
                     <motion.div
                         key="search-results"
-                        initial={shouldAnimate ? "hidden" : false}
-                        animate={shouldAnimate ? "show" : false}
+                        initial="hidden"
+                        animate={mounted ? "show" : "hidden"}
                         variants={containerVars}
                         className="space-y-6"
                     >
@@ -183,8 +187,8 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                 ) : (
                     <motion.div
                         key="categories"
-                        initial={shouldAnimate ? "hidden" : false}
-                        animate={shouldAnimate ? "show" : false}
+                        initial="hidden"
+                        animate={mounted ? "show" : "hidden"}
                         variants={containerVars}
                         className="space-y-12"
                     >
@@ -208,7 +212,7 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                             <h2 className="text-2xl font-bold tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
                                             <div className="h-px flex-1 bg-border/60"></div>
                                         </div>
-                                        <p className="text-sm md:text-base text-muted-foreground/70">
+                                        <p className="text-sm md:text-base text-muted-foreground/70 max-w-2xl">
                                             {categoryDescriptions[category]}
                                         </p>
                                     </div>
@@ -233,9 +237,9 @@ function ToolCard({ tool, variants, isMobile, mounted }: { tool: Tool, variants?
 
     return (
         <motion.div
-            initial={shouldAnimate ? (variants ? "hidden" : { opacity: 0, y: 20 }) : false}
-            animate={shouldAnimate ? (variants ? "show" : { opacity: 1, y: 0 }) : false}
-            variants={variants}
+            initial="hidden"
+            animate={mounted ? "show" : "hidden"}
+            variants={variants || itemVars}
             className="flex-none w-[280px] sm:w-[320px] transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
         >
             <Link
