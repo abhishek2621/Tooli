@@ -117,7 +117,8 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
             {/* Search Bar */}
             <motion.div
                 initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
                 className="relative w-full max-w-2xl mx-auto px-4 z-20"
             >
@@ -175,7 +176,8 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                     <motion.div
                         key="search-results"
                         initial="hidden"
-                        animate="show"
+                        whileInView="show"
+                        viewport={{ once: true }}
                         variants={containerVars}
                         className="space-y-6"
                     >
@@ -185,7 +187,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                             </h3>
                             <div className="h-px flex-1 bg-border/60"></div>
                         </div>
-                        <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
+                        <div suppressHydrationWarning className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
                             {filteredTools.map((tool) => (
                                 <ToolCard key={tool.slug} tool={tool} variants={itemVars} isMobile={isMobile} mounted={mounted} />
                             ))}
@@ -195,7 +197,8 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                     <motion.div
                         key="categories"
                         initial="hidden"
-                        animate="show"
+                        whileInView="show"
+                        viewport={{ once: true }}
                         variants={containerVars}
                         className="space-y-12"
                     >
@@ -223,7 +226,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                                             {categoryDescriptions[category]}
                                         </p>
                                     </div>
-                                    <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
+                                    <div suppressHydrationWarning className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
                                         {initialTools[category].map((tool) => (
                                             <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} mounted={mounted} />
                                         ))}
@@ -245,7 +248,8 @@ function ToolCard({ tool, variants, isMobile, mounted }: { tool: Tool, variants?
     return (
         <motion.div
             initial="hidden"
-            animate="show"
+            whileInView="show"
+            viewport={{ once: true }}
             variants={variants || itemVars}
             className="flex-none w-[280px] sm:w-[320px] transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
         >
