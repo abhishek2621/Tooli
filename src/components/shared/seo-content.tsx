@@ -1,6 +1,6 @@
 interface SEOSection {
     title: string;
-    content: string | string[];
+    content?: string | string[];
     subsections?: {
         title: string;
         content: string;
@@ -21,7 +21,7 @@ export function SEOContent({ title, sections }: SEOContentProps) {
                 {sections.map((section, idx) => (
                     <section key={idx} className="space-y-6">
                         <h3 className="text-xl font-bold text-foreground/90">{section.title}</h3>
-                        {Array.isArray(section.content) ? (
+                        {section.content && (Array.isArray(section.content) ? (
                             <div className="space-y-4">
                                 {section.content.map((p, i) => (
                                     <p key={i} className="text-muted-foreground leading-relaxed">
@@ -33,7 +33,7 @@ export function SEOContent({ title, sections }: SEOContentProps) {
                             <p className="text-muted-foreground leading-relaxed">
                                 {section.content}
                             </p>
-                        )}
+                        ))}
 
                         {section.subsections && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">

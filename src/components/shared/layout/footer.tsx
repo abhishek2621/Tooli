@@ -9,7 +9,7 @@ export function Footer() {
         <footer className="border-t bg-slate-50 dark:bg-slate-950 relative z-10">
             <div className="container py-12 md:py-16 space-y-12">
                 <RequestToolCta />
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-6">
+                <div className="grid grid-cols-4 gap-8 md:grid-cols-4 lg:grid-cols-6">
                     {/* Brand Column */}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center space-x-2">

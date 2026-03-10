@@ -18,67 +18,80 @@ const ImageCompressor = dynamic(
 );
 
 export const metadata: Metadata = generateToolMetadata({
-    title: 'Free Image Compressor – Reduce Image Size Online (Privacy First)',
-    description: 'Compress images online instantly. Reduce file size by up to 90% without losing quality. Ad-free, client-side compression for WebP, PNG, and JPG. 100% private.',
+    title: 'Compress Image to 50KB, 100KB Online – Photo & Signature Compressor | Tooli',
+    description: 'Compress images to exact sizes like 50KB or 100KB without quality loss. Perfect for exam forms, job applications and website uploads. Private browser-based JPG PNG WebP compressor.',
     canonical: 'https://www.tooli.in/image/image-compressor',
-    keywords: ['image compressor', 'compress image online', 'reduce image size for website', 'compress jpg', 'compress png', 'webp compressor', 'privacy first image compressor'],
+    keywords: [
+        'compress image to 50kb',
+        'compress image to 100kb',
+        'compress signature to 20kb',
+        'photo upload size error fix',
+        'exam photo compressor',
+        'passport photo under 50kb',
+        'reduce image size without blur'
+    ],
 })
 
 export default function ImageCompressorPage() {
     return (
         <ToolSEOWrapper
             title="Image Compressor"
-            description="Compress images online instantly. Reduce file size by up to 90% without losing quality."
+            description="Compress images to exact sizes like 50KB or 100KB without losing quality."
             canonical="https://www.tooli.in/image/image-compressor"
             category="MultimediaApplication"
             showRelatedAtBottom={false}
         >
             <div className="flex flex-col gap-2 mb-8 text-left items-start">
-                <h1 className="text-3xl font-bold tracking-tight">Free Image Compressor – Reduce Image Size Online</h1>
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Compress Image to Size (20KB, 50KB, 100KB) – Free Photo & Signature Compressor | FAST | SECURE | NO ADS
+                </h1>
                 <p className="text-lg text-muted-foreground">
-                    Optimize your images for the web. Compress JPG, PNG, and WebP files by up to 90% ad-free in your browser.
+                    Reduce image size without losing clarity. Ideal for exam forms, job applications, and website uploads. Private browser-based JPG, PNG and WebP compression.
                 </p>
             </div>
 
             <ImageCompressor />
 
+            <p className="text-sm text-muted-foreground mt-6">
+                Popular tasks: compress image to 50KB, compress signature to 20KB, passport photo under 50KB, fix photo upload size error.
+            </p>
+
             <RelatedTools />
 
             <SEOContent
-                title="Deep Dive: Advanced Privacy-First Image Compression"
+                title="Photo & Signature Compression for Online Forms and Upload Errors"
                 sections={[
                     {
-                        title: "Why Use Tooli's Image Compressor?",
+                        title: "Compress Images to Meet Upload Size Limits",
                         content: [
-                            "In an era where data privacy is paramount, Tooli's image compressor stands out by processing every pixel locally in your browser. Unlike traditional tools that upload your sensitive photos to remote servers, we utilize cutting-edge WebAssembly technology to deliver professional-grade compression without your data ever leaving your device.",
-                            "Whether you're a web developer looking to fix LCP issues on your website, or a student needing to reduce image size for an exam application, our tool provides the perfect balance of speed, quality, and security."
+                            "Many online forms reject images because of strict size limits such as 50KB for photos or 20KB for signatures. Tooli helps you instantly compress images to required sizes without making them blurry or unreadable.",
+                            "Our browser-based compressor is ideal for government exam applications, job portals, and university admission forms where upload errors are common."
                         ]
                     },
                     {
-                        title: "How Our Local Compression Works",
-                        content: "When you drop an image here, your browser's dedicated processing power takes over. We use MozJPEG and Oxygen encoding algorithms to strip unnecessary metadata and optimize color profiles while maintaining visual fidelity.",
+                        title: "Fix Photo Upload Errors Instantly",
+                        content: "If your image shows errors like file too large, upload failed, or invalid size, compressing it usually solves the issue.",
                         subsections: [
-                            { title: "Browser-Level Processing", content: "No server-side uploads mean your images are never stored or logged." },
-                            { title: "Lossless Optimization", content: "Strip hidden metadata and invisible overhead without affecting the image detail." },
-                            { title: "Smart Quality Scaling", content: "Intelligent algorithms choose the best compression ratio for your specific file type." },
-                            { title: "Privacy Guarantee", content: "Encrypted execution within your browser's sandboxed environment." }
+                            { title: "Compress to Exact Size", content: "Reduce image size to 50KB, 100KB, or other required limits." },
+                            { title: "Maintain Readability", content: "Preserve face clarity and signature sharpness during compression." },
+                            { title: "Mobile Friendly", content: "Quickly fix upload issues while filling forms on mobile." },
+                            { title: "No Registration Needed", content: "Instant compression without login or waiting." }
                         ]
                     },
                     {
-                        title: "Common Use Cases for Image Compression",
-                        content: "Thousands of users rely on Tooli for daily digital tasks that require high-performance optimization:",
-                        subsections: [
-                            { title: "Website SEO Optimization", content: "Compress images for website performance to improve Google Core Web Vitals rankings." },
-                            { title: "Exam & Job Applications", content: "Easily reduce image size to under 100KB or 50KB for government and academic portals." },
-                            { title: "Email Attachments", content: "Shrink multi-megabyte photos into lightweight files for fast email sharing." },
-                            { title: "Mobile Performance", content: "Optimize graphics for mobile apps to reduce data consumption for your users." }
-                        ]
-                    },
-                    {
-                        title: "Tooli vs. Cloud-Based Alternatives",
+                        title: "Why Tooli Compressor Performs Better",
                         content: [
-                            "Most 'Free' online compressors monetize your data or show intrusive ads. Tooli is a lightweight, ad-free alternative that prioritizes user experience above all else.",
-                            "By not using server-side processing, we eliminate the risks of data breaches and provide a much faster experience for large batch processing."
+                            "Unlike many tools filled with ads and slow server uploads, Tooli performs compression directly in your browser. This provides faster results, complete privacy, and smoother batch processing.",
+                            "The tool is especially helpful for students and applicants who need repeated compression while completing multiple forms."
+                        ]
+                    },
+                    {
+                        title: "Common Uses",
+                        subsections: [
+                            { title: "Government Exam Applications", content: "Prepare passport photo and signature images for online exam forms." },
+                            { title: "Job & Internship Forms", content: "Reduce image size for resume portals and application websites." },
+                            { title: "Website Optimization", content: "Improve page speed and Core Web Vitals with lighter images." },
+                            { title: "Email & Document Uploads", content: "Shrink large photos for quick sharing and submissions." }
                         ]
                     }
                 ]}

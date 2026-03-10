@@ -53,9 +53,10 @@ const itemVars: Variants = {
 
 interface ToolExplorerProps {
     initialTools: Record<ToolCategory, Tool[]>;
+    children?: React.ReactNode;
 }
 
-export function ToolExplorer({ initialTools }: ToolExplorerProps) {
+export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
     const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobile, setIsMobile] = useState(false);
@@ -112,12 +113,13 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
     const shouldAnimate = mounted && !isMobile;
 
     return (
-        <div className="space-y-12">
+        <>
+            {/* Search Bar */}
             <motion.div
                 initial={false}
                 animate={mounted && !isMobile ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="relative w-full max-w-2xl mx-auto -mt-4 mb-4 px-4 z-20"
+                className="relative w-full max-w-2xl mx-auto px-4 z-20"
                 style={!mounted && !isMobile ? { opacity: 0, transform: "translateY(-20px) scale(0.95)" } : undefined}
             >
                 <div className="relative group">
@@ -156,10 +158,16 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                 </div>
             </motion.div>
 
-            <div className="container space-y-12 py-8 bg-slate-50/50 dark:bg-slate-900/40 border border-transparent dark:border-slate-800 rounded-3xl mb-12 min-h-[400px]">
+            {/* Content between search and catalog (e.g. trust badges) */}
+            {children}
+
+            {/* Tool Catalog */}
+            <section className="container max-w-6xl space-y-16 py-12 md:py-16">
+
+
                 {isSearching && filteredTools.length === 0 ? (
                     <div className="text-center py-20 text-muted-foreground">
-                        <p className="text-xl">No tools found matching "{searchQuery}"</p>
+                        <p className="text-xl">No tools found matching &quot;{searchQuery}&quot;</p>
                         <Button variant="link" onClick={() => setInputValue("")} className="mt-2 text-primary">
                             Clear search
                         </Button>
@@ -173,12 +181,12 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                         className="space-y-6"
                     >
                         <div className="flex items-center gap-2">
-                            <h2 className="text-2xl font-bold tracking-tight text-foreground/80">
+                            <h3 className="text-2xl font-bold tracking-tight text-foreground/80">
                                 Search Results ({filteredTools.length})
-                            </h2>
+                            </h3>
                             <div className="h-px flex-1 bg-border/60"></div>
                         </div>
-                        <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
+                        <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
                             {filteredTools.map((tool) => (
                                 <ToolCard key={tool.slug} tool={tool} variants={itemVars} isMobile={isMobile} mounted={mounted} />
                             ))}
@@ -209,14 +217,14 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                                 <div key={category} className="space-y-6">
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <h2 className="text-2xl font-bold tracking-tight text-foreground/80">{categoryHeadings[category]}</h2>
+                                            <h3 className="text-2xl font-bold tracking-tight text-foreground/80">{categoryHeadings[category]}</h3>
                                             <div className="h-px flex-1 bg-border/60"></div>
                                         </div>
                                         <p className="text-sm md:text-base text-muted-foreground/70 max-w-2xl">
                                             {categoryDescriptions[category]}
                                         </p>
                                     </div>
-                                    <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pb-6 no-scrollbar scroll-smooth">
+                                    <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
                                         {initialTools[category].map((tool) => (
                                             <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} mounted={mounted} />
                                         ))}
@@ -226,8 +234,8 @@ export function ToolExplorer({ initialTools }: ToolExplorerProps) {
                         })}
                     </motion.div>
                 )}
-            </div>
-        </div>
+            </section>
+        </>
     );
 }
 
