@@ -116,11 +116,10 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
         <>
             {/* Search Bar */}
             <motion.div
-                initial={false}
-                animate={mounted && !isMobile ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="relative w-full max-w-2xl mx-auto px-4 z-20"
-                style={!mounted && !isMobile ? { opacity: 0, transform: "translateY(-20px) scale(0.95)" } : undefined}
             >
                 <div className="relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 via-purple-500/50 to-blue-500/50 rounded-full opacity-20 group-hover:opacity-60 blur-md transition duration-500 group-focus-within:opacity-100 group-focus-within:blur-lg" />
@@ -176,7 +175,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                     <motion.div
                         key="search-results"
                         initial="hidden"
-                        animate={mounted ? "show" : "hidden"}
+                        animate="show"
                         variants={containerVars}
                         className="space-y-6"
                     >
@@ -196,7 +195,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                     <motion.div
                         key="categories"
                         initial="hidden"
-                        animate={mounted ? "show" : "hidden"}
+                        animate="show"
                         variants={containerVars}
                         className="space-y-12"
                     >
@@ -220,7 +219,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                                             <h3 className="text-2xl font-bold tracking-tight text-foreground/80">{categoryHeadings[category]}</h3>
                                             <div className="h-px flex-1 bg-border/60"></div>
                                         </div>
-                                        <p className="text-sm md:text-base text-muted-foreground/70 max-w-2xl">
+                                        <p className="text-sm md:text-base text-muted-foreground/70 max-w-4xl">
                                             {categoryDescriptions[category]}
                                         </p>
                                     </div>
@@ -246,7 +245,7 @@ function ToolCard({ tool, variants, isMobile, mounted }: { tool: Tool, variants?
     return (
         <motion.div
             initial="hidden"
-            animate={mounted ? "show" : "hidden"}
+            animate="show"
             variants={variants || itemVars}
             className="flex-none w-[280px] sm:w-[320px] transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
         >
