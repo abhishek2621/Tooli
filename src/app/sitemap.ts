@@ -30,5 +30,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         }))
     );
 
-    return [...routes, ...toolRoutes];
+    const compressionSizes = [50, 100, 200, 500];
+    const compressionRoutes = compressionSizes.map(size => ({
+        url: buildUrl(siteConfig.url, `/compress-image-to-${size}kb`),
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+    }));
+
+    return [...routes, ...toolRoutes, ...compressionRoutes];
 }

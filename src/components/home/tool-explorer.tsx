@@ -116,7 +116,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
         <>
             {/* Search Bar */}
             <motion.div
-                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                initial={mounted ? { opacity: 0, y: -20, scale: 0.95 } : false}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
@@ -187,7 +187,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                             </h3>
                             <div className="h-px flex-1 bg-border/60"></div>
                         </div>
-                        <div suppressHydrationWarning className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
+                        <div suppressHydrationWarning className="-mt-5 flex flex-row flex-nowrap gap-4 overflow-x-auto pt-8 pb-6 no-scrollbar scroll-smooth">
                             {filteredTools.map((tool) => (
                                 <ToolCard key={tool.slug} tool={tool} variants={itemVars} isMobile={isMobile} mounted={mounted} />
                             ))}
@@ -196,7 +196,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                 ) : (
                     <motion.div
                         key="categories"
-                        initial="hidden"
+                        initial={mounted ? "hidden" : false}
                         whileInView="show"
                         viewport={{ once: true }}
                         variants={containerVars}
@@ -226,7 +226,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                                             {categoryDescriptions[category]}
                                         </p>
                                     </div>
-                                    <div suppressHydrationWarning className="flex flex-row flex-nowrap gap-4 overflow-x-auto pt-3 pb-6 no-scrollbar scroll-smooth">
+                                    <div suppressHydrationWarning className="-mt-5 flex flex-row flex-nowrap gap-4 overflow-x-auto pt-8 pb-6 no-scrollbar scroll-smooth">
                                         {initialTools[category].map((tool) => (
                                             <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} mounted={mounted} />
                                         ))}
@@ -247,7 +247,7 @@ function ToolCard({ tool, variants, isMobile, mounted }: { tool: Tool, variants?
 
     return (
         <motion.div
-            initial="hidden"
+            initial={mounted ? "hidden" : false}
             whileInView="show"
             viewport={{ once: true }}
             variants={variants || itemVars}

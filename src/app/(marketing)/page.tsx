@@ -60,7 +60,7 @@ export default function Home() {
 
                     <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground drop-shadow-sm">
                         Free Online Image, PDF & Calculator Tools — <br />
-                        <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-blue-600 to-indigo-600 animate-gradient-x">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-600 to-indigo-600">
                             Fast, Private & No Signup
                         </span>
                     </h1>
