@@ -138,6 +138,15 @@ export function Navbar() {
                                         </div>
                                     </div>
                                 ))}
+                                <div className="pt-2 border-t border-border/50">
+                                    <Link
+                                        href="/blog"
+                                        className="text-[14px] font-bold text-foreground hover:bg-muted/40 py-3 px-3 rounded-md transition-all flex items-center"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    >
+                                        Blog
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { siteConfig } from "@/config/site";
 import { toolsByCategory } from "@/config/tools";
+import { getAllBlogPosts } from "@/lib/blog";
 
 function buildUrl(base: string, path: string) {
     const cleanBase = base.trim().replace(/^(https?:\/\/)+/, "https://").replace(/\/$/, "")
@@ -11,6 +12,7 @@ function buildUrl(base: string, path: string) {
 export default function sitemap(): MetadataRoute.Sitemap {
     const routes = [
         '',
+        '/blog',
         '/about',
         '/privacy',
         '/terms',
@@ -38,5 +40,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.9,
     }));
 
-    return [...routes, ...toolRoutes, ...compressionRoutes];
+    const blogRoutes = getAllBlogPosts().map(post => ({
+        url: buildUrl(siteConfig.url, `/blog/${post.slug}`),
+        lastModified: new Date(post.frontmatter.date),
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+    }));
+
+    return [...routes, ...toolRoutes, ...compressionRoutes, ...blogRoutes];
 }

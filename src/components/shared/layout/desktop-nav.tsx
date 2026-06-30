@@ -9,6 +9,7 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
 export function DesktopNav() {
@@ -54,6 +55,13 @@ export function DesktopNav() {
                         </NavigationMenuContent>
                     </NavigationMenuItem>
                 ))}
+                <NavigationMenuItem>
+                    <Link href="/blog" legacyBehavior passHref>
+                        <NavigationMenuLink className={`${navigationMenuTriggerStyle()} bg-transparent`}>
+                            Blog
+                        </NavigationMenuLink>
+                    </Link>
+                </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
     );

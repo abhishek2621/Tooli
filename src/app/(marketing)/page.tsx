@@ -11,6 +11,7 @@ const BackgroundBlobs = dynamic(() => import("@/components/shared/background-blo
 const ToolExplorer = dynamic(() => import("@/components/home/tool-explorer").then(mod => mod.ToolExplorer));
 import { SEOJsonLd } from "@/components/shared/seo-json-ld";
 import { WhyChooseTooli } from "@/components/home/why-choose-tooli";
+import { LatestBlogPosts } from "@/components/home/latest-blog-posts";
 
 export const metadata: Metadata = {
     title: "Free Image & PDF Tools Online — Compress, Convert, Merge & Calculate | Tooli",
@@ -94,6 +95,8 @@ export default function Home() {
 
 
             <WhyChooseTooli />
+            
+            <LatestBlogPosts />
 
 
 
