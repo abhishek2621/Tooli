@@ -5,12 +5,6 @@ const STATIC_ASSETS = [
     '/manifest.json',
 ];
 
-const CACHE_STRATEGIES = {
-    STATIC: ['GET'],
-    CACHE_FIRST: ['GET'],
-    NETWORK_FIRST: ['GET'],
-};
-
 function shouldCache(request) {
     const url = new URL(request.url);
     
@@ -99,7 +93,7 @@ async function cacheFirst(request) {
         }
         
         return response;
-    } catch (error) {
+    } catch {
         return new Response('Offline', { status: 503 });
     }
 }
@@ -133,7 +127,7 @@ async function networkFirst(request) {
         }
         
         return response;
-    } catch (error) {
+    } catch {
         const cached = await caches.match(request);
         
         if (cached) {

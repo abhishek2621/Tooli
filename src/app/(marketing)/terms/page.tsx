@@ -28,7 +28,7 @@ export default function TermsPage() {
                 <section className="space-y-3">
                     <h2 className="text-2xl font-semibold">1. Acceptance of Terms</h2>
                     <p className="text-muted-foreground">
-                        By accessing and using Tooli ("the Service"), you accept and agree to be bound by the terms and provision of this agreement.
+                        By accessing and using Tooli (the Service), you accept and agree to be bound by the terms and provision of this agreement.
                     </p>
                 </section>
 
@@ -46,7 +46,7 @@ export default function TermsPage() {
                 <section className="space-y-3">
                     <h2 className="text-2xl font-semibold">3. Disclaimer</h2>
                     <p className="text-muted-foreground">
-                        The materials on Tooli's website are provided on an 'as is' basis. Tooli makes no warranties, expressed or implied,
+                        The materials on Tooli&apos;s website are provided on an &apos;as is&apos; basis. Tooli makes no warranties, expressed or implied,
                         and hereby disclaims and negates all other warranties including, without limitation, implied warranties or
                         conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property.
                     </p>
@@ -61,7 +61,7 @@ export default function TermsPage() {
                     <h2 className="text-2xl font-semibold">4. Limitations</h2>
                     <p className="text-muted-foreground">
                         In no event shall Tooli or its suppliers be liable for any damages (including, without limitation, damages for loss of
-                        data or profit, or due to business interruption) arising out of the use or inability to use the materials on Tooli's website.
+                        data or profit, or due to business interruption) arising out of the use or inability to use the materials on Tooli&apos;s website.
                     </p>
                 </section>
 

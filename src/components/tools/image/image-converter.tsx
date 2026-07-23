@@ -2,9 +2,9 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { FileDropzone } from "@/components/shared/file-dropzone";
+import Image from "next/image";
 import {
     Download,
-    X,
     Loader2,
     ArrowRight,
     Settings2,
@@ -127,7 +127,7 @@ export function ImageConverter() {
 
         try {
             // Get image dimensions
-            const img = new Image();
+            const img = new window.Image();
             img.src = imgData.originalPreview;
             await new Promise((resolve, reject) => {
                 img.onload = resolve;
@@ -285,11 +285,13 @@ export function ImageConverter() {
                                     selectedId === img.id ? "border-primary ring-1 ring-primary/20 bg-accent/20" : "border-border hover:border-primary/50"
                                 )}
                             >
-                                <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden border">
-                                    <img
+                                <div className="relative h-24 w-24 sm:h-32 sm:w-32 shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden border">
+                                    <Image
                                         src={img.originalPreview}
                                         alt={img.originalFile.name}
-                                        className="h-full w-full object-cover"
+                                        fill
+                                        className="object-cover"
+                                        unoptimized
                                     />
                                     {img.status === "done" && (
                                         <Badge className="absolute bottom-1 right-1 px-1.5 py-0.5 text-[10px] bg-green-600">

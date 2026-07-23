@@ -94,14 +94,7 @@ export const tools: Tool[] = [
     },
 
     // Utility (Ordered 4th)
-    {
-        name: "Universal Unit Converter Online",
-        slug: "unit-converter",
-        category: "utility",
-        description: "Convert length, weight, and volume between metric & imperial.",
-        path: "/utility/unit-converter",
-        icon: "scale",
-    },
+
     {
         name: "Free QR Code Generator",
         slug: "qr-generator",

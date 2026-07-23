@@ -38,7 +38,7 @@ export default function AboutPage() {
                     <h2 className="text-2xl font-bold">How It Works</h2>
                     <p className="text-muted-foreground leading-relaxed">
                         Tooli uses modern web technologies (WebAssembly, Service Workers) to process your files
-                        <strong> directly in your browser</strong>. Whether you're compressing a PDF or converting an image,
+                        <strong> directly in your browser</strong>. Whether you are compressing a PDF or converting an image,
                         the file never leaves your device.
                     </p>
                 </div>

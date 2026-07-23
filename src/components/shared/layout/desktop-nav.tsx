@@ -9,7 +9,6 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
 export function DesktopNav() {
@@ -28,6 +27,7 @@ export function DesktopNav() {
                                         <NavigationMenuLink asChild>
                                             <Link
                                                 href={tool.path}
+                                                legacyBehavior={false}
                                                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                             >
                                                 <div className="flex flex-col space-y-1">
@@ -44,6 +44,7 @@ export function DesktopNav() {
                                     <NavigationMenuLink asChild>
                                         <Link
                                             href={`/${category}`}
+                                            legacyBehavior={false}
                                             className="flex items-center justify-center w-full py-2.5 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 border border-primary/10 rounded-md transition-all group"
                                         >
                                             View all {category} tools
@@ -55,13 +56,6 @@ export function DesktopNav() {
                         </NavigationMenuContent>
                     </NavigationMenuItem>
                 ))}
-                <NavigationMenuItem>
-                    <Link href="/blog" legacyBehavior passHref>
-                        <NavigationMenuLink className={`${navigationMenuTriggerStyle()} bg-transparent`}>
-                            Blog
-                        </NavigationMenuLink>
-                    </Link>
-                </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
     );

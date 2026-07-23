@@ -59,15 +59,13 @@ interface ToolExplorerProps {
 export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
     const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [isMobile, setIsMobile] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        const raf = window.requestAnimationFrame(() => setMounted(true));
+        return () => {
+            window.cancelAnimationFrame(raf);
+        };
     }, []);
 
     useEffect(() => {
@@ -106,11 +104,6 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
     }, [allTools, searchQuery]);
 
     const isSearching = searchQuery.length > 0;
-
-
-
-    // Optimization: Handle motion overhead safely
-    const shouldAnimate = mounted && !isMobile;
 
     return (
         <>
@@ -189,7 +182,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                         </div>
                         <div suppressHydrationWarning className="-mt-5 flex flex-row flex-nowrap gap-4 overflow-x-auto pt-8 pb-6 no-scrollbar scroll-smooth">
                             {filteredTools.map((tool) => (
-                                <ToolCard key={tool.slug} tool={tool} variants={itemVars} isMobile={isMobile} mounted={mounted} />
+                                <ToolCard key={tool.slug} tool={tool} variants={itemVars} mounted={mounted} />
                             ))}
                         </div>
                     </motion.div>
@@ -228,7 +221,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                                     </div>
                                     <div suppressHydrationWarning className="-mt-5 flex flex-row flex-nowrap gap-4 overflow-x-auto pt-8 pb-6 no-scrollbar scroll-smooth">
                                         {initialTools[category].map((tool) => (
-                                            <ToolCard key={tool.slug} tool={tool} isMobile={isMobile} mounted={mounted} />
+                                            <ToolCard key={tool.slug} tool={tool} mounted={mounted} />
                                         ))}
                                     </div>
                                 </div>
@@ -241,9 +234,8 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
     );
 }
 
-function ToolCard({ tool, variants, isMobile, mounted }: { tool: Tool, variants?: Variants, isMobile?: boolean, mounted?: boolean }) {
+function ToolCard({ tool, variants, mounted }: { tool: Tool, variants?: Variants, mounted?: boolean }) {
     const IconComponent = useMemo(() => iconMap[tool.icon] || ArrowRight, [tool.icon]);
-    const shouldAnimate = mounted && !isMobile;
 
     return (
         <motion.div
@@ -251,7 +243,7 @@ function ToolCard({ tool, variants, isMobile, mounted }: { tool: Tool, variants?
             whileInView="show"
             viewport={{ once: true }}
             variants={variants || itemVars}
-            className="flex-none w-[280px] sm:w-[320px] transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
+            className="flex-none w-70 sm:w-[320px] transition-all duration-300 md:hover:-translate-y-2 md:active:scale-95"
         >
             <Link
                 href={tool.path}

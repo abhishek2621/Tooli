@@ -2,21 +2,12 @@
 
 import { toast as sonner } from "sonner";
 
-type ToastType = "success" | "error" | "warning" | "info";
-
 interface ToastOptions {
   duration?: number;
   description?: string;
 }
 
 const defaultDuration = 4000;
-
-const icons: Record<ToastType, string> = {
-  success: "✓",
-  error: "✕",
-  warning: "⚠",
-  info: "ℹ",
-};
 
 export const toast = {
   success: (message: string, options?: ToastOptions) => {

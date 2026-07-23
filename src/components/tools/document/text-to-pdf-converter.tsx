@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Upload, FileText, Settings2, Trash2, AlignLeft, Type } from "lucide-react";
+import { Download, FileText, Settings2, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 
@@ -91,7 +90,7 @@ export function TextToPdfConverter() {
             {/* Left Column: Input Area */}
             <div className="lg:col-span-8 space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                    <TabsList className="grid w-full grid-cols-2 lg:w-100">
                         <TabsTrigger value="type">Type / Edit Text</TabsTrigger>
                         <TabsTrigger value="upload">Upload File</TabsTrigger>
                     </TabsList>
@@ -100,7 +99,7 @@ export function TextToPdfConverter() {
                         <div className="relative">
                             <Textarea
                                 placeholder="Start typing or paste your text here to convert to PDF..."
-                                className="min-h-[600px] font-mono text-base p-6 resize-none shadow-sm border-2 focus-visible:ring-primary/20 focus-visible:border-primary rounded-xl"
+                                className="min-h-150 font-mono text-base p-6 resize-none shadow-sm border-2 focus-visible:ring-primary/20 focus-visible:border-primary rounded-xl"
                                 value={text}
                                 onChange={(e) => setText(e.target.value)}
                             />
@@ -117,7 +116,7 @@ export function TextToPdfConverter() {
                             accept={{ 'text/plain': ['.txt', '.md', '.json', '.csv'] }}
                             title="Upload Text File"
                             description="Drag & drop .txt, .md, .json, or .csv files here"
-                            className="min-h-[400px]"
+                            className="min-h-100"
                         />
                     </TabsContent>
                 </Tabs>

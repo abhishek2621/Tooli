@@ -55,7 +55,7 @@ export function WhyChooseTooli() {
             >
               <div
                 className={[
-                  "absolute inset-0 rounded-3xl bg-linear-to-br opacity-0 group-hover:opacity-100 transition-opacity",
+                  "absolute inset-0 rounded-3xl bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity",
                   feature.gradient,
                 ].join(" ")}
               />

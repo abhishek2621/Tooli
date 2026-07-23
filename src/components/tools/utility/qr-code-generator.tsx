@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Download, Share2, Type, Link as LinkIcon, Mail, Settings2 } from "lucide-react";
+import { Download, Type, Link as LinkIcon, Mail, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,15 +16,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-
 export function QrCodeGenerator() {
     const [value, setValue] = useState("https://example.com");
     const [size, setSize] = useState(256);
     const [fgColor, setFgColor] = useState("#000000");
     const [bgColor, setBgColor] = useState("#ffffff");
     const [level, setLevel] = useState<"L" | "M" | "Q" | "H">("L");
-    const [includeMargin, setIncludeMargin] = useState(true);
+    const [includeMargin] = useState(true);
 
     const svgRef = useRef<SVGSVGElement>(null);
 

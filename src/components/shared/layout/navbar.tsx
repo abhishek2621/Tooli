@@ -5,14 +5,6 @@ import { useState, useEffect } from "react";
 import { siteConfig } from "@/config/site";
 import { toolsByCategory } from "@/config/tools";
 import { Button } from "@/components/ui/button";
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import { Menu, X, Smartphone } from "lucide-react";
 import { DesktopNav } from "./desktop-nav";
 
@@ -27,6 +19,7 @@ export function Navbar() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
@@ -138,15 +131,6 @@ export function Navbar() {
                                         </div>
                                     </div>
                                 ))}
-                                <div className="pt-2 border-t border-border/50">
-                                    <Link
-                                        href="/blog"
-                                        className="text-[14px] font-bold text-foreground hover:bg-muted/40 py-3 px-3 rounded-md transition-all flex items-center"
-                                        onClick={() => setIsMenuOpen(false)}
-                                    >
-                                        Blog
-                                    </Link>
-                                </div>
                             </div>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ import { Footer } from "@/components/shared/layout/footer";
 import { Navbar } from "@/components/shared/layout/navbar";
 import { ToolSidebar } from "@/components/shared/layout/sidebar";
 import { BackgroundBlobs } from "@/components/shared/background-blobs";
+import Script from "next/script";
 
 export default function ToolsLayout({
     children,
@@ -21,6 +22,14 @@ export default function ToolsLayout({
                 </main>
             </div>
             <Footer />
+
+            {/* Google AdSense Global Snippet */}
+            <Script
+                async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6286695412377535"
+                crossOrigin="anonymous"
+                strategy="afterInteractive"
+            />
         </div>
     );
 }

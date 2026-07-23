@@ -232,7 +232,7 @@ export function ImageCompressor() {
         const worker = new Worker(new URL('../../../workers/zip-generator.worker', import.meta.url));
 
         worker.onmessage = (e) => {
-            const { type, blob, zipFilename } = e.data;
+            const { type, blob } = e.data;
 
             if (type === 'DONE') {
                 triggerHaptic([50, 30, 50]);
@@ -290,7 +290,8 @@ export function ImageCompressor() {
                                     selectedId === img.id ? "border-primary ring-1 ring-primary/20 bg-accent/20" : "border-border hover:border-primary/50"
                                 )}
                             >
-                                <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden border">
+                                <div className="relative h-24 w-24 sm:h-32 sm:w-32 shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden border">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={img.compressedPreview || img.originalPreview}
                                         alt={img.originalFile.name}

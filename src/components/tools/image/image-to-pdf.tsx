@@ -1,18 +1,15 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Image from "next/image";
 import { FileDropzone } from "@/components/shared/file-dropzone";
 import {
     Download,
-    Upload,
     X,
-    FileText,
     MoveLeft,
     MoveRight,
     ImageIcon,
     Settings2,
-    Check,
-    ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +24,6 @@ import {
 } from "@/components/ui/select";
 import { cn, triggerHaptic } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
 interface PdfImage {
@@ -79,7 +75,7 @@ export function ImageToPdf() {
             const url = URL.createObjectURL(file);
 
             // Get dimensions
-            const imgElement = new Image();
+            const imgElement = new window.Image();
             const dimensions = await new Promise<{ width: number, height: number }>((resolve, reject) => {
                 imgElement.onload = () => resolve({
                     width: imgElement.naturalWidth,
@@ -224,12 +220,13 @@ export function ImageToPdf() {
                 {images.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                         {images.map((img, index) => (
-                            <div key={img.id} className="group relative aspect-[3/4] bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border shadow-sm hover:ring-2 hover:ring-primary/50 transition-all">
-                                <img
+                            <div key={img.id} className="group relative aspect-3/4 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border shadow-sm hover:ring-2 hover:ring-primary/50 transition-all">
+                                <Image
                                     src={img.preview}
                                     alt={`Page ${index + 1}`}
-                                    className="h-full w-full object-cover"
-                                    loading="lazy"
+                                    fill
+                                    className="object-cover"
+                                    unoptimized
                                 />
 
                                 {/* Page Number Badge */}

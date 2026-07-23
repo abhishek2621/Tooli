@@ -14,8 +14,6 @@ const ImageConverter = dynamic(
         )
     }
 );
-import { SEOContent } from "@/components/shared/seo-content";
-
 export const metadata: Metadata = generateToolMetadata({
     title: 'Image Converter Online – Convert JPG, PNG & WEBP',
     description: 'Convert images between formats (JPG, PNG, WEBP). Free online image converter with no file size limit.',

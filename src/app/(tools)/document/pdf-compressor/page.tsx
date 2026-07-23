@@ -14,8 +14,6 @@ const PdfCompressorWrapper = dynamic(
         )
     }
 );
-import { SEOContent } from "@/components/shared/seo-content";
-
 export const metadata: Metadata = generateToolMetadata({
     title: 'Compress PDF Online – Free, Ad-Free & Instant',
     description: 'Reduce PDF file size instantly without compromising quality. Ad-free, browser-based PDF compression. No sign-up, no upload necessary.',

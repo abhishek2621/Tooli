@@ -6,7 +6,7 @@ import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 
 export function ModeToggle() {
-    const { setTheme, theme, resolvedTheme } = useTheme()
+    const { setTheme, resolvedTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
 
     React.useEffect(() => {

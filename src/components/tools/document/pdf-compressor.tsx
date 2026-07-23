@@ -236,7 +236,7 @@ export function PdfCompressor() {
                                 </SelectContent>
                             </Select>
                             <p className="text-xs text-muted-foreground">
-                                Balances file size vs. visual quality. "Extreme" may make text harder to read.
+                                Balances file size vs. visual quality. &quot;Extreme&quot; may make text harder to read.
                             </p>
                         </div>
 

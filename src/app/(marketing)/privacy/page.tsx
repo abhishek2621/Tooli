@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Privacy Policy - Tooli",
@@ -50,7 +49,7 @@ export default function PrivacyPage() {
                 <section className="space-y-3">
                     <h2 className="text-2xl font-semibold">3. Local Storage</h2>
                     <p className="text-muted-foreground">
-                        We may use your browser's local storage to save your preferences (like Dark/Light mode theme) or
+                        We may use your browser&apos;s local storage to save your preferences (like Dark/Light mode theme) or
                         temporary tool settings (like your last used image compression quality). This data stays on your device
                         and can be cleared by you at any time.
                     </p>
