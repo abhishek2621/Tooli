@@ -206,7 +206,7 @@ export function ToolExplorer({ initialTools, children }: ToolExplorerProps) {
                                 image: "Professional-grade image processing tools. Compress, convert, and resize images without losing quality.",
                                 document: "Fast and secure document management. Compress, merge, and convert PDF files directly in your browser.",
                                 finance: "Accurate financial calculators for GST, interest, and loans. Simplified math for smarter decisions.",
-                                utility: "Essential daily utility tools. From QR codes to unit conversions, everything you need in one place."
+                                utility: "Essential daily utility tools. From QR codes to secure password generation, everything you need in one place."
                             };
                             return (initialTools[category].length > 0 && (
                                 <div key={category} className="space-y-6">

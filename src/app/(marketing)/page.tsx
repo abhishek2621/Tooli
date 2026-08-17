@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     keywords: [
         "free image compressor",
         "free image converter",
-        "no ads",
+        "free online tools",
         "no sign up online tools",
         "privacy focused tools",
         "image compressor online",
@@ -55,7 +55,7 @@ export default function Home() {
                 <div className="container flex max-w-5xl flex-col items-center gap-6 text-center z-10">
                     <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md mb-4 transition-all hover:bg-primary/10 hover:border-primary/30 cursor-default">
                         <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
-                        100% Free • No Sign-up • No Ads
+                        100% Free • No Sign-up • Fast & Secure
                     </div>
 
                     <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground drop-shadow-sm">
@@ -79,7 +79,7 @@ export default function Home() {
                 <div className="flex flex-wrap justify-center gap-3 md:gap-6 mt-2 mb-4 px-4">
                     {[
                         { label: "Privacy First", icon: "🛡️" },
-                        { label: "No Advertisements", icon: "✨" },
+                        { label: "Fast & Secure", icon: "⚡" },
                         { label: "Runs Locally", icon: "💻" },
                         { label: "No Signup", icon: "🚫" },
                         { label: "Made in India", icon: "🇮🇳" }

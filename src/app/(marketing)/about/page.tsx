@@ -30,8 +30,8 @@ export default function AboutPage() {
                 <div className="space-y-4 p-6 rounded-2xl bg-muted/30 border">
                     <h2 className="text-2xl font-bold">Our Mission</h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        In a web filled with ad-cluttered, paywalled, and data-harvesting tool sites, Tooli stands apart.
-                        Our goal is simple: Create the most useful collection of calculators and converters that respect your time and data.
+                        In a web filled with slow, paywalled, and data-harvesting tool sites, Tooli stands apart.
+                        Our goal is simple: Create the most useful collection of calculators and tools that respect your time and data.
                     </p>
                 </div>
                 <div className="space-y-4 p-6 rounded-2xl bg-muted/30 border">

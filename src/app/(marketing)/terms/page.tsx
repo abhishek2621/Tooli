@@ -21,7 +21,7 @@ export default function TermsPage() {
         <div className="container max-w-3xl py-12 space-y-8">
             <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight">Terms of Service</h1>
-                <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+                <p className="text-muted-foreground">Last updated: August 14, 2026</p>
             </div>
 
             <div className="prose prose-slate dark:prose-invert max-w-none space-y-6">
@@ -52,7 +52,7 @@ export default function TermsPage() {
                     </p>
                     <p className="text-muted-foreground">
                         Further, Tooli does not warrant or make any representations concerning the accuracy, likely results, or reliability
-                        of the use of the materials on its website. Calculations (financial, unit conversions, etc.) should be verified independently
+                        of the use of the materials on its website. Calculations (financial repayments, interest rates, age indicators, etc.) should be verified independently
                         before being relied upon for critical tasks.
                     </p>
                 </section>

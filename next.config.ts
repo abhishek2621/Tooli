@@ -196,6 +196,30 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/compress-image-to-50kb",
+        destination: "/image/image-compressor",
+        permanent: true,
+      },
+      {
+        source: "/compress-image-to-100kb",
+        destination: "/image/image-compressor",
+        permanent: true,
+      },
+      {
+        source: "/compress-image-to-200kb",
+        destination: "/image/image-compressor",
+        permanent: true,
+      },
+      {
+        source: "/compress-image-to-500kb",
+        destination: "/image/image-compressor",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

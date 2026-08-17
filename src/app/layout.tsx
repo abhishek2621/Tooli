@@ -21,12 +21,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
 
   title: {
-    default: "Tooli - Free Online Tools & Calculators (Ad-Free)",
+    default: "Tooli - Free Online Tools & Calculators",
     template: "%s | Tooli",
   },
 
   description:
-    "A comprehensive collection of free, ad-free online calculators, converters, and productivity tools. No registration required.",
+    "A comprehensive collection of free online calculators, converters, and productivity tools. No registration required.",
 
   keywords: [
     "online tools",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     "pdf tools",
     "image tools",
     "free utilities",
-    "ad-free tools",
+    "online utilities",
   ],
 
   authors: [{ name: "Tooli Team" }],
@@ -56,9 +56,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: baseUrl,
     siteName: "Tooli",
-    title: "Tooli - 100% Free Online Tools & Calculators (Ad-Free)",
+    title: "Tooli - 100% Free Online Tools & Calculators",
     description:
-      "Pro-grade online tools: PDF, Image, Finance, and Utilities. 100% Free, No Ads, No Sign-up.",
+      "Pro-grade online tools: PDF, Image, Finance, and Utilities. 100% Free, No Sign-up.",
     images: [
       {
         url: `${baseUrl}/opengraph-image`,
@@ -71,9 +71,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Tooli - Free Online Tools (No Ads)",
+    title: "Tooli - Free Online Tools",
     description:
-      "Access pro-grade online tools for free. No ads, no registration.",
+      "Access pro-grade online tools for free. No registration required.",
     images: [`${baseUrl}/opengraph-image`],
   },
 
@@ -100,17 +100,35 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#6366f1" />
         <link rel="manifest" href="/manifest.json" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js');
-                });
-              }
-            `,
-          }}
-        />
+        {process.env.NODE_ENV === "production" ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js');
+                  });
+                }
+              `,
+            }}
+          />
+        ) : (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (let registration of registrations) {
+                      registration.unregister().then(function(success) {
+                        if (success) console.log('Successfully unregistered development service worker.');
+                      });
+                    }
+                  });
+                }
+              `,
+            }}
+          />
+        )}
       </head>
 
       <body

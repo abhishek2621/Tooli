@@ -3,8 +3,8 @@ import { toolsByCategory } from "@/config/tools";
 import { CategoryPage } from "@/components/shared/category-page";
 
 export const metadata: Metadata = {
-    title: "Utility Tools | Unit Converters, Password Generators & More",
-    description: "Helpful utilities for everyday tasks. Generate passwords, calculate age, and convert units.",
+    title: "Utility Tools | QR Generators, Password Generators & More",
+    description: "Helpful utilities for everyday tasks. Generate passwords, calculate age, and create QR codes.",
     robots: {
         index: true,
         follow: true,

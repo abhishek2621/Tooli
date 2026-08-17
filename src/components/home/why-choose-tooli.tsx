@@ -20,7 +20,7 @@ export function WhyChooseTooli() {
     },
     {
       title: "Always Free",
-      description: "No subscriptions, no hidden costs, and absolutely no intrusive advertisements.",
+      description: "No subscriptions, no hidden costs, and absolutely no registration required.",
       icon: Gem,
       gradient: "from-emerald-500/10 to-teal-500/10",
       iconColor: "text-emerald-500",

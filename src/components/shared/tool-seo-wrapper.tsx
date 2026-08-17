@@ -3,6 +3,8 @@ import { SEOJsonLd } from "@/components/shared/seo-json-ld";
 import { RelatedTools } from "@/components/shared/related-tools";
 import { ReactNode } from "react";
 
+import { TrustSignals } from "@/components/shared/trust-signals";
+
 interface ToolSEOProps {
   title: string;
   description: string;
@@ -66,6 +68,7 @@ export function ToolSEOWrapper({
       />
       <div className="space-y-6 w-full">
         {children}
+        <TrustSignals />
         {showRelatedAtBottom && <RelatedTools />}
       </div>
     </>
