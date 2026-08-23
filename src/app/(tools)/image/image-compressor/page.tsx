@@ -1,6 +1,4 @@
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic';
-import { Skeleton } from "@/components/ui/skeleton";
 import { ToolSEOWrapper, generateToolMetadata } from "@/components/shared/tool-seo-wrapper";
 import { RelatedTools } from "@/components/shared/related-tools";
 
@@ -60,7 +58,7 @@ export default function ImageCompressorPage() {
                         </p>
                         <ul className="list-disc pl-5 mt-4 space-y-2 text-muted-foreground">
                             <li><strong>Quality (80% Recommended):</strong> The sweet spot for web use. Reduces file size by up to 70% with virtually indistinguishable quality loss.</li>
-                            <li><strong>Quality (50% or less):</strong> Ideal when you need to meet strict submission limits like "under 50KB" or "under 20KB" for job applications and exam portals.</li>
+                            <li><strong>Quality (50% or less):</strong> Ideal when you need to meet strict submission limits like &quot;under 50KB&quot; or &quot;under 20KB&quot; for job applications and exam portals.</li>
                             <li><strong>Format Conversion:</strong> Convert to WebP for modern websites, JPEG for maximum compatibility, and PNG if you must preserve transparent backgrounds.</li>
                         </ul>
                     </div>
@@ -133,8 +131,8 @@ export default function ImageCompressorPage() {
                     <div>
                         <h2 className="text-2xl font-bold mb-4">Common Compression Errors</h2>
                         <ul className="space-y-3 text-muted-foreground">
-                            <li><strong>Error: "Output larger than input":</strong> Occurs when compressing a highly optimized PNG as a lossless WebP. Try reducing dimensions or quality slider.</li>
-                            <li><strong>Error: "Invalid format":</strong> Ensure your file extension is strictly `.jpg`, `.jpeg`, `.png`, or `.webp`.</li>
+                            <li><strong>Error: &quot;Output larger than input&quot;:</strong> Occurs when compressing a highly optimized PNG as a lossless WebP. Try reducing dimensions or quality slider.</li>
+                            <li><strong>Error: &quot;Invalid format&quot;:</strong> Ensure your file extension is strictly `.jpg`, `.jpeg`, `.png`, or `.webp`.</li>
                         </ul>
                     </div>
                 </section>

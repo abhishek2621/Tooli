@@ -61,7 +61,7 @@ export default function PdfCompressorPage() {
                             </li>
                             <li className="flex items-start gap-2">
                                 <span className="text-primary font-bold">✓</span>
-                                <span className="text-muted-foreground"><strong>Email Attachments:</strong> Reduce large scans to fit Gmail's 25MB attachment limit.</span>
+                                <span className="text-muted-foreground"><strong>Email Attachments:</strong> Reduce large scans to fit Gmail&apos;s 25MB attachment limit.</span>
                             </li>
                         </ul>
                     </div>
@@ -117,8 +117,8 @@ export default function PdfCompressorPage() {
                     <div>
                         <h2 className="text-2xl font-bold mb-4">Common Errors & Troubleshooting</h2>
                         <ul className="space-y-3 text-muted-foreground">
-                            <li><strong>Error: "File is encrypted":</strong> Decrypt the PDF using a removal tool before uploading.</li>
-                            <li><strong>Error: "Size did not decrease":</strong> The PDF may already have optimized images. Try a lower quality preset.</li>
+                            <li><strong>Error: &quot;File is encrypted&quot;:</strong> Decrypt the PDF using a removal tool before uploading.</li>
+                            <li><strong>Error: &quot;Size did not decrease&quot;:</strong> The PDF may already have optimized images. Try a lower quality preset.</li>
                         </ul>
                     </div>
                 </section>

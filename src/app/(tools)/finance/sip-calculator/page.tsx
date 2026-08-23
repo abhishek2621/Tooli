@@ -113,7 +113,7 @@ export default function SIPCalculatorPage() {
                     <div>
                         <h2 className="text-2xl font-bold mb-4">Common Misconceptions</h2>
                         <ul className="space-y-3 text-muted-foreground">
-                            <li><strong>Error: "SIP guarantees returns":</strong> Unlike bank deposits, SIP returns are linked to equity/debt markets and contain risk.</li>
+                            <li><strong>Error: &quot;SIP guarantees returns&quot;:</strong> Unlike bank deposits, SIP returns are linked to equity/debt markets and contain risk.</li>
                             <li><strong>Error: Short Term Expectation:</strong> Expecting massive wealth in 1-2 years. Compounding benefits become significant only after 7-10 years.</li>
                         </ul>
                     </div>
